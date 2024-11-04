@@ -148,42 +148,42 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     (() => {
                                         // Fetch river-mile
                                         (() => {
-                                            // riverMilePromises.push(
-                                            //     fetch('json/gage_control_official.json')
-                                            //         .then(response => {
-                                            //             if (!response.ok) {
-                                            //                 throw new Error(`Network response was not ok: ${response.statusText}`);
-                                            //             }
-                                            //             return response.json();
-                                            //         })
-                                            //         .then(riverMilesJson => {
-                                            //             // Loop through each basin in the JSON
-                                            //             for (const basin in riverMilesJson) {
-                                            //                 const locations = riverMilesJson[basin];
+                                            riverMilePromises.push(
+                                                fetch('json/gage_control_official.json')
+                                                    .then(response => {
+                                                        if (!response.ok) {
+                                                            throw new Error(`Network response was not ok: ${response.statusText}`);
+                                                        }
+                                                        return response.json();
+                                                    })
+                                                    .then(riverMilesJson => {
+                                                        // Loop through each basin in the JSON
+                                                        for (const basin in riverMilesJson) {
+                                                            const locations = riverMilesJson[basin];
 
-                                            //                 for (const loc in locations) {
-                                            //                     const ownerData = locations[loc];
-                                            //                     // console.log("ownerData: ", ownerData);
+                                                            for (const loc in locations) {
+                                                                const ownerData = locations[loc];
+                                                                // console.log("ownerData: ", ownerData);
 
-                                            //                     // Retrieve river mile and other data
-                                            //                     const riverMile = ownerData.river_mile_hard_coded;
+                                                                // Retrieve river mile and other data
+                                                                const riverMile = ownerData.river_mile_hard_coded;
 
-                                            //                     // Create an output object using the location name as ID
-                                            //                     const outputData = {
-                                            //                         locationId: loc, // Using location name as ID
-                                            //                         basin: basin,
-                                            //                         riverMile: riverMile
-                                            //                     };
+                                                                // Create an output object using the location name as ID
+                                                                const outputData = {
+                                                                    locationId: loc, // Using location name as ID
+                                                                    basin: basin,
+                                                                    riverMile: riverMile
+                                                                };
 
-                                            //                     // console.log("Output Data:", outputData);
-                                            //                     riverMileMap.set(loc, ownerData); // Store the data in the map
-                                            //                 }
-                                            //             }
-                                            //         })
-                                            //         .catch(error => {
-                                            //             console.error('Problem with the fetch operation:', error);
-                                            //         })
-                                            // )
+                                                                // console.log("Output Data:", outputData);
+                                                                riverMileMap.set(loc, ownerData); // Store the data in the map
+                                                            }
+                                                        }
+                                                    })
+                                                    .catch(error => {
+                                                        console.error('Problem with the fetch operation:', error);
+                                                    })
+                                            )
                                         })();
 
                                         // Fetch metadata
@@ -464,11 +464,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     // const lwrpMapData = lwrpMap.get(loc['location-id']);
                                     // loc['lwrp'] = lwrpMapData !== undefined ? lwrpMapData : null;
 
-                                    // // Append river-mile
-                                    // const riverMileMapData = riverMileMap.get(loc['location-id']);
-                                    // if (riverMileMapData) {
-                                    //     loc['river-mile'] = riverMileMapData;
-                                    // }
+                                    // Append river-mile
+                                    const riverMileMapData = riverMileMap.get(loc['location-id']);
+                                    if (riverMileMapData) {
+                                        loc['river-mile'] = riverMileMapData;
+                                    }
 
                                     // Append owner
                                     const ownerMapData = ownerMap.get(loc['location-id']);
@@ -1733,16 +1733,47 @@ function createTableRiverReservoir(combinedData, type, reportNumber, nws_day1_da
 
     // Loop through each basin in the combined data
     combinedData.forEach((basin) => {
-        console.log(basin[`id`]);
-
         // Create a row for the location ID spanning 13 columns
         const basinRow = document.createElement('tr');
         const basinCell = document.createElement('th');
         basinCell.colSpan = 13;
         basinCell.textContent = basin[`id`];
-        basinCell.style.height = '50px';
+        basinCell.style.height = '30px';
         basinRow.appendChild(basinCell);
         table.appendChild(basinRow);
+
+        basin['assigned-locations'].forEach((location) => {
+            const row = document.createElement('tr');
+
+            const riverMileCell = document.createElement('td');
+            const riverMileValue = location['river-mile'] && location['river-mile']['river_mile_hard_coded'];
+            riverMileCell.textContent = riverMileValue != null ? parseFloat(riverMileValue).toFixed(1) : "N/A";
+
+
+            // Set the title for the cell
+            riverMileCell.title = "Hard Coded with Json File";
+
+            // Set halo effect using text-shadow with orange color
+            riverMileCell.style.textShadow = '0 0 2px rgba(255, 165, 0, 0.7), 0 0 2px rgba(255, 140, 0, 0.5)';
+            row.appendChild(riverMileCell);
+
+
+            // Location cell with link
+            const value = location['stage-last-value'][0]?.value;
+            const tsid = value ? value.tsid : '';
+            const link = `https://wm.mvs.ds.usace.army.mil/apps/chart/index.html?office=MVS&cwms_ts_id=${tsid}&cda=internal&lookback=7`;
+            const locationCell = document.createElement('td');
+            const linkElement = document.createElement('a');
+            linkElement.href = link;
+            linkElement.target = '_blank';
+            linkElement.textContent = location['location-id'].split('-')[0];
+            locationCell.appendChild(linkElement);
+            row.appendChild(locationCell);
+
+            
+
+            table.appendChild(row);
+        });
     });
 
     // Return the constructed table element
