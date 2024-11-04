@@ -7,9 +7,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     let setTimeseriesGroup1 = null;
     let setTimeseriesGroup2 = null;
     let setTimeseriesGroup3 = null;
-    let setTimeseriesGroup4 = null;
-    let setTimeseriesGroup5 = null;
-    let setLookBackHours = null;
+    // let setTimeseriesGroup4 = null;
+    // let setTimeseriesGroup5 = null;
+    let setLookBack = null;
+    let setLookForward = null;
     let setReportDiv = null;
 
     let reportNumber = 1;
@@ -20,14 +21,15 @@ document.addEventListener('DOMContentLoaded', async function () {
         console.log("***************************************************************");
         // Set the category and base URL for API calls
         setReportDiv = "river_reservoir";
-        setLocationCategory = "Projects";
-        setLocationGroupOwner = "Ld-Gate-Summary";
+        setLocationCategory = "Basins";
+        setLocationGroupOwner = "River-Reservoir";
         setTimeseriesGroup1 = "Stage";
-        setTimeseriesGroup2 = "Stage-TW";
-        setTimeseriesGroup3 = "Hinge-Point";
-        setTimeseriesGroup4 = "Tainter";
-        setTimeseriesGroup5 = "Roller";
-        setLookBackHours = subtractDaysFromDate(new Date(), 1);
+        setTimeseriesGroup2 = "Forecast-NWS";
+        setTimeseriesGroup3 = "Crest";
+        // setTimeseriesGroup4 = "--";
+        // setTimeseriesGroup5 = "--";
+        setLookBack = subtractDaysFromDate(new Date(), 1);
+        setLookForward = addDaysFromDate(new Date(), 4);
     }
 
     // Display the loading indicator for water quality alarm
@@ -39,9 +41,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.log("setTimeseriesGroup1: ", setTimeseriesGroup1);
     console.log("setTimeseriesGroup2: ", setTimeseriesGroup2);
     console.log("setTimeseriesGroup3: ", setTimeseriesGroup3);
-    console.log("setTimeseriesGroup4: ", setTimeseriesGroup4);
-    console.log("setTimeseriesGroup5: ", setTimeseriesGroup5);
-    console.log("setLookBackHours: ", setLookBackHours);
+    // console.log("setTimeseriesGroup4: ", setTimeseriesGroup4);
+    // console.log("setTimeseriesGroup5: ", setTimeseriesGroup5);
+    console.log("setLookBack: ", setLookBack);
 
     let setBaseUrl = null;
     if (cda === "internal") {
@@ -63,10 +65,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     const ownerMap = new Map();
     const tsidStageMap = new Map();
     const riverMileMap = new Map();
-    const tsidTwMap = new Map();
-    const tsidHingePointMap = new Map();
-    const tsidTainterMap = new Map();
-    const tsidRollerMap = new Map();
+    const tsidForecastNwsMap = new Map();
+    const tsidCrestMap = new Map();
+    // const tsidTainterMap = new Map();
+    // const tsidRollerMap = new Map();
 
     // Initialize arrays for storing promises
     const metadataPromises = [];
@@ -75,10 +77,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     const ownerPromises = [];
     const stageTsidPromises = [];
     const riverMilePromises = [];
-    const twTsidPromises = [];
+    const forecastNwsTsidPromises = [];
     const hingePointTsidPromises = [];
-    const tainterTsidPromises = [];
-    const rollerTsidPromises = [];
+    // const tainterTsidPromises = [];
+    // const rollerTsidPromises = [];
 
     // Fetch location group data from the API
     fetch(categoryApiUrl)
@@ -332,7 +334,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                         (() => {
                                             const tsidApiUrl = setBaseUrl + `timeseries/group/${setTimeseriesGroup2}?office=${office}&category-id=${loc['location-id']}`;
                                             // console.log('tsidApiUrl:', tsidApiUrl);
-                                            twTsidPromises.push(
+                                            forecastNwsTsidPromises.push(
                                                 fetch(tsidApiUrl)
                                                     .then(response => {
                                                         if (response.status === 404) return null; // Skip if not found
@@ -342,7 +344,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                                     .then(data => {
                                                         // // console.log('data:', data);
                                                         if (data) {
-                                                            tsidTwMap.set(loc['location-id'], data);
+                                                            tsidForecastNwsMap.set(loc['location-id'], data);
                                                         }
                                                     })
                                                     .catch(error => {
@@ -365,7 +367,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                                     .then(data => {
                                                         // // console.log('data:', data);
                                                         if (data) {
-                                                            tsidHingePointMap.set(loc['location-id'], data);
+                                                            tsidCrestMap.set(loc['location-id'], data);
                                                         }
                                                     })
                                                     .catch(error => {
@@ -376,48 +378,48 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                                         // Fetch tsid 4
                                         (() => {
-                                            const tsidApiUrl = setBaseUrl + `timeseries/group/${setTimeseriesGroup4}?office=${office}&category-id=${loc['location-id']}`;
-                                            // console.log('tsidApiUrl:', tsidApiUrl);
-                                            tainterTsidPromises.push(
-                                                fetch(tsidApiUrl)
-                                                    .then(response => {
-                                                        if (response.status === 404) return null; // Skip if not found
-                                                        if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
-                                                        return response.json();
-                                                    })
-                                                    .then(data => {
-                                                        // // console.log('data:', data);
-                                                        if (data) {
-                                                            tsidTainterMap.set(loc['location-id'], data);
-                                                        }
-                                                    })
-                                                    .catch(error => {
-                                                        console.error(`Problem with the fetch operation for stage TSID data at ${tsidApiUrl}:`, error);
-                                                    })
-                                            );
+                                            // const tsidApiUrl = setBaseUrl + `timeseries/group/${setTimeseriesGroup4}?office=${office}&category-id=${loc['location-id']}`;
+                                            // // console.log('tsidApiUrl:', tsidApiUrl);
+                                            // tainterTsidPromises.push(
+                                            //     fetch(tsidApiUrl)
+                                            //         .then(response => {
+                                            //             if (response.status === 404) return null; // Skip if not found
+                                            //             if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+                                            //             return response.json();
+                                            //         })
+                                            //         .then(data => {
+                                            //             // // console.log('data:', data);
+                                            //             if (data) {
+                                            //                 tsidTainterMap.set(loc['location-id'], data);
+                                            //             }
+                                            //         })
+                                            //         .catch(error => {
+                                            //             console.error(`Problem with the fetch operation for stage TSID data at ${tsidApiUrl}:`, error);
+                                            //         })
+                                            // );
                                         })();
 
                                         // Fetch tsid 5
                                         (() => {
-                                            const tsidApiUrl = setBaseUrl + `timeseries/group/${setTimeseriesGroup5}?office=${office}&category-id=${loc['location-id']}`;
-                                            // console.log('tsidApiUrl:', tsidApiUrl);
-                                            rollerTsidPromises.push(
-                                                fetch(tsidApiUrl)
-                                                    .then(response => {
-                                                        if (response.status === 404) return null; // Skip if not found
-                                                        if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
-                                                        return response.json();
-                                                    })
-                                                    .then(data => {
-                                                        // // console.log('data:', data);
-                                                        if (data) {
-                                                            tsidRollerMap.set(loc['location-id'], data);
-                                                        }
-                                                    })
-                                                    .catch(error => {
-                                                        console.error(`Problem with the fetch operation for stage TSID data at ${tsidApiUrl}:`, error);
-                                                    })
-                                            );
+                                            // const tsidApiUrl = setBaseUrl + `timeseries/group/${setTimeseriesGroup5}?office=${office}&category-id=${loc['location-id']}`;
+                                            // // console.log('tsidApiUrl:', tsidApiUrl);
+                                            // rollerTsidPromises.push(
+                                            //     fetch(tsidApiUrl)
+                                            //         .then(response => {
+                                            //             if (response.status === 404) return null; // Skip if not found
+                                            //             if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+                                            //             return response.json();
+                                            //         })
+                                            //         .then(data => {
+                                            //             // // console.log('data:', data);
+                                            //             if (data) {
+                                            //                 tsidRollerMap.set(loc['location-id'], data);
+                                            //             }
+                                            //         })
+                                            //         .catch(error => {
+                                            //             console.error(`Problem with the fetch operation for stage TSID data at ${tsidApiUrl}:`, error);
+                                            //         })
+                                            // );
                                         })();
                                     })();
                                 });
@@ -437,10 +439,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                 .then(() => Promise.all(ownerPromises))
                 .then(() => Promise.all(stageTsidPromises))
                 .then(() => Promise.all(riverMilePromises))
-                .then(() => Promise.all(twTsidPromises))
+                .then(() => Promise.all(forecastNwsTsidPromises))
                 .then(() => Promise.all(hingePointTsidPromises))
-                .then(() => Promise.all(tainterTsidPromises))
-                .then(() => Promise.all(rollerTsidPromises))
+                // .then(() => Promise.all(tainterTsidPromises))
+                // .then(() => Promise.all(rollerTsidPromises))
                 .then(() => {
                     combinedData.forEach(basinData => {
                         if (basinData['assigned-locations']) {
@@ -484,40 +486,40 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     }
 
                                     // Append tsid 2
-                                    const tsidTwMapData = tsidTwMap.get(loc['location-id']);
-                                    if (tsidTwMapData) {
-                                        reorderByAttribute(tsidTwMapData);
-                                        loc['tsid-tw'] = tsidTwMapData;
+                                    const tsidForecastNwsMapData = tsidForecastNwsMap.get(loc['location-id']);
+                                    if (tsidForecastNwsMapData) {
+                                        reorderByAttribute(tsidForecastNwsMapData);
+                                        loc['tsid-forecast-nws'] = tsidForecastNwsMapData;
                                     } else {
-                                        loc['tsid-tw'] = null;
+                                        loc['tsid-forecast-nws'] = null;
                                     }
 
                                     // Append tsid 3
-                                    const tsidHingePointMapData = tsidHingePointMap.get(loc['location-id']);
+                                    const tsidHingePointMapData = tsidCrestMap.get(loc['location-id']);
                                     if (tsidHingePointMapData) {
                                         reorderByAttribute(tsidHingePointMapData);
-                                        loc['tsid-hinge-point'] = tsidHingePointMapData;
+                                        loc['tsid-crest'] = tsidHingePointMapData;
                                     } else {
-                                        loc['tsid-hinge-point'] = null;
+                                        loc['tsid-crest'] = null;
                                     }
 
-                                    // Append tsid 4
-                                    const tsidTainterMapData = tsidTainterMap.get(loc['location-id']);
-                                    if (tsidTainterMapData) {
-                                        reorderByAttribute(tsidTainterMapData);
-                                        loc['tsid-tainter'] = tsidTainterMapData;
-                                    } else {
-                                        loc['tsid-tainter'] = null;
-                                    }
+                                    // // Append tsid 4
+                                    // const tsidTainterMapData = tsidTainterMap.get(loc['location-id']);
+                                    // if (tsidTainterMapData) {
+                                    //     reorderByAttribute(tsidTainterMapData);
+                                    //     loc['tsid-tainter'] = tsidTainterMapData;
+                                    // } else {
+                                    //     loc['tsid-tainter'] = null;
+                                    // }
 
-                                    // Append tsid 5
-                                    const tsidRollerMapData = tsidRollerMap.get(loc['location-id']);
-                                    if (tsidRollerMapData) {
-                                        reorderByAttribute(tsidRollerMapData);
-                                        loc['tsid-roller'] = tsidRollerMapData;
-                                    } else {
-                                        loc['tsid-roller'] = null;
-                                    }
+                                    // // Append tsid 5
+                                    // const tsidRollerMapData = tsidRollerMap.get(loc['location-id']);
+                                    // if (tsidRollerMapData) {
+                                    //     reorderByAttribute(tsidRollerMapData);
+                                    //     loc['tsid-roller'] = tsidRollerMapData;
+                                    // } else {
+                                    //     loc['tsid-roller'] = null;
+                                    // }
 
                                     // Initialize empty arrays to hold API and last-value data for various parameters
                                     loc['stage-api-data'] = [];
@@ -528,37 +530,37 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     loc['stage-max-value'] = [];
                                     loc['stage-min-value'] = [];
 
-                                    loc['tw-api-data'] = [];
-                                    loc['tw-cum-value'] = [];
-                                    loc['tw-hourly-value'] = [];
-                                    loc['tw-inc-value'] = [];
-                                    loc['tw-last-value'] = [];
-                                    loc['tw-max-value'] = [];
-                                    loc['tw-min-value'] = [];
+                                    loc['forecast-nws-api-data'] = [];
+                                    loc['forecast-nws-cum-value'] = [];
+                                    loc['forecast-nws-hourly-value'] = [];
+                                    loc['forecast-nws-inc-value'] = [];
+                                    loc['forecast-nws-last-value'] = [];
+                                    loc['forecast-nws-max-value'] = [];
+                                    loc['forecast-nws-min-value'] = [];
 
-                                    loc['hinge-point-api-data'] = [];
-                                    loc['hinge-point-cum-value'] = [];
-                                    loc['hinge-point-hourly-value'] = [];
-                                    loc['hinge-point-inc-value'] = [];
-                                    loc['hinge-point-last-value'] = [];
-                                    loc['hinge-point-max-value'] = [];
-                                    loc['hinge-point-min-value'] = [];
+                                    loc['crest-api-data'] = [];
+                                    loc['crest-cum-value'] = [];
+                                    loc['crest-hourly-value'] = [];
+                                    loc['crest-inc-value'] = [];
+                                    loc['crest-last-value'] = [];
+                                    loc['crest-max-value'] = [];
+                                    loc['crest-min-value'] = [];
 
-                                    loc['tainter-api-data'] = [];
-                                    loc['tainter-cum-value'] = [];
-                                    loc['tainter-hourly-value'] = [];
-                                    loc['tainter-inc-value'] = [];
-                                    loc['tainter-last-value'] = [];
-                                    loc['tainter-max-value'] = [];
-                                    loc['tainter-min-value'] = [];
+                                    // loc['tainter-api-data'] = [];
+                                    // loc['tainter-cum-value'] = [];
+                                    // loc['tainter-hourly-value'] = [];
+                                    // loc['tainter-inc-value'] = [];
+                                    // loc['tainter-last-value'] = [];
+                                    // loc['tainter-max-value'] = [];
+                                    // loc['tainter-min-value'] = [];
 
-                                    loc['roller-api-data'] = [];
-                                    loc['roller-cum-value'] = [];
-                                    loc['roller-hourly-value'] = [];
-                                    loc['roller-inc-value'] = [];
-                                    loc['roller-last-value'] = [];
-                                    loc['roller-max-value'] = [];
-                                    loc['roller-min-value'] = [];
+                                    // loc['roller-api-data'] = [];
+                                    // loc['roller-cum-value'] = [];
+                                    // loc['roller-hourly-value'] = [];
+                                    // loc['roller-inc-value'] = [];
+                                    // loc['roller-last-value'] = [];
+                                    // loc['roller-max-value'] = [];
+                                    // loc['roller-min-value'] = [];
                                 })();
                             });
                         }
@@ -642,7 +644,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         console.log('Filtered all basin where assigned-locations is null successfully:', combinedData);
 
                         // Step 5: Filter out basin order
-                        const sortOrderBasin = ['Mississippi', 'Kaskaskia'];
+                        const sortOrderBasin = ['Mississippi', 'Illinois', 'Cuivre', 'Missouri', 'Meramec', 'Ohio', 'Kaskaskia', 'Big Muddy'];
 
                         // Sort the combinedData array based on the sortOrderBasin
                         combinedData.sort((a, b) => {
@@ -668,8 +670,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                         for (const locData of dataArray['assigned-locations'] || []) {
                             // Handle temperature, depth, and DO time series
                             const stageTimeSeries = locData['tsid-stage']?.['assigned-time-series'] || [];
-                            const twTimeSeries = locData['tsid-tw']?.['assigned-time-series'] || [];
-                            const hingePointTimeSeries = locData['tsid-hinge-point']?.['assigned-time-series'] || [];
+                            const twTimeSeries = locData['tsid-forecast-nws']?.['assigned-time-series'] || [];
+                            const hingePointTimeSeries = locData['tsid-crest']?.['assigned-time-series'] || [];
                             const tainterTimeSeries = locData['tsid-tainter']?.['assigned-time-series'] || [];
                             const rollerTimeSeries = locData['tsid-roller']?.['assigned-time-series'] || [];
 
@@ -677,7 +679,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             const timeSeriesDataFetchPromises = (timeSeries, type) => {
                                 return timeSeries.map((series, index) => {
                                     const tsid = series['timeseries-id'];
-                                    const timeSeriesDataApiUrl = setBaseUrl + `timeseries?page-size=5000&name=${tsid}&begin=${setLookBackHours.toISOString()}&end=${currentDateTime.toISOString()}&office=${office}`;
+                                    const timeSeriesDataApiUrl = setBaseUrl + `timeseries?page-size=5000&name=${tsid}&begin=${setLookBack.toISOString()}&end=${setLookForward.toISOString()}&office=${office}`;
                                     // console.log('timeSeriesDataApiUrl:', timeSeriesDataApiUrl);
 
                                     return fetch(timeSeriesDataApiUrl, {
@@ -702,9 +704,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                                             const minValue = getMinValue(data, tsid);
                                             const cumValue = getCumValue(data, tsid);
                                             const incValue = getIncValue(data, tsid);
+                                            const day1NwsValue = getNoonDataForDay1(data, tsid);
+                                            const day2NwsValue = getNoonDataForDay2(data, tsid);
+                                            const day3NwsValue = getNoonDataForDay3(data, tsid);
                                             const hourlyValue = getHourlyDataOnTopOfHour(data, tsid);
 
-                                            updateLocData(locData, type, data, lastValue, maxValue, minValue, cumValue, incValue, hourlyValue);
+                                            // console.log("day1NwsValue: ", day1NwsValue);
+
+                                            updateLocData(locData, type, data, lastValue, maxValue, minValue, cumValue, incValue, hourlyValue, day1NwsValue, day2NwsValue, day3NwsValue);
                                         })
 
                                         .catch(error => {
@@ -715,8 +722,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                             // Create promises for temperature, depth, and DO time series
                             const stagePromises = timeSeriesDataFetchPromises(stageTimeSeries, 'stage');
-                            const twPromises = timeSeriesDataFetchPromises(twTimeSeries, 'tw');
-                            const hingePointPromises = timeSeriesDataFetchPromises(hingePointTimeSeries, 'hinge-point');
+                            const twPromises = timeSeriesDataFetchPromises(twTimeSeries, 'forecast-nws');
+                            const hingePointPromises = timeSeriesDataFetchPromises(hingePointTimeSeries, 'crest');
                             const tainterPromises = timeSeriesDataFetchPromises(tainterTimeSeries, 'tainter');
                             const rollerPromises = timeSeriesDataFetchPromises(rollerTimeSeries, 'roller');
 
@@ -819,11 +826,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                 .then(() => {
                     console.log('All combinedData data fetched successfully:', combinedData);
 
-                    const table = createTableLdGateSummary(combinedData, type, reportNumber);
+                    // const table = createTableRiverReservoir(combinedData, type, reportNumber);
 
-                    // Append the table to the specified container
-                    const container = document.getElementById(`table_container_${setReportDiv}`);
-                    container.appendChild(table);
+                    // // Append the table to the specified container
+                    // const container = document.getElementById(`table_container_${setReportDiv}`);
+                    // container.appendChild(table);
 
                     loadingIndicator.style.display = 'none';
                 })
@@ -852,6 +859,10 @@ function subtractHoursFromDate(date, hoursToSubtract) {
 
 function subtractDaysFromDate(date, daysToSubtract) {
     return new Date(date.getTime() - (daysToSubtract * 24 * 60 * 60 * 1000));
+}
+
+function addDaysFromDate(date, daysToSubtract) {
+    return new Date(date.getTime() + (daysToSubtract * 24 * 60 * 60 * 1000));
 }
 
 function formatISODate2ReadableDate(timestamp) {
@@ -1237,6 +1248,66 @@ function getHourlyDataOnTopOfHour(data, tsid) {
     return hourlyData;
 }
 
+function getNoonDataForDay1(data, tsid) {
+    const noonData = [];
+    const day1 = new Date();
+    day1.setDate(day1.getDate() + 1); // Move to the next day (Day 1)
+    day1.setHours(12, 0, 0, 0); // Set to 12:00 (noon) on Day 1
+
+    data.values.forEach(entry => {
+        const [timestamp, value, qualityCode] = entry;
+        const date = new Date(timestamp);
+
+        // Check if the timestamp is exactly 12:00 on Day 1
+        if (date.getTime() === day1.getTime()) {
+            // Append tsid to the object
+            noonData.push({ timestamp, value, qualityCode, tsid });
+        }
+    });
+
+    return noonData;
+}
+
+function getNoonDataForDay2(data, tsid) {
+    const noonData = [];
+    const day1 = new Date();
+    day1.setDate(day1.getDate() + 2); // Move to the next day (Day 1)
+    day1.setHours(12, 0, 0, 0); // Set to 12:00 (noon) on Day 1
+
+    data.values.forEach(entry => {
+        const [timestamp, value, qualityCode] = entry;
+        const date = new Date(timestamp);
+
+        // Check if the timestamp is exactly 12:00 on Day 1
+        if (date.getTime() === day1.getTime()) {
+            // Append tsid to the object
+            noonData.push({ timestamp, value, qualityCode, tsid });
+        }
+    });
+
+    return noonData;
+}
+
+function getNoonDataForDay3(data, tsid) {
+    const noonData = [];
+    const day1 = new Date();
+    day1.setDate(day1.getDate() + 3); // Move to the next day (Day 1)
+    day1.setHours(12, 0, 0, 0); // Set to 12:00 (noon) on Day 1
+
+    data.values.forEach(entry => {
+        const [timestamp, value, qualityCode] = entry;
+        const date = new Date(timestamp);
+
+        // Check if the timestamp is exactly 12:00 on Day 1
+        if (date.getTime() === day1.getTime()) {
+            // Append tsid to the object
+            noonData.push({ timestamp, value, qualityCode, tsid });
+        }
+    });
+
+    return noonData;
+}
+
 function hasLastValue(data) {
     let allLocationsValid = true; // Flag to track if all locations are valid
 
@@ -1498,38 +1569,38 @@ function createTableLdGateSummary(combinedData, type, reportNumber) {
             // Loop through stage-hourly-value and other values to add data rows
             location['stage-hourly-value'][0].forEach((entry, index) => {
                 const row = document.createElement('tr'); // Create a new row for each entry
-            
+
                 // Fetch the dateTime for the current entry
                 const dateTime = entry?.timestamp || "N/A";
-                
+
                 // Check if the current timestamp matches any poolValue timestamp
                 const poolValueEntry = location['stage-hourly-value'][0].find(poolValue => poolValue.timestamp === dateTime);
                 const poolValue = poolValueEntry ? poolValueEntry.value.toFixed(2) : "--"; // Use "--" if no match
-            
+
                 // Match timestamps and grab values for tailWaterValue, hingePointValue, tainterValue, and rollerValue
-                const tailWaterEntry = location['tw-hourly-value']?.[0]?.find(tailWater => tailWater.timestamp === dateTime);
+                const tailWaterEntry = location['forecast-nws-hourly-value']?.[0]?.find(tailWater => tailWater.timestamp === dateTime);
                 const tailWaterValue = tailWaterEntry ? tailWaterEntry.value.toFixed(2) : "--"; // Use "--" if no match
-            
-                const hingePointEntry = location['hinge-point-hourly-value']?.[0]?.find(hingePoint => hingePoint.timestamp === dateTime);
+
+                const hingePointEntry = location['crest-hourly-value']?.[0]?.find(hingePoint => hingePoint.timestamp === dateTime);
                 const hingePointValue = hingePointEntry ? hingePointEntry.value.toFixed(2) : "--"; // Use "--" if no match
-            
+
                 const tainterEntry = location['tainter-hourly-value']?.[0]?.find(tainter => tainter.timestamp === dateTime);
                 const tainterValue = tainterEntry ? tainterEntry.value.toFixed(2) : "--"; // Use "--" if no match
-            
+
                 const rollerEntry = location['roller-hourly-value']?.[0]?.find(roller => roller.timestamp === dateTime);
                 const rollerValue = rollerEntry ? rollerEntry.value.toFixed(2) : "--"; // Use "--" if no match
-            
+
                 // Create and append cells to the row for each value
                 [dateTime, poolValue, tailWaterValue, hingePointValue, tainterValue, rollerValue].forEach((value) => {
                     const cell = document.createElement('td'); // Create a new cell for each value
                     cell.textContent = value; // Set the cell text
                     row.appendChild(cell); // Append the cell to the row
                 });
-            
+
                 // Append the data row to the table
                 table.appendChild(row);
             });
-            
+
             // Add a spacer row after each location's data rows for visual separation
             const spacerRow = document.createElement('tr'); // Create a new row for spacing
             const spacerCell = document.createElement('td'); // Create a cell for the spacer
@@ -1543,7 +1614,7 @@ function createTableLdGateSummary(combinedData, type, reportNumber) {
     return table; // Return the completed table
 }
 
-function updateLocData(locData, type, data, lastValue, maxValue, minValue, cumValue, incValue, hourlyValue) {
+function updateLocData(locData, type, data, lastValue, maxValue, minValue, cumValue, incValue, hourlyValue, day1NwsValue, day2NwsValue, day3NwsValue) {
     const keys = {
         apiDataKey: `${type}-api-data`,
         lastValueKey: `${type}-last-value`,
@@ -1551,7 +1622,10 @@ function updateLocData(locData, type, data, lastValue, maxValue, minValue, cumVa
         minValueKey: `${type}-min-value`,
         cumValueKey: `${type}-cum-value`,
         incValueKey: `${type}-inc-value`,
-        hourlyValueKey: `${type}-hourly-value`
+        hourlyValueKey: `${type}-hourly-value`,
+        day1NwsValueKey: `${type}-day1-nws-value`,
+        day2NwsValueKey: `${type}-day2-nws-value`,
+        day3NwsValueKey: `${type}-day3-nws-value`
     };
 
     for (let [key, value] of Object.entries(keys)) {
@@ -1580,6 +1654,15 @@ function updateLocData(locData, type, data, lastValue, maxValue, minValue, cumVa
                 break;
             case 'hourlyValueKey':
                 locData[value].push(hourlyValue);
+                break;
+            case 'day1NwsValueKey':
+                locData[value].push(day1NwsValue);
+                break;
+            case 'day2NwsValueKey':
+                locData[value].push(day2NwsValue);
+                break;
+            case 'day3NwsValueKey':
+                locData[value].push(day3NwsValue);
                 break;
             default:
                 console.error('Unknown key:', key);
