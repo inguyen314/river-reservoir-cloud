@@ -1934,7 +1934,14 @@ function createTableRiverReservoir(combinedData, type, reportNumber, nws_day1_da
             // Nws Forecast Time
             (() => {
                 const nwsForecastTimeCell = document.createElement('td');
-                nwsForecastTimeCell.textContent = '';
+                const tsid_stage_nws_3_day_forecast = location['tsid-forecast-nws']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
+
+                if (tsid_stage_nws_3_day_forecast !== null) {
+                    fetchAndLogNwsData(tsid_stage_nws_3_day_forecast, nwsForecastTimeCell);
+                } else {
+                    nwsForecastTimeCell.textContent = '';
+                }
+
                 row.appendChild(nwsForecastTimeCell);
             })();
 
@@ -2066,4 +2073,95 @@ function updateLocData(locData, type, data, lastValue, maxValue, minValue, cumVa
                 console.error('Unknown key:', key);
         }
     }
+}
+
+// ******************************************************
+// ******* Hard Coded Nws Forecast Time *****************
+// ******************************************************
+// Function to fetch exportNwsForecasts2Json.json
+async function fetchDataFromNwsForecastsOutput() {
+    let urlNwsForecast = null;
+    urlNwsForecast = 'https://wm.mvs.ds.usace.army.mil//php_data_api/public/json/exportNwsForecasts2Json.json';
+
+    // console.log("urlNwsForecast: ", urlNwsForecast);
+
+    try {
+        const response = await fetch(urlNwsForecast);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        throw error; // Propagate the error further if needed
+    }
+}
+
+// Function to filter ROutput data by tsid_stage_nws_3_day_forecast
+function filterDataByTsid(NwsOutput, cwms_ts_id) {
+    const filteredData = NwsOutput.filter(item => {
+        return item !== null && item.cwms_ts_id_day1 === cwms_ts_id;
+    });
+
+    return filteredData;
+}
+
+// Function to fetch and log NwsOutput data
+async function fetchAndLogNwsData(tsid_stage_nws_3_day_forecast, forecastTimeCell) {
+    try {
+        const NwsOutput = await fetchDataFromNwsForecastsOutput();
+        // console.log('NwsOutput:', NwsOutput);
+
+        const filteredData = filterDataByTsid(NwsOutput, tsid_stage_nws_3_day_forecast);
+        // console.log("Filtered NwsOutput Data for", tsid_stage_nws_3_day_forecast + ":", filteredData);
+
+        // Update the HTML element with filtered data
+        updateNwsForecastTimeHTML(filteredData, forecastTimeCell);
+
+        // Further processing of ROutput data as needed
+    } catch (error) {
+        // Handle errors from fetchDataFromROutput
+        console.error('Failed to fetch data:', error);
+    }
+}
+
+// Function to update the HTML element with filtered data
+function updateNwsForecastTimeHTML(filteredData, forecastTimeCell) {
+    const locationData = filteredData.find(item => item !== null); // Find the first non-null item
+    if (!locationData) {
+        forecastTimeCell.innerHTML = ''; // Handle case where no valid data is found
+        return;
+    }
+
+    const entryDate = locationData.data_entry_date_cst1;
+
+    // Parse the entry date string
+    const dateParts = entryDate.split('-'); // Split by hyphen
+    const day = dateParts[0]; // Day part
+    const monthAbbreviation = dateParts[1]; // Month abbreviation (e.g., JUL)
+    const year = dateParts[2].substring(0, 2); // Last two digits of the year (e.g., 24)
+
+    // Map month abbreviation to month number
+    const months = {
+        'JAN': '01', 'FEB': '02', 'MAR': '03', 'APR': '04',
+        'MAY': '05', 'JUN': '06', 'JUL': '07', 'AUG': '08',
+        'SEP': '09', 'OCT': '10', 'NOV': '11', 'DEC': '12'
+    };
+
+    const month = months[monthAbbreviation]; // Get numeric month
+
+    // Parse time parts
+    const timeParts = entryDate.split(' ')[1].split('.'); // Split time part by period
+    const hours = timeParts[0]; // Hours part
+    const minutes = timeParts[1]; // Minutes part
+
+    // Determine period (AM/PM)
+    const period = timeParts[3] === 'PM' ? 'PM' : 'AM';
+
+    // Construct formatted date and time
+    const formattedDateTime = `${month}-${day}-${year} ${hours}:${minutes} ${period}`;
+
+    // Update the HTML content
+    forecastTimeCell.innerHTML = `<div class="hard_coded_php" title="Uses PHP exportNwsForecasts2Json.json Output, No Cloud Option Yet">${formattedDateTime}</div>`;
 }
