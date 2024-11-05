@@ -69,6 +69,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const tsidCrestMap = new Map();
     // const tsidTainterMap = new Map();
     // const tsidRollerMap = new Map();
+    const recordStageMap = new Map();
 
     // Initialize arrays for storing promises
     const metadataPromises = [];
@@ -81,6 +82,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const hingePointTsidPromises = [];
     // const tainterTsidPromises = [];
     // const rollerTsidPromises = [];
+    const recordStageTsidPromises = [];
 
     // Fetch location group data from the API
     fetch(categoryApiUrl)
@@ -243,36 +245,68 @@ document.addEventListener('DOMContentLoaded', async function () {
                                             );
                                         })();
 
+                                        // Fetch record stage
+                                        (() => {
+                                            // Fetch flood location level for each location
+                                            const recordStageLevelId = loc['location-id'] + ".Stage.Inst.0.Record Stage";
+                                            // console.log("recordStageLevelId: ", recordStageLevelId);
+
+                                            const levelIdEffectiveDate = "2024-01-01T08:00:00";
+                                            // console.log("levelIdEffectiveDate: ", levelIdEffectiveDate);
+
+                                            const recordStageApiUrl = setBaseUrl + `levels/${recordStageLevelId}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ft`;
+                                            // console.log("recordStageApiUrl: ", recordStageApiUrl);
+                                            recordStageTsidPromises.push(
+                                                fetch(recordStageApiUrl)
+                                                    .then(response => {
+                                                        if (response.status === 404) {
+                                                            console.warn(`Location metadata not found for location: ${loc['location-id']}`);
+                                                            return null; // Skip if not found
+                                                        }
+                                                        if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+                                                        return response.json();
+                                                    })
+                                                    .then(recordStageData => {
+                                                        if (recordStageData) {
+                                                            recordStageMap.set(loc['location-id'], recordStageData);
+                                                        }
+                                                    })
+                                                    .catch(error => {
+                                                        console.error(`Problem with the fetch operation for location ${loc['location-id']}:`, error);
+                                                    })
+                                            );
+                                        })();
+
                                         // Fetch lwrp
                                         (() => {
-                                            // // Fetch lwrp location level for each location
-                                            // const levelIdLwrp = loc['location-id'] + ".Stage.Inst.0.LWRP";
-                                            // // console.log("levelIdFlood: ", levelIdFlood);
+                                            // Fetch lwrp location level for each location
+                                            const levelIdLwrp = loc['location-id'] + ".Stage.Inst.0.LWRP";
+                                            // console.log("levelIdFlood: ", levelIdFlood);
 
-                                            // const levelIdEffectiveDate = "2024-01-01T08:00:00";
-                                            // // console.log("levelIdEffectiveDate: ", levelIdEffectiveDate);
+                                            const levelIdEffectiveDate = "2024-01-01T08:00:00";
+                                            // console.log("levelIdEffectiveDate: ", levelIdEffectiveDate);
 
-                                            // const lwrpApiUrl = setBaseUrl + `levels/${levelIdLwrp}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ft`;
-                                            // // console.log("lwrpApiUrl: ", lwrpApiUrl);
-                                            // lwrpPromises.push(
-                                            //     fetch(lwrpApiUrl)
-                                            //         .then(response => {
-                                            //             if (response.status === 404) {
-                                            //                 console.warn(`Location metadata not found for location: ${loc['location-id']}`);
-                                            //                 return null; // Skip if not found
-                                            //             }
-                                            //             if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
-                                            //             return response.json();
-                                            //         })
-                                            //         .then(lwrpData => {
-                                            //             if (lwrpData) {
-                                            //                 lwrpMap.set(loc['location-id'], lwrpData);
-                                            //             }
-                                            //         })
-                                            //         .catch(error => {
-                                            //             console.error(`Problem with the fetch operation for location ${loc['location-id']}:`, error);
-                                            //         })
-                                            // );
+                                            const lwrpApiUrl = setBaseUrl + `levels/${levelIdLwrp}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ft`;
+                                            // console.log("lwrpApiUrl: ", lwrpApiUrl);
+                                            lwrpPromises.push(
+                                                fetch(lwrpApiUrl)
+                                                    .then(response => {
+                                                        if (response.status === 404) {
+                                                            console.warn(`Location metadata not found for location: ${loc['location-id']}`);
+                                                            return null; // Skip if not found
+                                                        }
+                                                        if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+                                                        return response.json();
+                                                    })
+                                                    .then(lwrpData => {
+                                                        if (lwrpData) {
+                                                            lwrpMap.set(loc['location-id'], lwrpData);
+                                                        }
+                                                    })
+                                                    .catch(error => {
+                                                        console.error(`Problem with the fetch operation for location ${loc['location-id']}:`, error);
+                                                    })
+                                            );
                                         })();
 
                                         // Fetch owner
@@ -443,6 +477,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 .then(() => Promise.all(hingePointTsidPromises))
                 // .then(() => Promise.all(tainterTsidPromises))
                 // .then(() => Promise.all(rollerTsidPromises))
+                .then(() => Promise.all(recordStageTsidPromises))
                 .then(() => {
                     combinedData.forEach(basinData => {
                         if (basinData['assigned-locations']) {
@@ -459,10 +494,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     const floodMapData = floodMap.get(loc['location-id']);
                                     loc['flood'] = floodMapData !== undefined ? floodMapData : null;
 
+                                    // Append record stage
+                                    const recordStageMapData = recordStageMap.get(loc['location-id']);
+                                    loc['record-stage'] = recordStageMapData !== undefined ? recordStageMapData : null;
 
-                                    // // Append lwrp
-                                    // const lwrpMapData = lwrpMap.get(loc['location-id']);
-                                    // loc['lwrp'] = lwrpMapData !== undefined ? lwrpMapData : null;
+                                    // Append lwrp
+                                    const lwrpMapData = lwrpMap.get(loc['location-id']);
+                                    loc['lwrp'] = lwrpMapData !== undefined ? lwrpMapData : null;
 
                                     // Append river-mile
                                     const riverMileMapData = riverMileMap.get(loc['location-id']);
@@ -592,12 +630,25 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         // Step 2: Filter out locations where 'location-id' doesn't match owner's 'assigned-locations'
                         combinedData.forEach(dataGroup => {
+                            // Check if 'assigned-locations' exists in dataGroup
+                            if (!dataGroup['assigned-locations']) {
+                                console.warn("dataGroup is missing 'assigned-locations'");
+                                return; // Skip this iteration if 'assigned-locations' is missing
+                            }
+
                             // Iterate over each assigned-location in the dataGroup
                             let locations = dataGroup['assigned-locations'];
 
                             // Loop through the locations array in reverse to safely remove items
                             for (let i = locations.length - 1; i >= 0; i--) {
                                 let location = locations[i];
+
+                                // Check if 'owner' and 'assigned-locations' are defined in the location object
+                                if (!location['owner'] || !location['owner']['assigned-locations']) {
+                                    console.warn(`Location with id ${location['location-id']} is missing owner or owner's assigned-locations`);
+                                    locations.splice(i, 1); // Remove the location if owner or assigned-locations is missing
+                                    continue;
+                                }
 
                                 // Find if the current location-id exists in owner's assigned-locations
                                 let matchingOwnerLocation = location['owner']['assigned-locations'].some(ownerLoc => {
@@ -606,11 +657,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                                 // If no match, remove the location
                                 if (!matchingOwnerLocation) {
-                                    // console.log(`Removing location with id ${location['location-id']} as it does not match owner`);
                                     locations.splice(i, 1);
                                 }
                             }
                         });
+
 
                         console.log('Filtered all locations by matching location-id with owner successfully:', combinedData);
 
@@ -1812,6 +1863,7 @@ function createTableRiverReservoir(combinedData, type, reportNumber, nws_day1_da
 
             // Current Level
             (() => {
+                // Create the link element for current level
                 const tsid = location['stage-last-value'][0]['tsid'];
                 const link = `https://wm.mvs.ds.usace.army.mil/apps/chart/index.html?&office=MVS&cwms_ts_id=${tsid}&cda=internal&lookback=4&lookforward=0`;
                 const currentLevelCell = document.createElement('td');
@@ -1820,15 +1872,27 @@ function createTableRiverReservoir(combinedData, type, reportNumber, nws_day1_da
                 linkElement.target = '_blank';
 
                 const currentLevel = location['stage-last-value'][0]['value'];
-                const floodValue = location['flood']['constant-value'];
+                const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
+                const recordStage = location['record-stage'];
+                const recordStageValue = recordStage ? recordStage['constant-value'] : null;
 
-                // Set text content and color based on the flood threshold
+                // Set text content and styles based on flood and recordStage thresholds
                 if (currentLevel != null) {
                     const formattedLevel = currentLevel.toFixed(2);
                     linkElement.textContent = formattedLevel;
-                    if (currentLevel >= floodValue) {
-                        linkElement.style.color = 'red';  // Make text red if currentLevel exceeds floodValue
+
+                    if (recordStageValue !== null) {
+                        if (currentLevel >= recordStageValue) {
+                            linkElement.classList.add('record_breaking'); // Add "alert" class when currentLevel >= recordStageValue
+                        }
                     }
+
+                    if (floodValue != null) {
+                        if (currentLevel >= floodValue) {
+                            linkElement.style.color = 'red';  // Make text red if currentLevel exceeds floodValue
+                        }
+                    }
+
                 } else {
                     linkElement.textContent = '';  // Display an empty string if currentLevel is null
                 }
@@ -1906,14 +1970,28 @@ function createTableRiverReservoir(combinedData, type, reportNumber, nws_day1_da
             // Record Stage
             (() => {
                 const recordStageCell = document.createElement('td');
-                recordStageCell.textContent = '';
+                const recordStage = location['record-stage'];
+                const recordStageValue = recordStage ? recordStage['constant-value'] : null;
+
+                // Check if recordStageValue is valid and within the required range
+                recordStageCell.textContent = recordStageValue != null && recordStageValue <= 900
+                    ? recordStageValue.toFixed(2)
+                    : '';
+
                 row.appendChild(recordStageCell);
             })();
 
             // Record Date
             (() => {
                 const recordDateCell = document.createElement('td');
-                recordDateCell.textContent = '';
+
+                const recordDateValue = location['river-mile'] && location['river-mile']['record_stage_hard_coded'];
+                recordDateCell.textContent = recordDateValue != null ? recordDateValue : "";
+                // Set the title for the cell
+                recordDateCell.title = "Hard Coded with Json File";
+                // Set halo effect using text-shadow with orange color
+                recordDateCell.style.textShadow = '0 0 2px rgba(255, 165, 0, 0.7), 0 0 2px rgba(255, 140, 0, 0.5)';
+
                 row.appendChild(recordDateCell);
             })();
 

@@ -109,6 +109,18 @@ hr {
 	color: black; /* Base text color */
 	text-shadow: 0 0 2px purple;
 }
+/* CSS class for flashing red, larger text */
+.record_breaking {
+	font-size: 1.2em; /* Make text larger */
+	color: red;
+	animation: flashRed 1s infinite; /* Flashing effect */
+}
+
+/* Keyframes for flashing red */
+@keyframes flashRed {
+	0%, 100% { color: red; }
+	50% { color: transparent; }
+}
 
 /*** ===================================================================================== ***/
 /*** ===== SPAN CLASSES ===== ***/
