@@ -1745,32 +1745,41 @@ function createTableRiverReservoir(combinedData, type, reportNumber, nws_day1_da
         basin['assigned-locations'].forEach((location) => {
             const row = document.createElement('tr');
 
-            const riverMileCell = document.createElement('td');
-            const riverMileValue = location['river-mile'] && location['river-mile']['river_mile_hard_coded'];
-            riverMileCell.textContent = riverMileValue != null ? parseFloat(riverMileValue).toFixed(1) : "N/A";
+            // River Mile
+            (() => {
+                const riverMileCell = document.createElement('td');
+                const riverMileValue = location['river-mile'] && location['river-mile']['river_mile_hard_coded'];
+                riverMileCell.textContent = riverMileValue != null ? parseFloat(riverMileValue).toFixed(1) : "N/A";
+                // Set the title for the cell
+                riverMileCell.title = "Hard Coded with Json File";
+                // Set halo effect using text-shadow with orange color
+                riverMileCell.style.textShadow = '0 0 2px rgba(255, 165, 0, 0.7), 0 0 2px rgba(255, 140, 0, 0.5)';
+                row.appendChild(riverMileCell);
+            })();
+
+            // Gage Station
+            (() => {
+                // Location cell without link
+                const locationCell = document.createElement('td');
+                locationCell.textContent = location['location-id'].split('-')[0];
+                row.appendChild(locationCell);
+            })();
+
+            // Current Level
+            (() => {
+                const tsid = location['stage-last-value'][0][`tsid`];
+                const link = `https://wm.mvs.ds.usace.army.mil/apps/chart/index.html?&office=MVS&cwms_ts_id=${tsid}&cda=internal&lookback=4&lookforward=0`;
+                const currentLevelCell = document.createElement('td');
+                const linkElement = document.createElement('a');
+                linkElement.href = link;
+                linkElement.target = '_blank';
+                linkElement.textContent = (location['stage-last-value'][0][`value`]).toFixed(2);
+                currentLevelCell.appendChild(linkElement);
+                row.appendChild(currentLevelCell);
+            })();
 
 
-            // Set the title for the cell
-            riverMileCell.title = "Hard Coded with Json File";
 
-            // Set halo effect using text-shadow with orange color
-            riverMileCell.style.textShadow = '0 0 2px rgba(255, 165, 0, 0.7), 0 0 2px rgba(255, 140, 0, 0.5)';
-            row.appendChild(riverMileCell);
-
-
-            // Location cell with link
-            const value = location['stage-last-value'][0]?.value;
-            const tsid = value ? value.tsid : '';
-            const link = `https://wm.mvs.ds.usace.army.mil/apps/chart/index.html?office=MVS&cwms_ts_id=${tsid}&cda=internal&lookback=7`;
-            const locationCell = document.createElement('td');
-            const linkElement = document.createElement('a');
-            linkElement.href = link;
-            linkElement.target = '_blank';
-            linkElement.textContent = location['location-id'].split('-')[0];
-            locationCell.appendChild(linkElement);
-            row.appendChild(locationCell);
-
-            
 
             table.appendChild(row);
         });
