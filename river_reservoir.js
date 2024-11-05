@@ -1829,12 +1829,13 @@ function createTableRiverReservoir(combinedData, type, reportNumber, nws_day1_da
 
     // Loop through each basin in the combined data
     combinedData.forEach((basin) => {
-        // Create a row for the location ID spanning 13 columns
         const basinRow = document.createElement('tr');
         const basinCell = document.createElement('th');
         basinCell.colSpan = 13;
         basinCell.textContent = basin[`id`];
         basinCell.style.height = '30px';
+        basinCell.style.textAlign = 'left'; // Align text to the left
+        basinCell.style.paddingLeft = '10px'; // Add left padding of 10px
         basinRow.appendChild(basinCell);
         table.appendChild(basinRow);
 
@@ -1857,7 +1858,8 @@ function createTableRiverReservoir(combinedData, type, reportNumber, nws_day1_da
             (() => {
                 // Location cell without link
                 const locationCell = document.createElement('td');
-                locationCell.textContent = location['location-id'].split('-')[0];
+                locationCell.textContent = location['location-id'];
+                // locationCell.textContent = location['location-id'].split('-')[0];
                 row.appendChild(locationCell);
             })();
 
