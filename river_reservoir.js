@@ -1000,13 +1000,16 @@ function getLastNonNullValueWithDelta24hrs(data, tsid) {
     if (lastNonNull) {
         return {
             tsid: tsid,
-            timestamp: lastNonNull.timestamp,
-            value: lastNonNull.value,
-            value24hrs: secondLastNonNull.value,
-            qualityCode: lastNonNull.qualityCode,
-            delta: secondLastNonNull ? lastNonNull.value - secondLastNonNull.value : null
+            timestamp: lastNonNull.timestamp || null,
+            value: lastNonNull.value || null,
+            value24hrs: secondLastNonNull && secondLastNonNull.value ? secondLastNonNull.value : null,
+            qualityCode: lastNonNull.qualityCode || null,
+            delta: secondLastNonNull && lastNonNull.value != null && secondLastNonNull.value != null
+                ? lastNonNull.value - secondLastNonNull.value
+                : null
         };
     }
+
 
     // If no matching values were found, return null
     return null;
@@ -1809,13 +1812,27 @@ function createTableRiverReservoir(combinedData, type, reportNumber, nws_day1_da
 
             // Current Level
             (() => {
-                const tsid = location['stage-last-value'][0][`tsid`];
+                const tsid = location['stage-last-value'][0]['tsid'];
                 const link = `https://wm.mvs.ds.usace.army.mil/apps/chart/index.html?&office=MVS&cwms_ts_id=${tsid}&cda=internal&lookback=4&lookforward=0`;
                 const currentLevelCell = document.createElement('td');
                 const linkElement = document.createElement('a');
                 linkElement.href = link;
                 linkElement.target = '_blank';
-                linkElement.textContent = (location['stage-last-value'][0][`value`]).toFixed(2);
+
+                const currentLevel = location['stage-last-value'][0]['value'];
+                const floodValue = location['flood']['constant-value'];
+
+                // Set text content and color based on the flood threshold
+                if (currentLevel != null) {
+                    const formattedLevel = currentLevel.toFixed(2);
+                    linkElement.textContent = formattedLevel;
+                    if (currentLevel >= floodValue) {
+                        linkElement.style.color = 'red';  // Make text red if currentLevel exceeds floodValue
+                    }
+                } else {
+                    linkElement.textContent = '';  // Display an empty string if currentLevel is null
+                }
+
                 currentLevelCell.appendChild(linkElement);
                 row.appendChild(currentLevelCell);
             })();
@@ -1823,7 +1840,9 @@ function createTableRiverReservoir(combinedData, type, reportNumber, nws_day1_da
             // 24hr Delta
             (() => {
                 const deltaCell = document.createElement('td');
-                deltaCell.textContent = (location['stage-last-value'][0][`delta`]).toFixed(2);
+                const deltaValue = location['stage-last-value'][0]['delta'];
+
+                deltaCell.textContent = deltaValue != null ? parseFloat(deltaValue).toFixed(2) : 'N/A';
                 row.appendChild(deltaCell);
             })();
 
