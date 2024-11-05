@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         // setTimeseriesGroup4 = "--";
         // setTimeseriesGroup5 = "--";
         setLookBack = subtractDaysFromDate(new Date(), 2);
-        setLookForward = addDaysFromDate(new Date(), 4);
+        setLookForward = addDaysFromDate(new Date(), 14);
     }
 
     // Display the loading indicator for water quality alarm
@@ -1941,7 +1941,16 @@ function createTableRiverReservoir(combinedData, type, reportNumber, nws_day1_da
             // Crest & Date
             (() => {
                 const crestAndDateCell = document.createElement('td');
-                crestAndDateCell.textContent = '';
+                const crest = location['crest-last-value']?.[0]?.['value'] ?? null;
+                const crestValue = crest !== null ? Number(crest) : null;
+                const crestDate = location['crest-last-value']?.[0]?.['timestamp'] ?? '';
+
+                if (crestValue !== null && !isNaN(crestValue)) {
+                    crestAndDateCell.textContent = crestValue.toFixed(2) + " | " + crestDate.substring(0, 5);
+                } else {
+                    crestAndDateCell.textContent = '';
+                }
+
                 row.appendChild(crestAndDateCell);
             })();
 
@@ -1985,7 +1994,7 @@ function createTableRiverReservoir(combinedData, type, reportNumber, nws_day1_da
             (() => {
                 const recordDateCell = document.createElement('td');
 
-                const recordDateValue = location['river-mile'] && location['river-mile']['record_stage_hard_coded'];
+                const recordDateValue = location['river-mile'] && location['river-mile']['record_stage_date_hard_coded'];
                 recordDateCell.textContent = recordDateValue != null ? recordDateValue : "";
                 // Set the title for the cell
                 recordDateCell.title = "Hard Coded with Json File";
