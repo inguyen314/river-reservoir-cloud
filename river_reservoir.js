@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         setTimeseriesGroup3 = "Crest";
         // setTimeseriesGroup4 = "--";
         // setTimeseriesGroup5 = "--";
-        setLookBack = subtractDaysFromDate(new Date(), 1);
+        setLookBack = subtractDaysFromDate(new Date(), 2);
         setLookForward = addDaysFromDate(new Date(), 4);
     }
 
@@ -699,7 +699,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                                 });
                                             }
 
-                                            const lastValue = getLastNonNullValue(data, tsid);
+                                            const lastValue = getLastNonNullValueWithDelta24hrs(data, tsid);
                                             const maxValue = getMaxValue(data, tsid);
                                             const minValue = getMinValue(data, tsid);
                                             const cumValue = getCumValue(data, tsid);
@@ -970,6 +970,48 @@ function getLastNonNullValue(data, tsid) {
         }
     }
     // If no non-null value is found, return null
+    return null;
+}
+
+function getLastNonNullValueWithDelta24hrs(data, tsid) {
+    let lastNonNull = null;
+    let secondLastNonNull = null;
+    const ONE_DAY_MS = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+    // Iterate over the values array in reverse to find the last non-null value
+    for (let i = data.values.length - 1; i >= 0; i--) {
+        const [timestamp, value, qualityCode] = data.values[i];
+        
+        if (value !== null) {
+            if (!lastNonNull) {
+                // Store the most recent non-null value
+                lastNonNull = { timestamp, value, qualityCode };
+            } else {
+                // Check if this non-null value is exactly 24 hours before the last one
+                const lastTimestamp = new Date(lastNonNull.timestamp).getTime();
+                const currentTimestamp = new Date(timestamp).getTime();
+                const timeDifference = lastTimestamp - currentTimestamp;
+
+                if (timeDifference === ONE_DAY_MS) {
+                    secondLastNonNull = { timestamp, value, qualityCode };
+                    break;
+                }
+            }
+        }
+    }
+
+    if (lastNonNull) {
+        return {
+            tsid: tsid,
+            timestamp: lastNonNull.timestamp,
+            value: lastNonNull.value,
+            value24hrs: secondLastNonNull.value,
+            qualityCode: lastNonNull.qualityCode,
+            delta: secondLastNonNull ? lastNonNull.value - secondLastNonNull.value : null
+        };
+    }
+
+    // If no matching values were found, return null
     return null;
 }
 
@@ -1651,85 +1693,88 @@ function createTableRiverReservoir(combinedData, type, reportNumber, nws_day1_da
     const table = document.createElement('table');
     table.setAttribute('id', 'webrep');
 
-    // TITLE ROW 1
-    // Insert the first header row (main headers) for the table
-    const headerRow = table.insertRow(0);
+    // Add 3-rows title
+    (() => {
+        // TITLE ROW 1
+        // Insert the first header row (main headers) for the table
+        const headerRow = table.insertRow(0);
 
-    // Define the main column headers
-    const columns = ["River Mile", "Gage Station", "Current Level", "24hr Delta",
-        "National Weather Service River Forecast", "Flood Level",
-        "Gage Zero", "Record Stage", "Record Date"];
+        // Define the main column headers
+        const columns = ["River Mile", "Gage Station", "Current Level", "24hr Delta",
+            "National Weather Service River Forecast", "Flood Level",
+            "Gage Zero", "Record Stage", "Record Date"];
 
-    // Create and append headers for each main column
-    columns.forEach((columnName) => {
-        const th = document.createElement('th');
-        th.textContent = columnName;
+        // Create and append headers for each main column
+        columns.forEach((columnName) => {
+            const th = document.createElement('th');
+            th.textContent = columnName;
 
-        // Set row spans or column spans based on header requirements
-        if (columnName === "River Mile" || columnName === "Gage Station" ||
-            columnName === "Current Level" || columnName === "24hr Delta" ||
-            columnName === "Flood Level" || columnName === "Gage Zero" ||
-            columnName === "Record Stage" || columnName === "Record Date") {
-            th.rowSpan = 3;
-        }
+            // Set row spans or column spans based on header requirements
+            if (columnName === "River Mile" || columnName === "Gage Station" ||
+                columnName === "Current Level" || columnName === "24hr Delta" ||
+                columnName === "Flood Level" || columnName === "Gage Zero" ||
+                columnName === "Record Stage" || columnName === "Record Date") {
+                th.rowSpan = 3;
+            }
 
-        // Set colspan for the "National Weather Service River Forecast" column
-        if (columnName === "National Weather Service River Forecast") {
-            th.colSpan = 3;
-        }
+            // Set colspan for the "National Weather Service River Forecast" column
+            if (columnName === "National Weather Service River Forecast") {
+                th.colSpan = 3;
+            }
 
-        // Apply styling for header cells
-        th.style.backgroundColor = 'darkblue';
-        headerRow.appendChild(th);
-    });
+            // Apply styling for header cells
+            th.style.backgroundColor = 'darkblue';
+            headerRow.appendChild(th);
+        });
 
-    // TITLE ROW 2
-    // Insert the second header row for sub-headers under "National Weather Service River Forecast"
-    const headerRow2 = table.insertRow(1);
+        // TITLE ROW 2
+        // Insert the second header row for sub-headers under "National Weather Service River Forecast"
+        const headerRow2 = table.insertRow(1);
 
-    // Define sub-headers for the forecast columns
-    const columns2 = ["National Weather Service River Forecast"];
+        // Define sub-headers for the forecast columns
+        const columns2 = ["National Weather Service River Forecast"];
 
-    columns2.forEach((columnName) => {
-        if (columnName === "National Weather Service River Forecast") {
-            // Header for "Next 3 days" forecast
-            const thNext3Days = document.createElement('th');
-            thNext3Days.textContent = "Next 3 days";
-            thNext3Days.style.backgroundColor = 'darkblue';
-            headerRow2.appendChild(thNext3Days);
+        columns2.forEach((columnName) => {
+            if (columnName === "National Weather Service River Forecast") {
+                // Header for "Next 3 days" forecast
+                const thNext3Days = document.createElement('th');
+                thNext3Days.textContent = "Next 3 days";
+                thNext3Days.style.backgroundColor = 'darkblue';
+                headerRow2.appendChild(thNext3Days);
 
-            // Header for "Forecast Time" with rowspan of 2 to cover rows 2 and 3
-            const thForecastTime = document.createElement('th');
-            thForecastTime.textContent = "Forecast Time";
-            thForecastTime.rowSpan = 2;
-            thForecastTime.style.backgroundColor = 'darkblue';
-            headerRow2.appendChild(thForecastTime);
+                // Header for "Forecast Time" with rowspan of 2 to cover rows 2 and 3
+                const thForecastTime = document.createElement('th');
+                thForecastTime.textContent = "Forecast Time";
+                thForecastTime.rowSpan = 2;
+                thForecastTime.style.backgroundColor = 'darkblue';
+                headerRow2.appendChild(thForecastTime);
 
-            // Header for "Crest & Date" with rowspan of 2 to cover rows 2 and 3
-            const thCrest = document.createElement('th');
-            thCrest.textContent = "Crest & Date";
-            thCrest.rowSpan = 2;
-            thCrest.style.backgroundColor = 'darkblue';
-            headerRow2.appendChild(thCrest);
-        }
-    });
+                // Header for "Crest & Date" with rowspan of 2 to cover rows 2 and 3
+                const thCrest = document.createElement('th');
+                thCrest.textContent = "Crest & Date";
+                thCrest.rowSpan = 2;
+                thCrest.style.backgroundColor = 'darkblue';
+                headerRow2.appendChild(thCrest);
+            }
+        });
 
-    // TITLE ROW 3
-    // Insert the third header row to show individual day headers under "Next 3 days"
-    const headerRow3 = table.insertRow(2);
+        // TITLE ROW 3
+        // Insert the third header row to show individual day headers under "Next 3 days"
+        const headerRow3 = table.insertRow(2);
 
-    // Define columns for the "Next 3 days" forecast
-    const columns3 = ["National Weather Service River Forecast"];
+        // Define columns for the "Next 3 days" forecast
+        const columns3 = ["National Weather Service River Forecast"];
 
-    columns3.forEach((columnName) => {
-        if (columnName === "National Weather Service River Forecast") {
-            // Create cells for each day (day1, day2, day3) with separators
-            const thNext3DaysDate = document.createElement('th');
-            thNext3DaysDate.innerHTML = `<span style='margin-right: 7px;margin-left: 7px;'>${nws_day1_date_title}</span> | <span style='margin-right: 7px;margin-left: 7px;'>${nws_day2_date_title}</span> | <span style='margin-right: 7px;margin-left: 7px;'>${nws_day3_date_title}</span>`;
-            thNext3DaysDate.style.backgroundColor = 'darkblue';
-            headerRow3.appendChild(thNext3DaysDate);
-        }
-    });
+        columns3.forEach((columnName) => {
+            if (columnName === "National Weather Service River Forecast") {
+                // Create cells for each day (day1, day2, day3) with separators
+                const thNext3DaysDate = document.createElement('th');
+                thNext3DaysDate.innerHTML = `<span style='margin-right: 7px;margin-left: 7px;'>${nws_day1_date_title}</span> | <span style='margin-right: 7px;margin-left: 7px;'>${nws_day2_date_title}</span> | <span style='margin-right: 7px;margin-left: 7px;'>${nws_day3_date_title}</span>`;
+                thNext3DaysDate.style.backgroundColor = 'darkblue';
+                headerRow3.appendChild(thNext3DaysDate);
+            }
+        });
+    })();
 
     // Loop through each basin in the combined data
     combinedData.forEach((basin) => {
@@ -1776,6 +1821,13 @@ function createTableRiverReservoir(combinedData, type, reportNumber, nws_day1_da
                 linkElement.textContent = (location['stage-last-value'][0][`value`]).toFixed(2);
                 currentLevelCell.appendChild(linkElement);
                 row.appendChild(currentLevelCell);
+            })();
+
+            // 24hr Delta
+            (() => {
+                const deltaCell = document.createElement('td');
+                deltaCell.textContent = (location['stage-last-value'][0][`delta`]).toFixed(2);
+                row.appendChild(deltaCell);
             })();
 
 
