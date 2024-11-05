@@ -188,59 +188,59 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                                         // Fetch metadata
                                         (() => {
-                                            // const locApiUrl = setBaseUrl + `locations/${loc['location-id']}?office=${office}`;
-                                            // // console.log("locApiUrl: ", locApiUrl);
-                                            // metadataPromises.push(
-                                            //     fetch(locApiUrl)
-                                            //         .then(response => {
-                                            //             if (response.status === 404) {
-                                            //                 console.warn(`Location metadata not found for location: ${loc['location-id']}`);
-                                            //                 return null; // Skip if not found
-                                            //             }
-                                            //             if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
-                                            //             return response.json();
-                                            //         })
-                                            //         .then(locData => {
-                                            //             if (locData) {
-                                            //                 metadataMap.set(loc['location-id'], locData);
-                                            //             }
-                                            //         })
-                                            //         .catch(error => {
-                                            //             console.error(`Problem with the fetch operation for location ${loc['location-id']}:`, error);
-                                            //         })
-                                            // );
+                                            const locApiUrl = setBaseUrl + `locations/${loc['location-id']}?office=${office}`;
+                                            // console.log("locApiUrl: ", locApiUrl);
+                                            metadataPromises.push(
+                                                fetch(locApiUrl)
+                                                    .then(response => {
+                                                        if (response.status === 404) {
+                                                            console.warn(`Location metadata not found for location: ${loc['location-id']}`);
+                                                            return null; // Skip if not found
+                                                        }
+                                                        if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+                                                        return response.json();
+                                                    })
+                                                    .then(locData => {
+                                                        if (locData) {
+                                                            metadataMap.set(loc['location-id'], locData);
+                                                        }
+                                                    })
+                                                    .catch(error => {
+                                                        console.error(`Problem with the fetch operation for location ${loc['location-id']}:`, error);
+                                                    })
+                                            );
                                         })();
 
                                         // Fetch flood
                                         (() => {
-                                            // // Fetch flood location level for each location
-                                            // const levelIdFlood = loc['location-id'] + ".Stage.Inst.0.Flood";
-                                            // // console.log("levelIdFlood: ", levelIdFlood);
+                                            // Fetch flood location level for each location
+                                            const levelIdFlood = loc['location-id'] + ".Stage.Inst.0.Flood";
+                                            // console.log("levelIdFlood: ", levelIdFlood);
 
-                                            // const levelIdEffectiveDate = "2024-01-01T08:00:00";
-                                            // // console.log("levelIdEffectiveDate: ", levelIdEffectiveDate);
+                                            const levelIdEffectiveDate = "2024-01-01T08:00:00";
+                                            // console.log("levelIdEffectiveDate: ", levelIdEffectiveDate);
 
-                                            // const floodApiUrl = setBaseUrl + `levels/${levelIdFlood}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ft`;
-                                            // // console.log("floodApiUrl: ", floodApiUrl);
-                                            // floodPromises.push(
-                                            //     fetch(floodApiUrl)
-                                            //         .then(response => {
-                                            //             if (response.status === 404) {
-                                            //                 console.warn(`Location metadata not found for location: ${loc['location-id']}`);
-                                            //                 return null; // Skip if not found
-                                            //             }
-                                            //             if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
-                                            //             return response.json();
-                                            //         })
-                                            //         .then(floodData => {
-                                            //             if (floodData) {
-                                            //                 floodMap.set(loc['location-id'], floodData);
-                                            //             }
-                                            //         })
-                                            //         .catch(error => {
-                                            //             console.error(`Problem with the fetch operation for location ${loc['location-id']}:`, error);
-                                            //         })
-                                            // );
+                                            const floodApiUrl = setBaseUrl + `levels/${levelIdFlood}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ft`;
+                                            // console.log("floodApiUrl: ", floodApiUrl);
+                                            floodPromises.push(
+                                                fetch(floodApiUrl)
+                                                    .then(response => {
+                                                        if (response.status === 404) {
+                                                            console.warn(`Location metadata not found for location: ${loc['location-id']}`);
+                                                            return null; // Skip if not found
+                                                        }
+                                                        if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+                                                        return response.json();
+                                                    })
+                                                    .then(floodData => {
+                                                        if (floodData) {
+                                                            floodMap.set(loc['location-id'], floodData);
+                                                        }
+                                                    })
+                                                    .catch(error => {
+                                                        console.error(`Problem with the fetch operation for location ${loc['location-id']}:`, error);
+                                                    })
+                                            );
                                         })();
 
                                         // Fetch lwrp
@@ -449,15 +449,15 @@ document.addEventListener('DOMContentLoaded', async function () {
                             basinData['assigned-locations'].forEach(loc => {
                                 // Append metadata and tsid
                                 (() => {
-                                    // // Append metadata
-                                    // const metadataMapData = metadataMap.get(loc['location-id']);
-                                    // if (metadataMapData) {
-                                    //     loc['metadata'] = metadataMapData;
-                                    // }
+                                    // Append metadata
+                                    const metadataMapData = metadataMap.get(loc['location-id']);
+                                    if (metadataMapData) {
+                                        loc['metadata'] = metadataMapData;
+                                    }
 
-                                    // // Append flood
-                                    // const floodMapData = floodMap.get(loc['location-id']);
-                                    // loc['flood'] = floodMapData !== undefined ? floodMapData : null;
+                                    // Append flood
+                                    const floodMapData = floodMap.get(loc['location-id']);
+                                    loc['flood'] = floodMapData !== undefined ? floodMapData : null;
 
 
                                     // // Append lwrp
@@ -826,9 +826,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 .then(() => {
                     console.log('All combinedData data fetched successfully:', combinedData);
 
-                    // =================================================================== // 
-                    // ========================== GET NWS DATE =========================== // 
-                    // =================================================================== //
                     // Get the current time in JavaScript)
                     const now = new Date();
                     const timestamp = now.getTime();
@@ -981,7 +978,7 @@ function getLastNonNullValueWithDelta24hrs(data, tsid) {
     // Iterate over the values array in reverse to find the last non-null value
     for (let i = data.values.length - 1; i >= 0; i--) {
         const [timestamp, value, qualityCode] = data.values[i];
-        
+
         if (value !== null) {
             if (!lastNonNull) {
                 // Store the most recent non-null value
@@ -1830,8 +1827,76 @@ function createTableRiverReservoir(combinedData, type, reportNumber, nws_day1_da
                 row.appendChild(deltaCell);
             })();
 
+            // Day1, Day2, and Day3
+            (() => {
+                const nwsCell = document.createElement('td');
 
+                const day1Value = location['forecast-nws-day1-nws-value']?.[0]?.[0]?.value;
+                const day2Value = location['forecast-nws-day2-nws-value']?.[0]?.[0]?.value;
+                const day3Value = location['forecast-nws-day3-nws-value']?.[0]?.[0]?.value;
 
+                // Create an array of formatted values, filtering out nulls
+                const values = [
+                    day1Value != null ? day1Value.toFixed(2) : null,
+                    day2Value != null ? day2Value.toFixed(2) : null,
+                    day3Value != null ? day3Value.toFixed(2) : null
+                ].filter(value => value !== null); // Filter out null values
+
+                // Join the values with a separator only if there are any values
+                nwsCell.textContent = values.length > 0 ? values.join(' | ') : ' ';
+
+                row.appendChild(nwsCell);
+            })();
+
+            // Nws Forecast Time
+            (() => {
+                const nwsForecastTimeCell = document.createElement('td');
+                nwsForecastTimeCell.textContent = '';
+                row.appendChild(nwsForecastTimeCell);
+            })();
+
+            // Crest & Date
+            (() => {
+                const crestAndDateCell = document.createElement('td');
+                crestAndDateCell.textContent = '';
+                row.appendChild(crestAndDateCell);
+            })();
+
+            // Flood Level
+            (() => {
+                const floodLevelCell = document.createElement('td');
+                const floodValue = location['flood']['constant-value'];
+
+                floodLevelCell.textContent = (floodValue > 900) ? '' : floodValue.toFixed(2);
+                row.appendChild(floodLevelCell);
+            })();
+
+            // Gage Zero
+            (() => {
+                const gageZeroCell = document.createElement('td');
+                const gageZeroValue = location['metadata']['elevation'];
+                const datum = location['metadata']['vertical-datum'];
+                gageZeroCell.textContent = (gageZeroValue > 900) ? '' : gageZeroValue.toFixed(2);
+                // Check if datum is "NGVD29" and set text color to purple
+                if (datum === "NGVD29") {
+                    gageZeroCell.style.color = 'purple';
+                }
+                row.appendChild(gageZeroCell);
+            })();
+
+            // Record Stage
+            (() => {
+                const recordStageCell = document.createElement('td');
+                recordStageCell.textContent = '';
+                row.appendChild(recordStageCell);
+            })();
+
+            // Record Date
+            (() => {
+                const recordDateCell = document.createElement('td');
+                recordDateCell.textContent = '';
+                row.appendChild(recordDateCell);
+            })();
 
             table.appendChild(row);
         });
