@@ -2304,9 +2304,14 @@ function createTableReservoir(combinedData, type, reportNumber, nws_day1_date_ti
             // 13 - Record Stage
             (() => {
                 const recordStageCell = document.createElement('td');
-                const recordStageValue = "--";
+                const recordStage = location['record-stage'];
+                const recordStageValue = recordStage ? recordStage['constant-value'] : null;
 
-                recordStageCell.textContent = recordStageValue;
+                // Check if recordStageValue is valid and within the required range
+                recordStageCell.textContent = recordStageValue != null && recordStageValue <= 900
+                    ? recordStageValue.toFixed(2)
+                    : '';
+
                 row.appendChild(recordStageCell);
             })();
 
