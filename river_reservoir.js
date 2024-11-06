@@ -910,14 +910,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const combinedDataCopy = structuredClone ? structuredClone(combinedData) : JSON.parse(JSON.stringify(combinedData));
 
                     // Create the first table
-                    const table1 = createTableRiver(combinedData, type, reportNumber, nws_day1_date_title, nws_day2_date_title, nws_day3_date_title);
+                    // const table1 = createTableRiver(combinedData, type, reportNumber, nws_day1_date_title, nws_day2_date_title, nws_day3_date_title);
 
                     // Create the second table (you could use a similar function or a separate one)
                     const table2 = createTableReservoir(combinedDataCopy, type, reportNumber, nws_day1_date_title, nws_day2_date_title, nws_day3_date_title);
 
                     // Append both tables to the specified container
                     const container = document.getElementById(`table_container_${setReportDiv}`);
-                    container.appendChild(table1);
+                    // container.appendChild(table1);
                     container.appendChild(table2);
 
                     loadingIndicator.style.display = 'none';
@@ -2057,9 +2057,9 @@ function createTableRiver(combinedData, type, reportNumber, nws_day1_date_title,
 }
 
 function createTableReservoir(combinedData, type, reportNumber, nws_day1_date_title, nws_day2_date_title, nws_day3_date_title) {
-    // Create a table element and set an ID for styling or selection purposes
+    // Create a table element
     const table = document.createElement('table');
-    table.setAttribute('id', 'webrep');
+    table.setAttribute('id', 'webreplake');
 
     console.log("combinedData (before): ", combinedData);
 
@@ -2095,82 +2095,65 @@ function createTableReservoir(combinedData, type, reportNumber, nws_day1_date_ti
     // Add 3-rows title
     (() => {
         // TITLE ROW 1
-        // Insert the first header row (main headers) for the table
+        // Create a table header row
         const headerRow = table.insertRow(0);
 
-        // Define the main column headers
-        const columns = ["River Mile", "Gage Station", "Current Level", "24hr Delta",
-            "National Weather Service River Forecast", "Flood Level",
-            "Gage Zero", "Record Stage", "Record Date"];
+        // Create table headers for the desired columns
+        const columns = ["Lake", "Current Level", "24hr Delta", "Storage Utilized", "Precip (in)", "Yesterdays Inflow (dsf)", "Controlled Outflow", "Seasonal Rule Curve", "Pool Forecast", "Record Stage", "Record Date"];
 
-        // Create and append headers for each main column
         columns.forEach((columnName) => {
             const th = document.createElement('th');
             th.textContent = columnName;
-
-            // Set row spans or column spans based on header requirements
-            if (columnName === "River Mile" || columnName === "Gage Station" ||
-                columnName === "Current Level" || columnName === "24hr Delta" ||
-                columnName === "Flood Level" || columnName === "Gage Zero" ||
-                columnName === "Record Stage" || columnName === "Record Date") {
-                th.rowSpan = 3;
+            if (["Lake", "Current Level", "24hr Delta", "Precip (in)", "Yesterdays Inflow (dsf)", "Seasonal Rule Curve", "Record Stage", "Record Date"].includes(columnName)) {
+                th.rowSpan = 2;
             }
-
-            // Set colspan for the "National Weather Service River Forecast" column
-            if (columnName === "National Weather Service River Forecast") {
-                th.colSpan = 3;
+            if (["Storage Utilized", "Controlled Outflow", "Pool Forecast"].includes(columnName)) {
+                th.colSpan = 2;
             }
-
-            // Apply styling for header cells
-            th.style.backgroundColor = 'darkblue';
+            th.style.backgroundColor = 'darkblue'; // Set background color to dark blue
             headerRow.appendChild(th);
         });
 
         // TITLE ROW 2
-        // Insert the second header row for sub-headers under "National Weather Service River Forecast"
-        const headerRow2 = table.insertRow(1);
+        // Create a table header row
+        const headerRowLake2 = table.insertRow(1);
 
-        // Define sub-headers for the forecast columns
-        const columns2 = ["National Weather Service River Forecast"];
+        // Create table headers for the desired columns
+        const columns2 = ["Storage Utilized", "Controlled Outflow", "Pool Forecast"];
 
         columns2.forEach((columnName) => {
-            if (columnName === "National Weather Service River Forecast") {
-                // Header for "Next 3 days" forecast
-                const thNext3Days = document.createElement('th');
-                thNext3Days.textContent = "Next 3 days";
-                thNext3Days.style.backgroundColor = 'darkblue';
-                headerRow2.appendChild(thNext3Days);
+            if (columnName === "Storage Utilized") {
+                const thStorageConsr = document.createElement('th');
+                thStorageConsr.textContent = "Consr";
+                thStorageConsr.style.backgroundColor = 'darkblue'; // Set background color to dark blue
+                headerRowLake2.appendChild(thStorageConsr);
 
-                // Header for "Forecast Time" with rowspan of 2 to cover rows 2 and 3
-                const thForecastTime = document.createElement('th');
-                thForecastTime.textContent = "Forecast Time";
-                thForecastTime.rowSpan = 2;
-                thForecastTime.style.backgroundColor = 'darkblue';
-                headerRow2.appendChild(thForecastTime);
-
-                // Header for "Crest & Date" with rowspan of 2 to cover rows 2 and 3
-                const thCrest = document.createElement('th');
-                thCrest.textContent = "Crest & Date";
-                thCrest.rowSpan = 2;
-                thCrest.style.backgroundColor = 'darkblue';
-                headerRow2.appendChild(thCrest);
+                const thStorageFlood = document.createElement('th');
+                thStorageFlood.textContent = "Flood";
+                thStorageFlood.style.backgroundColor = 'darkblue'; // Set background color to dark blue
+                headerRowLake2.appendChild(thStorageFlood);
             }
-        });
+            if (columnName === "Controlled Outflow") {
+                const thMidnightOutflow = document.createElement('th');
+                thMidnightOutflow.textContent = "Midnight";
+                thMidnightOutflow.style.backgroundColor = 'darkblue'; // Set background color to dark blue
+                headerRowLake2.appendChild(thMidnightOutflow);
 
-        // TITLE ROW 3
-        // Insert the third header row to show individual day headers under "Next 3 days"
-        const headerRow3 = table.insertRow(2);
+                const thEveningOutflow = document.createElement('th');
+                thEveningOutflow.textContent = "Evening";
+                thEveningOutflow.style.backgroundColor = 'darkblue'; // Set background color to dark blue
+                headerRowLake2.appendChild(thEveningOutflow);
+            }
+            if (columnName === "Pool Forecast") {
+                const thForecastCrest = document.createElement('th');
+                thForecastCrest.textContent = "Crest";
+                thForecastCrest.style.backgroundColor = 'darkblue'; // Set background color to dark blue
+                headerRowLake2.appendChild(thForecastCrest);
 
-        // Define columns for the "Next 3 days" forecast
-        const columns3 = ["National Weather Service River Forecast"];
-
-        columns3.forEach((columnName) => {
-            if (columnName === "National Weather Service River Forecast") {
-                // Create cells for each day (day1, day2, day3) with separators
-                const thNext3DaysDate = document.createElement('th');
-                thNext3DaysDate.innerHTML = `<span style='margin-right: 7px;margin-left: 7px;'>${nws_day1_date_title}</span> | <span style='margin-right: 7px;margin-left: 7px;'>${nws_day2_date_title}</span> | <span style='margin-right: 7px;margin-left: 7px;'>${nws_day3_date_title}</span>`;
-                thNext3DaysDate.style.backgroundColor = 'darkblue';
-                headerRow3.appendChild(thNext3DaysDate);
+                const thForecastDate = document.createElement('th');
+                thForecastDate.textContent = "Date";
+                thForecastDate.style.backgroundColor = 'darkblue'; // Set background color to dark blue
+                headerRowLake2.appendChild(thForecastDate);
             }
         });
     })();
@@ -2180,28 +2163,15 @@ function createTableReservoir(combinedData, type, reportNumber, nws_day1_date_ti
         basin['assigned-locations'].forEach((location) => {
             const row = document.createElement('tr');
 
-            // River Mile
+            // 01 - Lake
             (() => {
-                const riverMileCell = document.createElement('td');
-                const riverMileValue = location['river-mile'] && location['river-mile']['river_mile_hard_coded'];
-                riverMileCell.textContent = riverMileValue != null ? parseFloat(riverMileValue).toFixed(1) : "N/A";
-                // Set the title for the cell
-                riverMileCell.title = "Hard Coded with Json File";
-                // Set halo effect using text-shadow with orange color
-                riverMileCell.style.textShadow = '0 0 2px rgba(255, 165, 0, 0.7), 0 0 2px rgba(255, 140, 0, 0.5)';
-                row.appendChild(riverMileCell);
+                const lakeCell = document.createElement('td');
+                const lakeValue = location['location-id'].split('-')[0];
+                lakeCell.textContent = lakeValue;
+                row.appendChild(lakeCell);
             })();
 
-            // Gage Station
-            (() => {
-                // Location cell without link
-                const locationCell = document.createElement('td');
-                // locationCell.textContent = location['location-id'];
-                locationCell.textContent = location['location-id'].split('-')[0];
-                row.appendChild(locationCell);
-            })();
-
-            // Current Level
+            // 02 - Current Level
             (() => {
                 // Create the link element for current level
                 const tsid = location['stage-last-value'][0]['tsid'];
@@ -2241,7 +2211,7 @@ function createTableReservoir(combinedData, type, reportNumber, nws_day1_date_ti
                 row.appendChild(currentLevelCell);
             })();
 
-            // 24hr Delta
+            // 03 - 24hr Delta
             (() => {
                 const deltaCell = document.createElement('td');
                 const deltaValue = location['stage-last-value'][0]['delta'];
@@ -2250,94 +2220,97 @@ function createTableReservoir(combinedData, type, reportNumber, nws_day1_date_ti
                 row.appendChild(deltaCell);
             })();
 
-            // Day1, Day2, and Day3
+            // 04 - Consr Storage
             (() => {
-                const nwsCell = document.createElement('td');
+                const conservationStorageCell = document.createElement('td');
+                const conservationStorageValue = "%";
 
-                const day1Value = location['forecast-nws-day1-nws-value']?.[0]?.[0]?.value;
-                const day2Value = location['forecast-nws-day2-nws-value']?.[0]?.[0]?.value;
-                const day3Value = location['forecast-nws-day3-nws-value']?.[0]?.[0]?.value;
-
-                // Create an array of formatted values, filtering out nulls
-                const values = [
-                    day1Value != null ? day1Value.toFixed(2) : null,
-                    day2Value != null ? day2Value.toFixed(2) : null,
-                    day3Value != null ? day3Value.toFixed(2) : null
-                ].filter(value => value !== null); // Filter out null values
-
-                // Join the values with a separator only if there are any values
-                nwsCell.textContent = values.length > 0 ? values.join(' | ') : ' ';
-
-                row.appendChild(nwsCell);
+                conservationStorageCell.textContent = conservationStorageValue;
+                row.appendChild(conservationStorageCell);
             })();
 
-            // Nws Forecast Time
+            // 05 - Flood Storage
             (() => {
-                const nwsForecastTimeCell = document.createElement('td');
-                const tsid_stage_nws_3_day_forecast = location['tsid-forecast-nws']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
+                const floodStorageCell = document.createElement('td');
+                const floodStorageValue = "%";
 
-                if (tsid_stage_nws_3_day_forecast !== null) {
-                    fetchAndLogNwsData(tsid_stage_nws_3_day_forecast, nwsForecastTimeCell);
-                } else {
-                    nwsForecastTimeCell.textContent = '';
-                }
-
-                row.appendChild(nwsForecastTimeCell);
+                floodStorageCell.textContent = floodStorageValue;
+                row.appendChild(floodStorageCell);
             })();
 
-            // Crest & Date
+            // 06 - Precip
             (() => {
-                const crestAndDateCell = document.createElement('td');
-                const crest = location['crest-last-value']?.[0]?.['value'] ?? null;
-                const crestValue = crest !== null ? Number(crest) : null;
-                const crestDate = location['crest-last-value']?.[0]?.['timestamp'] ?? '';
+                const precipCell = document.createElement('td');
+                const precipValue = "--";
 
-                if (crestValue !== null && !isNaN(crestValue)) {
-                    crestAndDateCell.textContent = crestValue.toFixed(2) + " | " + crestDate.substring(0, 5);
-                } else {
-                    crestAndDateCell.textContent = '';
-                }
-
-                row.appendChild(crestAndDateCell);
+                precipCell.textContent = precipValue;
+                row.appendChild(precipCell);
             })();
 
-            // Flood Level
+            // 07 - Yesterdays Inflow
             (() => {
-                const floodLevelCell = document.createElement('td');
-                const floodValue = location['flood']['constant-value'] ?? null;
+                const yesterdaysInflowCell = document.createElement('td');
+                const yesterdaysInflowValue = "--";
 
-                floodLevelCell.textContent = (floodValue > 900) ? '' : floodValue.toFixed(2);
-                row.appendChild(floodLevelCell);
+                yesterdaysInflowCell.textContent = yesterdaysInflowValue;
+                row.appendChild(yesterdaysInflowCell);
             })();
 
-            // Gage Zero
+            // 08 - Midnight - Controlled Outflow
             (() => {
-                const gageZeroCell = document.createElement('td');
-                const gageZeroValue = location['metadata']['elevation'];
-                const datum = location['metadata']['vertical-datum'];
-                gageZeroCell.textContent = (gageZeroValue > 900) ? '' : gageZeroValue.toFixed(2);
-                // Check if datum is "NGVD29" and set text color to purple
-                if (datum === "NGVD29") {
-                    gageZeroCell.style.color = 'purple';
-                }
-                row.appendChild(gageZeroCell);
+                const midnightControlledOutflowCell = document.createElement('td');
+                const midnightControlledOutflowValue = "--";
+
+                midnightControlledOutflowCell.textContent = midnightControlledOutflowValue;
+                row.appendChild(midnightControlledOutflowCell);
             })();
 
-            // Record Stage
+            // 09 - Evening - Controlled Outflow
+            (() => {
+                const eveningControlledOutflowCell = document.createElement('td');
+                const eveningControlledOutflowValue = "--";
+
+                eveningControlledOutflowCell.textContent = eveningControlledOutflowValue;
+                row.appendChild(eveningControlledOutflowCell);
+            })();
+
+            // 10 - Seasonal Rule Curve
+            (() => {
+                const seasonalRuleCurveCell = document.createElement('td');
+                const seasonalRuleCurveValue = "--";
+
+                seasonalRuleCurveCell.textContent = seasonalRuleCurveValue;
+                row.appendChild(seasonalRuleCurveCell);
+            })();
+
+            // 11 - Crest - Pool Forecast
+            (() => {
+                const crestPoolForecastCell = document.createElement('td');
+                const crestPoolForecastValue = "--";
+
+                crestPoolForecastCell.textContent = crestPoolForecastValue;
+                row.appendChild(crestPoolForecastCell);
+            })();
+
+            // 12 - Date - Pool Forecast
+            (() => {
+                const datePoolForecastCell = document.createElement('td');
+                const datePoolForecastValue = "--";
+
+                datePoolForecastCell.textContent = datePoolForecastValue;
+                row.appendChild(datePoolForecastCell);
+            })();
+
+            // 13 - Record Stage
             (() => {
                 const recordStageCell = document.createElement('td');
-                const recordStage = location['record-stage'];
-                const recordStageValue = recordStage ? recordStage['constant-value'] : null;
+                const recordStageValue = "--";
 
-                // Check if recordStageValue is valid and within the required range
-                recordStageCell.textContent = recordStageValue != null && recordStageValue <= 900
-                    ? recordStageValue.toFixed(2)
-                    : '';
-
+                recordStageCell.textContent = recordStageValue;
                 row.appendChild(recordStageCell);
             })();
 
-            // Record Date
+            // 14 - Record Date
             (() => {
                 const recordDateCell = document.createElement('td');
 
