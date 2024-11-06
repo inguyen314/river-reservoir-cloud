@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     if (reportNumber === 1) {
         console.log("***************************************************************");
-        console.log("********************* Setup LD Gate Summary *******************");
+        console.log("********************* Setup River Reservoir *******************");
         console.log("***************************************************************");
         // Set the category and base URL for API calls
         setReportDiv = "river_reservoir";
@@ -1744,6 +1744,33 @@ function createTableRiverReservoir(combinedData, type, reportNumber, nws_day1_da
     const table = document.createElement('table');
     table.setAttribute('id', 'webrep');
 
+    // Filter out locations with attribute === 1 in owner, and remove basins without assigned-locations
+    combinedData = combinedData.filter((basin) => {
+        // Filter 'assigned-locations' within each basin
+        basin['assigned-locations'] = basin['assigned-locations'].filter((location) => {
+            const currentLocationId = location['location-id'];
+            const locationList = location['owner']['assigned-locations'];
+
+            // Check if currentLocationId exists in locationList with attribute === 1
+            const foundInLocationList = locationList.some(
+                loc => loc['location-id'] === currentLocationId && loc['attribute'] === 1
+            );
+
+            if (foundInLocationList) {
+                console.log("Removing location with ID:", currentLocationId);
+            }
+            // Remove location if attribute is 1, keep it otherwise
+            return !foundInLocationList;
+        });
+
+        // Return true if there are remaining assigned-locations, otherwise filter out the basin
+        const hasLocations = basin['assigned-locations'].length > 0;
+        if (!hasLocations) {
+            console.log("Removing empty basin:", basin);
+        }
+        return hasLocations;
+    });
+
     // Add 3-rows title
     (() => {
         // TITLE ROW 1
@@ -1858,8 +1885,8 @@ function createTableRiverReservoir(combinedData, type, reportNumber, nws_day1_da
             (() => {
                 // Location cell without link
                 const locationCell = document.createElement('td');
-                locationCell.textContent = location['location-id'];
-                // locationCell.textContent = location['location-id'].split('-')[0];
+                // locationCell.textContent = location['location-id'];
+                locationCell.textContent = location['location-id'].split('-')[0];
                 row.appendChild(locationCell);
             })();
 
@@ -2080,6 +2107,7 @@ function updateLocData(locData, type, data, lastValue, maxValue, minValue, cumVa
 // ******************************************************
 // ******* Hard Coded Nws Forecast Time *****************
 // ******************************************************
+
 // Function to fetch exportNwsForecasts2Json.json
 async function fetchDataFromNwsForecastsOutput() {
     let urlNwsForecast = null;
