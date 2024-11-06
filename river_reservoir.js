@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     let setTimeseriesGroup3 = null;
     // let setTimeseriesGroup4 = null;
     // let setTimeseriesGroup5 = null;
-    let setTimeseriesGroup6 = null;
     let setLookBack = null;
     let setLookForward = null;
     let setReportDiv = null;
@@ -29,7 +28,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         setTimeseriesGroup3 = "Crest";
         // setTimeseriesGroup4 = "--";
         // setTimeseriesGroup5 = "--";
-        setTimeseriesGroup6 = "Precip-Lake";
         setLookBack = subtractDaysFromDate(new Date(), 2);
         setLookForward = addDaysFromDate(new Date(), 14);
     }
@@ -45,7 +43,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.log("setTimeseriesGroup3: ", setTimeseriesGroup3);
     // console.log("setTimeseriesGroup4: ", setTimeseriesGroup4);
     // console.log("setTimeseriesGroup5: ", setTimeseriesGroup5);
-    console.log("setTimeseriesGroup6: ", setTimeseriesGroup6);
     console.log("setLookBack: ", setLookBack);
 
     let setBaseUrl = null;
@@ -73,8 +70,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     // const tsidTainterMap = new Map();
     // const tsidRollerMap = new Map();
     const recordStageMap = new Map();
-    const tsidLakePrecipMap = new Map();
-
 
     // Initialize arrays for storing promises
     const metadataPromises = [];
@@ -88,7 +83,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     // const tainterTsidPromises = [];
     // const rollerTsidPromises = [];
     const recordStageTsidPromises = [];
-    const lakePrecipTsidPromises = [];
 
     // Fetch location group data from the API
     fetch(categoryApiUrl)
@@ -461,29 +455,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                                             //         })
                                             // );
                                         })();
-
-                                        // Fetch tsid 6
-                                        (() => {
-                                            const tsidApiUrl = setBaseUrl + `timeseries/group/${setTimeseriesGroup6}?office=${office}&category-id=${loc['location-id']}`;
-                                            // console.log('tsidApiUrl:', tsidApiUrl);
-                                            lakePrecipTsidPromises.push(
-                                                fetch(tsidApiUrl)
-                                                    .then(response => {
-                                                        if (response.status === 404) return null; // Skip if not found
-                                                        if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
-                                                        return response.json();
-                                                    })
-                                                    .then(data => {
-                                                        // // console.log('data:', data);
-                                                        if (data) {
-                                                            tsidLakePrecipMap.set(loc['location-id'], data);
-                                                        }
-                                                    })
-                                                    .catch(error => {
-                                                        console.error(`Problem with the fetch operation for stage TSID data at ${tsidApiUrl}:`, error);
-                                                    })
-                                            );
-                                        })();
                                     })();
                                 });
                             }
@@ -507,7 +478,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // .then(() => Promise.all(tainterTsidPromises))
                 // .then(() => Promise.all(rollerTsidPromises))
                 .then(() => Promise.all(recordStageTsidPromises))
-                .then(() => Promise.all(lakePrecipTsidPromises))
                 .then(() => {
                     combinedData.forEach(basinData => {
                         if (basinData['assigned-locations']) {
@@ -589,15 +559,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     //     loc['tsid-roller'] = null;
                                     // }
 
-                                    // Append tsid 6
-                                    const tsidLakePrecipMapData = tsidLakePrecipMap.get(loc['location-id']);
-                                    if (tsidLakePrecipMapData) {
-                                        reorderByAttribute(tsidLakePrecipMapData);
-                                        loc['tsid-lake-precip'] = tsidLakePrecipMapData;
-                                    } else {
-                                        loc['tsid-lake-precip'] = null;
-                                    }
-
                                     // Initialize empty arrays to hold API and last-value data for various parameters
                                     loc['stage-api-data'] = [];
                                     loc['stage-cum-value'] = [];
@@ -638,14 +599,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     // loc['roller-last-value'] = [];
                                     // loc['roller-max-value'] = [];
                                     // loc['roller-min-value'] = [];
-
-                                    loc['lake-precip-api-data'] = [];
-                                    loc['lake-precip-cum-value'] = [];
-                                    loc['lake-precip-hourly-value'] = [];
-                                    loc['lake-precip-inc-value'] = [];
-                                    loc['lake-precip-last-value'] = [];
-                                    loc['lake-precip-max-value'] = [];
-                                    loc['lake-precip-min-value'] = [];
                                 })();
                             });
                         }
@@ -766,13 +719,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                     // Iterate over all arrays in combinedData
                     for (const dataArray of combinedData) {
                         for (const locData of dataArray['assigned-locations'] || []) {
-                            // Handle time series
+                            // Handle temperature, depth, and DO time series
                             const stageTimeSeries = locData['tsid-stage']?.['assigned-time-series'] || [];
                             const twTimeSeries = locData['tsid-forecast-nws']?.['assigned-time-series'] || [];
                             const hingePointTimeSeries = locData['tsid-crest']?.['assigned-time-series'] || [];
                             const tainterTimeSeries = locData['tsid-tainter']?.['assigned-time-series'] || [];
                             const rollerTimeSeries = locData['tsid-roller']?.['assigned-time-series'] || [];
-                            const lakePrecipTimeSeries = locData['tsid-lake-precip']?.['assigned-time-series'] || [];
 
                             // Function to create fetch promises for time series data
                             const timeSeriesDataFetchPromises = (timeSeries, type) => {
@@ -819,13 +771,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 });
                             };
 
-                            // Create promises
+                            // Create promises for temperature, depth, and DO time series
                             const stagePromises = timeSeriesDataFetchPromises(stageTimeSeries, 'stage');
                             const twPromises = timeSeriesDataFetchPromises(twTimeSeries, 'forecast-nws');
                             const hingePointPromises = timeSeriesDataFetchPromises(hingePointTimeSeries, 'crest');
                             const tainterPromises = timeSeriesDataFetchPromises(tainterTimeSeries, 'tainter');
                             const rollerPromises = timeSeriesDataFetchPromises(rollerTimeSeries, 'roller');
-                            const lakePrecipPromises = timeSeriesDataFetchPromises(lakePrecipTimeSeries, 'lake-precip');
 
                             // Additional API call for extents data
                             const timeSeriesDataExtentsApiCall = async (type) => {
@@ -849,8 +800,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     const hingePointTids = twTimeSeries.map(series => series['timeseries-id']);
                                     const tainterTids = tainterTimeSeries.map(series => series['timeseries-id']);
                                     const rollerTids = rollerTimeSeries.map(series => series['timeseries-id']);
-                                    const lakePrecipTids = rollerTimeSeries.map(series => series['timeseries-id']);
-                                    const allTids = [...stageTids, ...twTids, ...hingePointTids, ...tainterTids, ...rollerTids, ...lakePrecipTids]; // Combine both arrays
+                                    const allTids = [...stageTids, ...twTids, ...hingePointTids, ...tainterTids, ...rollerTids]; // Combine both arrays
 
                                     allTids.forEach((tsid, index) => {
                                         const matchingEntry = data.entries.find(entry => entry['name'] === tsid);
@@ -894,7 +844,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                                             // Determine extent key based on tsid
                                             let extent_key;
-                                            if (tsid.includes('Stage') || tsid.includes('Elev') || tsid.includes('Flow') || tsid.includes('Conc-DO') || tsid.includes('Precip')) {
+                                            if (tsid.includes('Stage') || tsid.includes('Elev') || tsid.includes('Flow') || tsid.includes('Conc-DO')) {
                                                 extent_key = 'datman';
                                             } else {
                                                 return; // Ignore if it doesn't match the condition
@@ -917,7 +867,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             };
 
                             // Combine all promises for this location
-                            timeSeriesDataPromises.push(Promise.all([...stagePromises, ...twPromises, ...hingePointPromises, ...tainterPromises, ...rollerPromises, ...lakePrecipPromises, timeSeriesDataExtentsApiCall()]));
+                            timeSeriesDataPromises.push(Promise.all([...stagePromises, ...twPromises, ...hingePointPromises, ...tainterPromises, ...rollerPromises, timeSeriesDataExtentsApiCall()]));
                         }
                     }
 
@@ -1088,7 +1038,6 @@ function getLastNonNullValueWithDelta24hrs(data, tsid) {
     for (let i = data.values.length - 1; i >= 0; i--) {
         const [timestamp, value, qualityCode] = data.values[i];
 
-        // Explicitly check if the value is not null
         if (value !== null) {
             if (!lastNonNull) {
                 // Store the most recent non-null value
@@ -1111,14 +1060,15 @@ function getLastNonNullValueWithDelta24hrs(data, tsid) {
         return {
             tsid: tsid,
             timestamp: lastNonNull.timestamp || null,
-            value: lastNonNull.value, // Keep the actual value, even if it is 0
-            value24hrs: secondLastNonNull && secondLastNonNull.value !== null ? secondLastNonNull.value : null,
+            value: lastNonNull.value || null,
+            value24hrs: secondLastNonNull && secondLastNonNull.value ? secondLastNonNull.value : null,
             qualityCode: lastNonNull.qualityCode || null,
             delta: secondLastNonNull && lastNonNull.value != null && secondLastNonNull.value != null
                 ? lastNonNull.value - secondLastNonNull.value
                 : null
         };
     }
+
 
     // If no matching values were found, return null
     return null;
@@ -2111,7 +2061,7 @@ function createTableReservoir(combinedData, type, reportNumber, nws_day1_date_ti
     const table = document.createElement('table');
     table.setAttribute('id', 'webreplake');
 
-    // console.log("combinedData (before): ", combinedData);
+    console.log("combinedData (before): ", combinedData);
 
     // Filter out locations with attribute === 1 in owner, and remove basins without assigned-locations
     combinedData = combinedData.filter((basin) => {
@@ -2140,7 +2090,7 @@ function createTableReservoir(combinedData, type, reportNumber, nws_day1_date_ti
         return hasLocations;
     });
 
-    // console.log("combinedData (after): ", combinedData);
+    console.log("combinedData (after): ", combinedData);
 
     // Add 3-rows title
     (() => {
@@ -2223,16 +2173,25 @@ function createTableReservoir(combinedData, type, reportNumber, nws_day1_date_ti
 
             // 02 - Current Level
             (() => {
-                // Create the link element for current level
-                const tsid = location['stage-last-value'][0]['tsid'];
-                const link = `https://wm.mvs.ds.usace.army.mil/apps/chart/index.html?&office=MVS&cwms_ts_id=${tsid}&cda=internal&lookback=4&lookforward=0`;
+                // Check if 'stage-last-value' exists, is an array, and has the necessary properties
+                const tsid = (location['stage-last-value'] && Array.isArray(location['stage-last-value']) && location['stage-last-value'][0]?.['tsid'])
+                    ? location['stage-last-value'][0]['tsid']
+                    : null;
+
+                const link = tsid
+                    ? `https://wm.mvs.ds.usace.army.mil/apps/chart/index.html?&office=MVS&cwms_ts_id=${tsid}&cda=internal&lookback=4&lookforward=0`
+                    : '#'; // Use a placeholder if tsid is missing
+
                 const currentLevelCell = document.createElement('td');
                 const linkElement = document.createElement('a');
                 linkElement.href = link;
                 linkElement.target = '_blank';
 
-                const currentLevel = location['stage-last-value'][0]['value'];
-                const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
+                const currentLevel = (location['stage-last-value'] && Array.isArray(location['stage-last-value']) && location['stage-last-value'][0]?.['value'])
+                    ? location['stage-last-value'][0]['value']
+                    : null;
+
+                const floodValue = location['flood']?.['constant-value'] ?? null;
                 const recordStage = location['record-stage'];
                 const recordStageValue = recordStage ? recordStage['constant-value'] : null;
 
@@ -2241,16 +2200,12 @@ function createTableReservoir(combinedData, type, reportNumber, nws_day1_date_ti
                     const formattedLevel = currentLevel.toFixed(2);
                     linkElement.textContent = formattedLevel;
 
-                    if (recordStageValue !== null) {
-                        if (currentLevel >= recordStageValue) {
-                            linkElement.classList.add('record_breaking'); // Add "alert" class when currentLevel >= recordStageValue
-                        }
+                    if (recordStageValue !== null && currentLevel >= recordStageValue) {
+                        linkElement.classList.add('record_breaking'); // Add "alert" class when currentLevel >= recordStageValue
                     }
 
-                    if (floodValue != null) {
-                        if (currentLevel >= floodValue) {
-                            linkElement.style.color = 'red';  // Make text red if currentLevel exceeds floodValue
-                        }
+                    if (floodValue != null && currentLevel >= floodValue) {
+                        linkElement.style.color = 'red';  // Make text red if currentLevel exceeds floodValue
                     }
 
                 } else {
@@ -2264,9 +2219,14 @@ function createTableReservoir(combinedData, type, reportNumber, nws_day1_date_ti
             // 03 - 24hr Delta
             (() => {
                 const deltaCell = document.createElement('td');
-                const deltaValue = location['stage-last-value'][0]['delta'];
 
-                deltaCell.textContent = deltaValue != null ? parseFloat(deltaValue).toFixed(2) : 'N/A';
+                // Check if 'stage-last-value' exists, is an array, and has at least one element with 'delta' property
+                let deltaValue = (location['stage-last-value'] && Array.isArray(location['stage-last-value']) && location['stage-last-value'][0]?.['delta'] !== undefined)
+                    ? location['stage-last-value'][0]['delta']
+                    : "N/A";  // Default to "N/A" if 'delta' is not available
+
+                // Format deltaValue to 2 decimal places if it's a number
+                deltaCell.textContent = typeof deltaValue === 'number' ? deltaValue.toFixed(2) : deltaValue;
                 row.appendChild(deltaCell);
             })();
 
@@ -2291,16 +2251,34 @@ function createTableReservoir(combinedData, type, reportNumber, nws_day1_date_ti
             // 06 - Precip
             (() => {
                 const precipCell = document.createElement('td');
-                const precipValue = location['lake-precip-last-value'][0]?.['value'] ?? "N/A";
 
-                precipCell.textContent = precipValue.toFixed(2);
+                // Check if 'lake-precip-last-value' exists, is an array, and has at least one element
+                let precipValue = (location['lake-precip-last-value'] && Array.isArray(location['lake-precip-last-value']) && location['lake-precip-last-value'][0])
+                    ? location['lake-precip-last-value'][0]['value']
+                    : "N/A";  // Default to "N/A" if the value doesn't exist or is not an array
+
+                // Ensure the value is a number before calling toFixed
+                if (typeof precipValue === 'number') {
+                    precipValue = precipValue.toFixed(2); // Format to 2 decimal places
+                }
+
+                precipCell.textContent = precipValue;
                 row.appendChild(precipCell);
             })();
 
             // 07 - Yesterdays Inflow
             (() => {
                 const yesterdaysInflowCell = document.createElement('td');
-                const yesterdaysInflowValue = "--";
+
+                // Check if 'inflow-yesterday-last-value' exists and is an array, then get the first element
+                let yesterdaysInflowValue = (location['inflow-yesterday-last-value'] && Array.isArray(location['inflow-yesterday-last-value']) && location['inflow-yesterday-last-value'][0])
+                    ? location['inflow-yesterday-last-value'][0]['value']
+                    : "N/A";  // Default to "N/A" if the value doesn't exist or is not an array
+
+                // Ensure the value is a number before calling toFixed
+                if (typeof yesterdaysInflowValue === 'number') {
+                    yesterdaysInflowValue = yesterdaysInflowValue.toFixed(0); // Format as an integer
+                }
 
                 yesterdaysInflowCell.textContent = yesterdaysInflowValue;
                 row.appendChild(yesterdaysInflowCell);
