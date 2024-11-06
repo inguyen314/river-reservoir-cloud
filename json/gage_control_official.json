@@ -129,7 +129,7 @@
         "Meredosia-Illinois": {
             "river_mile_hard_coded": 70.80,
             "tsid_null": null,
-            "record_stage_date_hard_coded": null
+            "record_stage_date_hard_coded": "07-02-15"
         },
         "Valley City-Illinois": {
             "river_mile_hard_coded": 61.30,
@@ -694,7 +694,7 @@
         "Paducah-Ohio": {
             "river_mile_hard_coded": 42.80,
             "tsid_null": null,
-            "record_stage_date_hard_coded": null
+            "record_stage_date_hard_coded": "02-02-1937"
         },
         "Cairo-Ohio": {
             "river_mile_hard_coded": 2.00,
