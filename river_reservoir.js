@@ -906,18 +906,20 @@ document.addEventListener('DOMContentLoaded', async function () {
                     // console.log('nws_day3_date: ', nws_day3_date);
                     // console.log('nws_day3_date_title: ', nws_day3_date_title);
 
-                    // Create a deep copy of combinedData for the second table
-                    const combinedDataCopy = structuredClone ? structuredClone(combinedData) : JSON.parse(JSON.stringify(combinedData));
+                    // Create a deep copy of combinedData
+                    const combinedDataRiver = structuredClone ? structuredClone(combinedData) : JSON.parse(JSON.stringify(combinedData));
+
+                    const combinedDataReservoir = structuredClone ? structuredClone(combinedData) : JSON.parse(JSON.stringify(combinedData));
 
                     // Create the first table
-                    // const table1 = createTableRiver(combinedData, type, reportNumber, nws_day1_date_title, nws_day2_date_title, nws_day3_date_title);
+                    const table1 = createTableRiver(combinedDataRiver, type, reportNumber, nws_day1_date_title, nws_day2_date_title, nws_day3_date_title);
 
                     // Create the second table (you could use a similar function or a separate one)
-                    const table2 = createTableReservoir(combinedDataCopy, type, reportNumber, nws_day1_date_title, nws_day2_date_title, nws_day3_date_title);
+                    const table2 = createTableReservoir(combinedDataReservoir, type, reportNumber, nws_day1_date_title, nws_day2_date_title, nws_day3_date_title);
 
                     // Append both tables to the specified container
                     const container = document.getElementById(`table_container_${setReportDiv}`);
-                    // container.appendChild(table1);
+                    container.appendChild(table1);
                     container.appendChild(table2);
 
                     loadingIndicator.style.display = 'none';
@@ -1747,13 +1749,13 @@ function createTableLdGateSummary(combinedData, type, reportNumber) {
     return table; // Return the completed table
 }
 
-function createTableRiver(combinedData, type, reportNumber, nws_day1_date_title, nws_day2_date_title, nws_day3_date_title) {
+function createTableRiver(combinedDataRiver, type, reportNumber, nws_day1_date_title, nws_day2_date_title, nws_day3_date_title) {
     // Create a table element and set an ID for styling or selection purposes
     const table = document.createElement('table');
     table.setAttribute('id', 'webrep');
 
     // Filter out locations with attribute === 1 in owner, and remove basins without assigned-locations
-    combinedData = combinedData.filter((basin) => {
+    combinedDataRiver = combinedDataRiver.filter((basin) => {
         // Filter 'assigned-locations' within each basin
         basin['assigned-locations'] = basin['assigned-locations'].filter((location) => {
             const currentLocationId = location['location-id'];
@@ -1805,11 +1807,12 @@ function createTableRiver(combinedData, type, reportNumber, nws_day1_date_title,
 
             // Set colspan for the "National Weather Service River Forecast" column
             if (columnName === "National Weather Service River Forecast") {
-                th.colSpan = 3;
+                th.colSpan = 6;  // Adjusted to span across the 3 "Next 3 days" columns and 3 additional sub-columns
             }
 
             // Apply styling for header cells
             th.style.backgroundColor = 'darkblue';
+            th.style.color = 'white';
             headerRow.appendChild(th);
         });
 
@@ -1818,55 +1821,44 @@ function createTableRiver(combinedData, type, reportNumber, nws_day1_date_title,
         const headerRow2 = table.insertRow(1);
 
         // Define sub-headers for the forecast columns
-        const columns2 = ["National Weather Service River Forecast"];
+        const columns2 = ["Next 3 days", "forecast time", "Crest", "Date"];
 
         columns2.forEach((columnName) => {
-            if (columnName === "National Weather Service River Forecast") {
-                // Header for "Next 3 days" forecast
-                const thNext3Days = document.createElement('th');
-                thNext3Days.textContent = "Next 3 days";
-                thNext3Days.style.backgroundColor = 'darkblue';
-                headerRow2.appendChild(thNext3Days);
+            const th = document.createElement('th');
+            th.textContent = columnName;
+            th.style.backgroundColor = 'darkblue';
+            th.style.color = 'white';
 
-                // Header for "Forecast Time" with rowspan of 2 to cover rows 2 and 3
-                const thForecastTime = document.createElement('th');
-                thForecastTime.textContent = "Forecast Time";
-                thForecastTime.rowSpan = 2;
-                thForecastTime.style.backgroundColor = 'darkblue';
-                headerRow2.appendChild(thForecastTime);
-
-                // Header for "Crest & Date" with rowspan of 2 to cover rows 2 and 3
-                const thCrest = document.createElement('th');
-                thCrest.textContent = "Crest & Date";
-                thCrest.rowSpan = 2;
-                thCrest.style.backgroundColor = 'darkblue';
-                headerRow2.appendChild(thCrest);
+            // Set colspan for "Next 3 days" to include Day1, Day2, and Day3
+            if (columnName === "Next 3 days") {
+                th.colSpan = 3;
+            } else {
+                th.rowSpan = 2;
             }
+            headerRow2.appendChild(th);
         });
 
         // TITLE ROW 3
         // Insert the third header row to show individual day headers under "Next 3 days"
         const headerRow3 = table.insertRow(2);
 
-        // Define columns for the "Next 3 days" forecast
-        const columns3 = ["National Weather Service River Forecast"];
+        // Define columns for the individual days under "Next 3 days"
+        const dayColumns = ["Day1", "Day2", "Day3"];
 
-        columns3.forEach((columnName) => {
-            if (columnName === "National Weather Service River Forecast") {
-                // Create cells for each day (day1, day2, day3) with separators
-                const thNext3DaysDate = document.createElement('th');
-                thNext3DaysDate.innerHTML = `<span style='margin-right: 7px;margin-left: 7px;'>${nws_day1_date_title}</span> | <span style='margin-right: 7px;margin-left: 7px;'>${nws_day2_date_title}</span> | <span style='margin-right: 7px;margin-left: 7px;'>${nws_day3_date_title}</span>`;
-                thNext3DaysDate.style.backgroundColor = 'darkblue';
-                headerRow3.appendChild(thNext3DaysDate);
-            }
+        dayColumns.forEach((day) => {
+            const th = document.createElement('th');
+            th.textContent = day;
+            th.style.backgroundColor = 'darkblue';
+            th.style.color = 'white';
+            headerRow3.appendChild(th);
         });
     })();
 
     // Loop through each basin in the combined data
-    combinedData.forEach((basin) => {
+    combinedDataRiver.forEach((basin) => {
         const basinRow = document.createElement('tr');
         const basinCell = document.createElement('th');
-        basinCell.colSpan = 13;
+        basinCell.colSpan = 14;
         basinCell.textContent = basin[`id`];
         basinCell.style.height = '30px';
         basinCell.style.textAlign = 'left'; // Align text to the left
@@ -1877,7 +1869,7 @@ function createTableRiver(combinedData, type, reportNumber, nws_day1_date_title,
         basin['assigned-locations'].forEach((location) => {
             const row = document.createElement('tr');
 
-            // River Mile
+            // 01 - River Mile
             (() => {
                 const riverMileCell = document.createElement('td');
                 const riverMileValue = location['river-mile'] && location['river-mile']['river_mile_hard_coded'];
@@ -1889,7 +1881,7 @@ function createTableRiver(combinedData, type, reportNumber, nws_day1_date_title,
                 row.appendChild(riverMileCell);
             })();
 
-            // Gage Station
+            // 02 - Gage Station
             (() => {
                 // Location cell without link
                 const locationCell = document.createElement('td');
@@ -1898,7 +1890,7 @@ function createTableRiver(combinedData, type, reportNumber, nws_day1_date_title,
                 row.appendChild(locationCell);
             })();
 
-            // Current Level
+            // 03 - Current Level
             (() => {
                 // Create the link element for current level
                 const tsid = location['stage-last-value'][0]['tsid'];
@@ -1938,7 +1930,7 @@ function createTableRiver(combinedData, type, reportNumber, nws_day1_date_title,
                 row.appendChild(currentLevelCell);
             })();
 
-            // 24hr Delta
+            // 04 - 24hr Delta
             (() => {
                 const deltaCell = document.createElement('td');
                 const deltaValue = location['stage-last-value'][0]['delta'];
@@ -1947,28 +1939,55 @@ function createTableRiver(combinedData, type, reportNumber, nws_day1_date_title,
                 row.appendChild(deltaCell);
             })();
 
-            // Day1, Day2, and Day3
+            // 05 - Day1
             (() => {
-                const nwsCell = document.createElement('td');
+                // Create the cell for NWS Day 1 forecast value
+                const nwsDay1Cell = document.createElement('td');
 
-                const day1Value = location['forecast-nws-day1-nws-value']?.[0]?.[0]?.value;
-                const day2Value = location['forecast-nws-day2-nws-value']?.[0]?.[0]?.value;
-                const day3Value = location['forecast-nws-day3-nws-value']?.[0]?.[0]?.value;
+                // Safely retrieve and format the forecast value for Day 1
+                const day1Value = location?.['forecast-nws-day1-nws-value']?.[0]?.[0]?.value;
+                const formattedDay1Value = day1Value != null ? day1Value.toFixed(2) : ' ';
 
-                // Create an array of formatted values, filtering out nulls
-                const values = [
-                    day1Value != null ? day1Value.toFixed(2) : null,
-                    day2Value != null ? day2Value.toFixed(2) : null,
-                    day3Value != null ? day3Value.toFixed(2) : null
-                ].filter(value => value !== null); // Filter out null values
+                // Set the cell's content
+                nwsDay1Cell.textContent = formattedDay1Value;
 
-                // Join the values with a separator only if there are any values
-                nwsCell.textContent = values.length > 0 ? values.join(' | ') : ' ';
-
-                row.appendChild(nwsCell);
+                // Append the cell to the row
+                row.appendChild(nwsDay1Cell);
             })();
 
-            // Nws Forecast Time
+            // 06 - Day2
+            (() => {
+                // Create the cell for NWS Day 1 forecast value
+                const nwsDay2Cell = document.createElement('td');
+
+                // Safely retrieve and format the forecast value for Day 1
+                const day2Value = location?.['forecast-nws-day2-nws-value']?.[0]?.[0]?.value;
+                const formattedDay2Value = day2Value != null ? day2Value.toFixed(2) : ' ';
+
+                // Set the cell's content
+                nwsDay2Cell.textContent = formattedDay2Value;
+
+                // Append the cell to the row
+                row.appendChild(nwsDay2Cell);
+            })();
+
+            // 07 - Day3
+            (() => {
+                // Create the cell for NWS Day 1 forecast value
+                const nwsDay3Cell = document.createElement('td');
+
+                // Safely retrieve and format the forecast value for Day 1
+                const day3Value = location?.['forecast-nws-day3-nws-value']?.[0]?.[0]?.value;
+                const formattedDay3Value = day3Value != null ? day3Value.toFixed(2) : ' ';
+
+                // Set the cell's content
+                nwsDay3Cell.textContent = formattedDay3Value;
+
+                // Append the cell to the row
+                row.appendChild(nwsDay3Cell);
+            })();
+
+            // 08 - Nws Forecast Time
             (() => {
                 const nwsForecastTimeCell = document.createElement('td');
                 const tsid_stage_nws_3_day_forecast = location['tsid-forecast-nws']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
@@ -1982,23 +2001,36 @@ function createTableRiver(combinedData, type, reportNumber, nws_day1_date_title,
                 row.appendChild(nwsForecastTimeCell);
             })();
 
-            // Crest & Date
+            // 09 - Crest Value
             (() => {
-                const crestAndDateCell = document.createElement('td');
+                const crestValueCell = document.createElement('td');
                 const crest = location['crest-last-value']?.[0]?.['value'] ?? null;
                 const crestValue = crest !== null ? Number(crest) : null;
-                const crestDate = location['crest-last-value']?.[0]?.['timestamp'] ?? '';
 
                 if (crestValue !== null && !isNaN(crestValue)) {
-                    crestAndDateCell.textContent = crestValue.toFixed(2) + " | " + crestDate.substring(0, 5);
+                    crestValueCell.textContent = crestValue.toFixed(2);
                 } else {
-                    crestAndDateCell.textContent = '';
+                    crestValueCell.textContent = '';
                 }
 
-                row.appendChild(crestAndDateCell);
+                row.appendChild(crestValueCell);
             })();
 
-            // Flood Level
+            // 10 - Crest Date
+            (() => {
+                const crestDateCell = document.createElement('td');
+                const crestDate = location['crest-last-value']?.[0]?.['timestamp'] ?? null;
+
+                if (crestDate !== null) {
+                    crestDateCell.textContent = crestDate.substring(0, 5);
+                } else {
+                    crestDateCell.textContent = '';
+                }
+
+                row.appendChild(crestDateCell);
+            })();
+
+            // 11 - Flood Level
             (() => {
                 const floodLevelCell = document.createElement('td');
                 const floodValue = location['flood']['constant-value'];
@@ -2007,7 +2039,7 @@ function createTableRiver(combinedData, type, reportNumber, nws_day1_date_title,
                 row.appendChild(floodLevelCell);
             })();
 
-            // Gage Zero
+            // 12 - Gage Zero
             (() => {
                 const gageZeroCell = document.createElement('td');
                 const gageZeroValue = location['metadata']['elevation'];
@@ -2020,7 +2052,7 @@ function createTableRiver(combinedData, type, reportNumber, nws_day1_date_title,
                 row.appendChild(gageZeroCell);
             })();
 
-            // Record Stage
+            // 13 - Record Stage
             (() => {
                 const recordStageCell = document.createElement('td');
                 const recordStage = location['record-stage'];
@@ -2034,7 +2066,7 @@ function createTableRiver(combinedData, type, reportNumber, nws_day1_date_title,
                 row.appendChild(recordStageCell);
             })();
 
-            // Record Date
+            // 14 - Record Date
             (() => {
                 const recordDateCell = document.createElement('td');
 
@@ -2056,15 +2088,15 @@ function createTableRiver(combinedData, type, reportNumber, nws_day1_date_title,
     return table;
 }
 
-function createTableReservoir(combinedData, type, reportNumber, nws_day1_date_title, nws_day2_date_title, nws_day3_date_title) {
+function createTableReservoir(combinedDataReservoir, type, reportNumber, nws_day1_date_title, nws_day2_date_title, nws_day3_date_title) {
     // Create a table element
     const table = document.createElement('table');
     table.setAttribute('id', 'webreplake');
 
-    console.log("combinedData (before): ", combinedData);
+    console.log("combinedDataReservoir (before): ", combinedDataReservoir);
 
     // Filter out locations with attribute === 1 in owner, and remove basins without assigned-locations
-    combinedData = combinedData.filter((basin) => {
+    combinedDataReservoir = combinedDataReservoir.filter((basin) => {
         // Filter 'assigned-locations' within each basin
         basin['assigned-locations'] = basin['assigned-locations'].filter((location) => {
             const currentLocationId = location['location-id'];
@@ -2090,7 +2122,7 @@ function createTableReservoir(combinedData, type, reportNumber, nws_day1_date_ti
         return hasLocations;
     });
 
-    console.log("combinedData (after): ", combinedData);
+    console.log("combinedDataReservoir (after): ", combinedDataReservoir);
 
     // Add 3-rows title
     (() => {
@@ -2159,7 +2191,7 @@ function createTableReservoir(combinedData, type, reportNumber, nws_day1_date_ti
     })();
 
     // Loop through each basin in the combined data
-    combinedData.forEach((basin) => {
+    combinedDataReservoir.forEach((basin) => {
         basin['assigned-locations'].forEach((location) => {
             const row = document.createElement('tr');
 
