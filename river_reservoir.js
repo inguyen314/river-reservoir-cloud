@@ -689,11 +689,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         console.log('Filtered all locations where tsid is null successfully:', combinedData);
 
-                        // Step 4: Filter out basin where there are no gages
-                        combinedData = combinedData.filter(item => item['assigned-locations'] && item['assigned-locations'].length > 0);
-
-                        console.log('Filtered all basin where assigned-locations is null successfully:', combinedData);
-
                         // Step 5: Filter out basin order
                         const sortOrderBasin = ['Mississippi', 'Illinois', 'Cuivre', 'Missouri', 'Meramec', 'Ohio', 'Kaskaskia', 'Big Muddy', 'St Francis', 'Salt'];
 
@@ -712,6 +707,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         // Log the sorted combinedData for verification
                         console.log("Sorted combinedData: ", combinedData);
+
+                        // Step 4: Filter out basin where there are no gages
+                        combinedData = combinedData.filter(item => item['assigned-locations'] && item['assigned-locations'].length > 0);
+
+                        console.log('Filtered all basin where assigned-locations is null successfully:', combinedData);
                     })();
 
                     const timeSeriesDataPromises = [];
@@ -1946,10 +1946,24 @@ function createTableRiver(combinedDataRiver, type, reportNumber, nws_day1_date_t
 
                 // Safely retrieve and format the forecast value for Day 1
                 const day1Value = location?.['forecast-nws-day1-nws-value']?.[0]?.[0]?.value;
-                const formattedDay1Value = day1Value != null ? day1Value.toFixed(2) : ' ';
+                const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
+                const recordStageValue = location['record-stage'] ? location['record-stage']['constant-value'] : null;
 
-                // Set the cell's content
-                nwsDay1Cell.textContent = formattedDay1Value;
+                // Set text content and styles based on flood and recordStage thresholds
+                if (day1Value != null) {
+                    const formattedDay1Value = day1Value.toFixed(2);
+                    nwsDay1Cell.textContent = formattedDay1Value;
+
+                    if (recordStageValue !== null && day1Value >= recordStageValue) {
+                        nwsDay1Cell.classList.add('record_breaking'); // Add "record_breaking" class if day1Value >= recordStageValue
+                    }
+
+                    if (floodValue != null && day1Value >= floodValue) {
+                        nwsDay1Cell.style.color = 'red'; // Make text red if day1Value exceeds floodValue
+                    }
+                } else {
+                    nwsDay1Cell.textContent = ''; // Display an empty string if day1Value is null
+                }
 
                 // Append the cell to the row
                 row.appendChild(nwsDay1Cell);
@@ -1957,15 +1971,26 @@ function createTableRiver(combinedDataRiver, type, reportNumber, nws_day1_date_t
 
             // 06 - Day2
             (() => {
-                // Create the cell for NWS Day 1 forecast value
+                // Create the cell for NWS Day 2 forecast value
                 const nwsDay2Cell = document.createElement('td');
 
-                // Safely retrieve and format the forecast value for Day 1
+                // Safely retrieve and format the forecast value for Day 2
                 const day2Value = location?.['forecast-nws-day2-nws-value']?.[0]?.[0]?.value;
-                const formattedDay2Value = day2Value != null ? day2Value.toFixed(2) : ' ';
+                const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
+                const recordStageValue = location['record-stage'] ? location['record-stage']['constant-value'] : null;
+                const formattedDay2Value = day2Value != null ? day2Value.toFixed(2) : '';
 
-                // Set the cell's content
+                // Set text content and styles based on flood and recordStage thresholds
                 nwsDay2Cell.textContent = formattedDay2Value;
+
+                if (day2Value != null) {
+                    if (recordStageValue !== null && day2Value >= recordStageValue) {
+                        nwsDay2Cell.classList.add('record_breaking'); // Add "record_breaking" class if day2Value >= recordStageValue
+                    }
+                    if (floodValue != null && day2Value >= floodValue) {
+                        nwsDay2Cell.style.color = 'red'; // Make text red if day2Value exceeds floodValue
+                    }
+                }
 
                 // Append the cell to the row
                 row.appendChild(nwsDay2Cell);
@@ -1973,15 +1998,26 @@ function createTableRiver(combinedDataRiver, type, reportNumber, nws_day1_date_t
 
             // 07 - Day3
             (() => {
-                // Create the cell for NWS Day 1 forecast value
+                // Create the cell for NWS Day 3 forecast value
                 const nwsDay3Cell = document.createElement('td');
 
-                // Safely retrieve and format the forecast value for Day 1
+                // Safely retrieve and format the forecast value for Day 3
                 const day3Value = location?.['forecast-nws-day3-nws-value']?.[0]?.[0]?.value;
-                const formattedDay3Value = day3Value != null ? day3Value.toFixed(2) : ' ';
+                const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
+                const recordStageValue = location['record-stage'] ? location['record-stage']['constant-value'] : null;
+                const formattedDay3Value = day3Value != null ? day3Value.toFixed(2) : '';
 
-                // Set the cell's content
+                // Set text content and styles based on flood and recordStage thresholds
                 nwsDay3Cell.textContent = formattedDay3Value;
+
+                if (day3Value != null) {
+                    if (recordStageValue !== null && day3Value >= recordStageValue) {
+                        nwsDay3Cell.classList.add('record_breaking'); // Add "record_breaking" class if day3Value >= recordStageValue
+                    }
+                    if (floodValue != null && day3Value >= floodValue) {
+                        nwsDay3Cell.style.color = 'red'; // Make text red if day3Value exceeds floodValue
+                    }
+                }
 
                 // Append the cell to the row
                 row.appendChild(nwsDay3Cell);
