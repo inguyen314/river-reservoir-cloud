@@ -7,8 +7,8 @@ document.addEventListener('DOMContentLoaded', async function () {
     let setTimeseriesGroup1 = null;
     let setTimeseriesGroup2 = null;
     let setTimeseriesGroup3 = null;
-    // let setTimeseriesGroup4 = null;
-    // let setTimeseriesGroup5 = null;
+    let setTimeseriesGroup4 = null;
+    let setTimeseriesGroup5 = null;
     let setLookBack = null;
     let setLookForward = null;
     let setReportDiv = null;
@@ -26,8 +26,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         setTimeseriesGroup1 = "Stage";
         setTimeseriesGroup2 = "Forecast-NWS";
         setTimeseriesGroup3 = "Crest";
-        // setTimeseriesGroup4 = "--";
-        // setTimeseriesGroup5 = "--";
+        setTimeseriesGroup4 = "Precip-Lake";
+        setTimeseriesGroup5 = "Inflow-Yesterday-Lake";
         setLookBack = subtractDaysFromDate(new Date(), 2);
         setLookForward = addDaysFromDate(new Date(), 14);
     }
@@ -41,8 +41,8 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.log("setTimeseriesGroup1: ", setTimeseriesGroup1);
     console.log("setTimeseriesGroup2: ", setTimeseriesGroup2);
     console.log("setTimeseriesGroup3: ", setTimeseriesGroup3);
-    // console.log("setTimeseriesGroup4: ", setTimeseriesGroup4);
-    // console.log("setTimeseriesGroup5: ", setTimeseriesGroup5);
+    console.log("setTimeseriesGroup4: ", setTimeseriesGroup4);
+    console.log("setTimeseriesGroup5: ", setTimeseriesGroup5);
     console.log("setLookBack: ", setLookBack);
 
     let setBaseUrl = null;
@@ -63,13 +63,15 @@ document.addEventListener('DOMContentLoaded', async function () {
     const floodMap = new Map();
     const lwrpMap = new Map();
     const ownerMap = new Map();
-    const tsidStageMap = new Map();
+    const stageTsidMap = new Map();
     const riverMileMap = new Map();
-    const tsidForecastNwsMap = new Map();
-    const tsidCrestMap = new Map();
-    // const tsidTainterMap = new Map();
-    // const tsidRollerMap = new Map();
+    const forecastNwsTsidMap = new Map();
+    const crestTsidMap = new Map();
+    // const tainterTsidMap = new Map();
+    // const rollerTsidMap = new Map();
     const recordStageMap = new Map();
+    const precipLakeTsidMap = new Map();
+    const inflowYesterdayLakeTsidMap = new Map();
 
     // Initialize arrays for storing promises
     const metadataPromises = [];
@@ -83,6 +85,8 @@ document.addEventListener('DOMContentLoaded', async function () {
     // const tainterTsidPromises = [];
     // const rollerTsidPromises = [];
     const recordStageTsidPromises = [];
+    const precipLakeTsidPromises = [];
+    const inflowYesterdayLakeTsidPromises = [];
 
     // Fetch location group data from the API
     fetch(categoryApiUrl)
@@ -355,7 +359,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                                     .then(tsidData => {
                                                         // // console.log('tsidData:', tsidData);
                                                         if (tsidData) {
-                                                            tsidStageMap.set(loc['location-id'], tsidData);
+                                                            stageTsidMap.set(loc['location-id'], tsidData);
                                                         }
                                                     })
                                                     .catch(error => {
@@ -366,55 +370,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                                         // Fetch tsid 2
                                         (() => {
-                                            const tsidApiUrl = setBaseUrl + `timeseries/group/${setTimeseriesGroup2}?office=${office}&category-id=${loc['location-id']}`;
-                                            // console.log('tsidApiUrl:', tsidApiUrl);
-                                            forecastNwsTsidPromises.push(
-                                                fetch(tsidApiUrl)
-                                                    .then(response => {
-                                                        if (response.status === 404) return null; // Skip if not found
-                                                        if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
-                                                        return response.json();
-                                                    })
-                                                    .then(data => {
-                                                        // // console.log('data:', data);
-                                                        if (data) {
-                                                            tsidForecastNwsMap.set(loc['location-id'], data);
-                                                        }
-                                                    })
-                                                    .catch(error => {
-                                                        console.error(`Problem with the fetch operation for stage TSID data at ${tsidApiUrl}:`, error);
-                                                    })
-                                            );
-                                        })();
-
-                                        // Fetch tsid 3
-                                        (() => {
-                                            const tsidApiUrl = setBaseUrl + `timeseries/group/${setTimeseriesGroup3}?office=${office}&category-id=${loc['location-id']}`;
-                                            // console.log('tsidApiUrl:', tsidApiUrl);
-                                            hingePointTsidPromises.push(
-                                                fetch(tsidApiUrl)
-                                                    .then(response => {
-                                                        if (response.status === 404) return null; // Skip if not found
-                                                        if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
-                                                        return response.json();
-                                                    })
-                                                    .then(data => {
-                                                        // // console.log('data:', data);
-                                                        if (data) {
-                                                            tsidCrestMap.set(loc['location-id'], data);
-                                                        }
-                                                    })
-                                                    .catch(error => {
-                                                        console.error(`Problem with the fetch operation for stage TSID data at ${tsidApiUrl}:`, error);
-                                                    })
-                                            );
-                                        })();
-
-                                        // Fetch tsid 4
-                                        (() => {
-                                            // const tsidApiUrl = setBaseUrl + `timeseries/group/${setTimeseriesGroup4}?office=${office}&category-id=${loc['location-id']}`;
+                                            // const tsidApiUrl = setBaseUrl + `timeseries/group/${setTimeseriesGroup2}?office=${office}&category-id=${loc['location-id']}`;
                                             // // console.log('tsidApiUrl:', tsidApiUrl);
-                                            // tainterTsidPromises.push(
+                                            // forecastNwsTsidPromises.push(
                                             //     fetch(tsidApiUrl)
                                             //         .then(response => {
                                             //             if (response.status === 404) return null; // Skip if not found
@@ -424,7 +382,53 @@ document.addEventListener('DOMContentLoaded', async function () {
                                             //         .then(data => {
                                             //             // // console.log('data:', data);
                                             //             if (data) {
-                                            //                 tsidTainterMap.set(loc['location-id'], data);
+                                            //                 forecastNwsTsidMap.set(loc['location-id'], data);
+                                            //             }
+                                            //         })
+                                            //         .catch(error => {
+                                            //             console.error(`Problem with the fetch operation for stage TSID data at ${tsidApiUrl}:`, error);
+                                            //         })
+                                            // );
+                                        })();
+
+                                        // Fetch tsid 3
+                                        (() => {
+                                            // const tsidApiUrl = setBaseUrl + `timeseries/group/${setTimeseriesGroup3}?office=${office}&category-id=${loc['location-id']}`;
+                                            // // console.log('tsidApiUrl:', tsidApiUrl);
+                                            // hingePointTsidPromises.push(
+                                            //     fetch(tsidApiUrl)
+                                            //         .then(response => {
+                                            //             if (response.status === 404) return null; // Skip if not found
+                                            //             if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+                                            //             return response.json();
+                                            //         })
+                                            //         .then(data => {
+                                            //             // // console.log('data:', data);
+                                            //             if (data) {
+                                            //                 crestTsidMap.set(loc['location-id'], data);
+                                            //             }
+                                            //         })
+                                            //         .catch(error => {
+                                            //             console.error(`Problem with the fetch operation for stage TSID data at ${tsidApiUrl}:`, error);
+                                            //         })
+                                            // );
+                                        })();
+
+                                        // Fetch tsid 4
+                                        (() => {
+                                            // const tsidApiUrl = setBaseUrl + `timeseries/group/${setTimeseriesGroup4}?office=${office}&category-id=${loc['location-id']}`;
+                                            // // console.log('tsidApiUrl:', tsidApiUrl);
+                                            // precipLakeTsidPromises.push( // Change Here
+                                            //     fetch(tsidApiUrl)
+                                            //         .then(response => {
+                                            //             if (response.status === 404) return null; // Skip if not found
+                                            //             if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+                                            //             return response.json();
+                                            //         })
+                                            //         .then(data => {
+                                            //             // // console.log('data:', data);
+                                            //             if (data) {
+                                            //                 precipLakeTsidMap.set(loc['location-id'], data); // Change Here
                                             //             }
                                             //         })
                                             //         .catch(error => {
@@ -437,7 +441,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                         (() => {
                                             // const tsidApiUrl = setBaseUrl + `timeseries/group/${setTimeseriesGroup5}?office=${office}&category-id=${loc['location-id']}`;
                                             // // console.log('tsidApiUrl:', tsidApiUrl);
-                                            // rollerTsidPromises.push(
+                                            // inflowYesterdayLakeTsidPromises.push( // Change Here
                                             //     fetch(tsidApiUrl)
                                             //         .then(response => {
                                             //             if (response.status === 404) return null; // Skip if not found
@@ -447,7 +451,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                             //         .then(data => {
                                             //             // // console.log('data:', data);
                                             //             if (data) {
-                                            //                 tsidRollerMap.set(loc['location-id'], data);
+                                            //                 inflowYesterdayLakeTsidMap.set(loc['location-id'], data); // Change Here
                                             //             }
                                             //         })
                                             //         .catch(error => {
@@ -478,6 +482,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // .then(() => Promise.all(tainterTsidPromises))
                 // .then(() => Promise.all(rollerTsidPromises))
                 .then(() => Promise.all(recordStageTsidPromises))
+                .then(() => Promise.all(precipLakeTsidPromises))
+                .then(() => Promise.all(inflowYesterdayLakeTsidPromises))
                 .then(() => {
                     combinedData.forEach(basinData => {
                         if (basinData['assigned-locations']) {
@@ -515,48 +521,48 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     }
 
                                     // Append tsid 1
-                                    const tsidStageMapData = tsidStageMap.get(loc['location-id']);
-                                    if (tsidStageMapData) {
-                                        reorderByAttribute(tsidStageMapData);
-                                        loc['tsid-stage'] = tsidStageMapData;
+                                    const stageTsidMapData = stageTsidMap.get(loc['location-id']);
+                                    if (stageTsidMapData) {
+                                        reorderByAttribute(stageTsidMapData);
+                                        loc['tsid-stage'] = stageTsidMapData;
                                     } else {
                                         loc['tsid-stage'] = null;  // Append null if missing
                                     }
 
-                                    // Append tsid 2
-                                    const tsidForecastNwsMapData = tsidForecastNwsMap.get(loc['location-id']);
-                                    if (tsidForecastNwsMapData) {
-                                        reorderByAttribute(tsidForecastNwsMapData);
-                                        loc['tsid-forecast-nws'] = tsidForecastNwsMapData;
-                                    } else {
-                                        loc['tsid-forecast-nws'] = null;
-                                    }
-
-                                    // Append tsid 3
-                                    const tsidHingePointMapData = tsidCrestMap.get(loc['location-id']);
-                                    if (tsidHingePointMapData) {
-                                        reorderByAttribute(tsidHingePointMapData);
-                                        loc['tsid-crest'] = tsidHingePointMapData;
-                                    } else {
-                                        loc['tsid-crest'] = null;
-                                    }
-
-                                    // // Append tsid 4
-                                    // const tsidTainterMapData = tsidTainterMap.get(loc['location-id']);
-                                    // if (tsidTainterMapData) {
-                                    //     reorderByAttribute(tsidTainterMapData);
-                                    //     loc['tsid-tainter'] = tsidTainterMapData;
+                                    // // Append forecastNwsTsidMapData
+                                    // const forecastNwsTsidMapData = forecastNwsTsidMap.get(loc['location-id']);
+                                    // if (forecastNwsTsidMapData) {
+                                    //     reorderByAttribute(forecastNwsTsidMapData);
+                                    //     loc['tsid-forecast-nws'] = forecastNwsTsidMapData;
                                     // } else {
-                                    //     loc['tsid-tainter'] = null;
+                                    //     loc['tsid-forecast-nws'] = null;
                                     // }
 
-                                    // // Append tsid 5
-                                    // const tsidRollerMapData = tsidRollerMap.get(loc['location-id']);
-                                    // if (tsidRollerMapData) {
-                                    //     reorderByAttribute(tsidRollerMapData);
-                                    //     loc['tsid-roller'] = tsidRollerMapData;
+                                    // // Append crestTsidMapData
+                                    // const crestTsidMapData = crestTsidMap.get(loc['location-id']);
+                                    // if (crestTsidMapData) {
+                                    //     reorderByAttribute(crestTsidMapData);
+                                    //     loc['tsid-crest'] = crestTsidMapData;
                                     // } else {
-                                    //     loc['tsid-roller'] = null;
+                                    //     loc['tsid-crest'] = null;
+                                    // }
+
+                                    // // Append precipLakeTsidMapData
+                                    // const precipLakeTsidMapData = precipLakeTsidMap.get(loc['location-id']);
+                                    // if (precipLakeTsidMapData) {
+                                    //     reorderByAttribute(precipLakeTsidMapData);
+                                    //     loc['tsid-precip-lake'] = precipLakeTsidMapData;
+                                    // } else {
+                                    //     loc['tsid-precip-lake'] = null;
+                                    // }
+
+                                    // // Append inflowYesterdayLakeTsidMapData
+                                    // const inflowYesterdayLakeTsidMapData = inflowYesterdayLakeTsidMap.get(loc['location-id']);
+                                    // if (inflowYesterdayLakeTsidMapData) {
+                                    //     reorderByAttribute(inflowYesterdayLakeTsidMapData);
+                                    //     loc['tsid-inflow-yesterday-lake'] = inflowYesterdayLakeTsidMapData;
+                                    // } else {
+                                    //     loc['tsid-inflow-yesterday-lake'] = null;
                                     // }
 
                                     // Initialize empty arrays to hold API and last-value data for various parameters
@@ -584,21 +590,21 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     loc['crest-max-value'] = [];
                                     loc['crest-min-value'] = [];
 
-                                    // loc['tainter-api-data'] = [];
-                                    // loc['tainter-cum-value'] = [];
-                                    // loc['tainter-hourly-value'] = [];
-                                    // loc['tainter-inc-value'] = [];
-                                    // loc['tainter-last-value'] = [];
-                                    // loc['tainter-max-value'] = [];
-                                    // loc['tainter-min-value'] = [];
+                                    loc['precip-lake-api-data'] = [];
+                                    loc['precip-lake-cum-value'] = [];
+                                    loc['precip-lake-hourly-value'] = [];
+                                    loc['precip-lake-inc-value'] = [];
+                                    loc['precip-lake-last-value'] = [];
+                                    loc['precip-lake-max-value'] = [];
+                                    loc['precip-lake-min-value'] = [];
 
-                                    // loc['roller-api-data'] = [];
-                                    // loc['roller-cum-value'] = [];
-                                    // loc['roller-hourly-value'] = [];
-                                    // loc['roller-inc-value'] = [];
-                                    // loc['roller-last-value'] = [];
-                                    // loc['roller-max-value'] = [];
-                                    // loc['roller-min-value'] = [];
+                                    loc['inflow-yesterday-lake-api-data'] = [];
+                                    loc['inflow-yesterday-lake-cum-value'] = [];
+                                    loc['inflow-yesterday-lake-hourly-value'] = [];
+                                    loc['inflow-yesterday-lake-inc-value'] = [];
+                                    loc['inflow-yesterday-lake-last-value'] = [];
+                                    loc['inflow-yesterday-lake-max-value'] = [];
+                                    loc['inflow-yesterday-lake-min-value'] = [];
                                 })();
                             });
                         }
@@ -1754,31 +1760,28 @@ function createTableRiver(combinedDataRiver, type, reportNumber, nws_day1_date_t
     const table = document.createElement('table');
     table.setAttribute('id', 'webrep');
 
-    // Filter out locations with attribute === 1 in owner, and remove basins without assigned-locations
     combinedDataRiver = combinedDataRiver.filter((basin) => {
+        // Ensure 'assigned-locations' exists before proceeding
+        if (!Array.isArray(basin['assigned-locations'])) {
+            return false; // Filter out basins without 'assigned-locations'
+        }
+
         // Filter 'assigned-locations' within each basin
         basin['assigned-locations'] = basin['assigned-locations'].filter((location) => {
             const currentLocationId = location['location-id'];
-            const locationList = location['owner']['assigned-locations'];
+            const locationList = location['owner']?.['assigned-locations'];
 
             // Check if currentLocationId exists in locationList with attribute === 1
-            const foundInLocationList = locationList.some(
+            const foundInLocationList = locationList?.some(
                 loc => loc['location-id'] === currentLocationId && loc['attribute'] === 1
             );
 
-            if (foundInLocationList) {
-                // console.log("Removing location with ID:", currentLocationId);
-            }
             // Remove location if attribute is 1, keep it otherwise
             return !foundInLocationList;
         });
 
         // Return true if there are remaining assigned-locations, otherwise filter out the basin
-        const hasLocations = basin['assigned-locations'].length > 0;
-        if (!hasLocations) {
-            // console.log("Removing empty basin:", basin);
-        }
-        return hasLocations;
+        return basin['assigned-locations'].length > 0;
     });
 
     // Add 3-rows title
@@ -1892,15 +1895,22 @@ function createTableRiver(combinedDataRiver, type, reportNumber, nws_day1_date_t
 
             // 03 - Current Level
             (() => {
+                // Ensure 'stage-last-value' exists and has at least one entry
+                const stageLastValue = location['stage-last-value'] && location['stage-last-value'][0];
+                if (!stageLastValue || !stageLastValue['tsid']) {
+                    console.warn("Missing 'tsid' or 'stage-last-value' data for location:", location);
+                    return; // Exit early if data is missing
+                }
+
                 // Create the link element for current level
-                const tsid = location['stage-last-value'][0]['tsid'];
+                const tsid = stageLastValue['tsid'];
                 const link = `https://wm.mvs.ds.usace.army.mil/apps/chart/index.html?&office=MVS&cwms_ts_id=${tsid}&cda=internal&lookback=4&lookforward=0`;
                 const currentLevelCell = document.createElement('td');
                 const linkElement = document.createElement('a');
                 linkElement.href = link;
                 linkElement.target = '_blank';
 
-                const currentLevel = location['stage-last-value'][0]['value'];
+                const currentLevel = stageLastValue['value'];
                 const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
                 const recordStage = location['record-stage'];
                 const recordStageValue = recordStage ? recordStage['constant-value'] : null;
@@ -1910,18 +1920,13 @@ function createTableRiver(combinedDataRiver, type, reportNumber, nws_day1_date_t
                     const formattedLevel = currentLevel.toFixed(2);
                     linkElement.textContent = formattedLevel;
 
-                    if (recordStageValue !== null) {
-                        if (currentLevel >= recordStageValue) {
-                            linkElement.classList.add('record_breaking'); // Add "alert" class when currentLevel >= recordStageValue
-                        }
+                    if (recordStageValue !== null && currentLevel >= recordStageValue) {
+                        linkElement.classList.add('record_breaking'); // Add "alert" class when currentLevel >= recordStageValue
                     }
 
-                    if (floodValue != null) {
-                        if (currentLevel >= floodValue) {
-                            linkElement.style.color = 'red';  // Make text red if currentLevel exceeds floodValue
-                        }
+                    if (floodValue != null && currentLevel >= floodValue) {
+                        linkElement.style.color = 'red';  // Make text red if currentLevel exceeds floodValue
                     }
-
                 } else {
                     linkElement.textContent = '';  // Display an empty string if currentLevel is null
                 }
@@ -1933,8 +1938,14 @@ function createTableRiver(combinedDataRiver, type, reportNumber, nws_day1_date_t
             // 04 - 24hr Delta
             (() => {
                 const deltaCell = document.createElement('td');
-                const deltaValue = location['stage-last-value'][0]['delta'];
 
+                // Ensure 'stage-last-value' exists, is an array, and has at least one entry
+                const stageLastValue = location['stage-last-value'] && Array.isArray(location['stage-last-value']) && location['stage-last-value'][0];
+
+                // If stageLastValue is valid, get 'delta', otherwise default to null
+                const deltaValue = stageLastValue ? stageLastValue['delta'] : null;
+
+                // Display the delta value, or 'N/A' if delta is not available
                 deltaCell.textContent = deltaValue != null ? parseFloat(deltaValue).toFixed(2) : 'N/A';
                 row.appendChild(deltaCell);
             })();
@@ -2069,22 +2080,38 @@ function createTableRiver(combinedDataRiver, type, reportNumber, nws_day1_date_t
             // 11 - Flood Level
             (() => {
                 const floodLevelCell = document.createElement('td');
-                const floodValue = location['flood']['constant-value'];
 
-                floodLevelCell.textContent = (floodValue > 900) ? '' : floodValue.toFixed(2);
+                // Check if 'flood' exists and has 'constant-value'
+                const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
+
+                // Display the flood value if it's valid, otherwise set to 'N/A' or leave empty
+                if (floodValue != null && floodValue <= 900) {
+                    floodLevelCell.textContent = floodValue.toFixed(2);
+                } else {
+                    floodLevelCell.textContent = ''; // Leave it empty if floodValue > 900 or is null
+                }
+
                 row.appendChild(floodLevelCell);
             })();
 
             // 12 - Gage Zero
             (() => {
                 const gageZeroCell = document.createElement('td');
-                const gageZeroValue = location['metadata']['elevation'];
-                const datum = location['metadata']['vertical-datum'];
-                gageZeroCell.textContent = (gageZeroValue > 900) ? '' : gageZeroValue.toFixed(2);
+                const gageZeroValue = location['metadata']?.['elevation'];
+                const datum = location['metadata']?.['vertical-datum'];
+
+                // Ensure gageZeroValue is a valid number before calling toFixed
+                if (typeof gageZeroValue === 'number' && !isNaN(gageZeroValue)) {
+                    gageZeroCell.textContent = (gageZeroValue > 900) ? '' : gageZeroValue.toFixed(2);
+                } else {
+                    gageZeroCell.textContent = 'N/A';  // Set to 'N/A' if gageZeroValue is invalid
+                }
+
                 // Check if datum is "NGVD29" and set text color to purple
                 if (datum === "NGVD29") {
                     gageZeroCell.style.color = 'purple';
                 }
+
                 row.appendChild(gageZeroCell);
             })();
 
@@ -2093,28 +2120,36 @@ function createTableRiver(combinedDataRiver, type, reportNumber, nws_day1_date_t
                 const recordStageCell = document.createElement('td');
                 const recordStage = location['record-stage'];
                 const recordStageValue = recordStage ? recordStage['constant-value'] : null;
-
+            
                 // Check if recordStageValue is valid and within the required range
-                recordStageCell.textContent = recordStageValue != null && recordStageValue <= 900
-                    ? recordStageValue.toFixed(2)
-                    : '';
-
+                if (recordStageValue != null && recordStageValue <= 900) {
+                    recordStageCell.textContent = recordStageValue.toFixed(2);
+                } else {
+                    recordStageCell.textContent = 'N/A';  // Show 'N/A' if no valid recordStageValue
+                }
+            
                 row.appendChild(recordStageCell);
-            })();
+            })();            
 
             // 14 - Record Date
             (() => {
                 const recordDateCell = document.createElement('td');
-
+            
+                // Retrieve the record stage date value, or use null if not available
                 const recordDateValue = location['river-mile'] && location['river-mile']['record_stage_date_hard_coded'];
+            
+                // Set the text content of the cell, default to an empty string if no data
                 recordDateCell.textContent = recordDateValue != null ? recordDateValue : "";
+            
                 // Set the title for the cell
                 recordDateCell.title = "Hard Coded with Json File";
+            
                 // Set halo effect using text-shadow with orange color
                 recordDateCell.style.textShadow = '0 0 2px rgba(255, 165, 0, 0.7), 0 0 2px rgba(255, 140, 0, 0.5)';
-
+            
+                // Append the cell to the row
                 row.appendChild(recordDateCell);
-            })();
+            })();            
 
             table.appendChild(row);
         });
@@ -2136,7 +2171,11 @@ function createTableReservoir(combinedDataReservoir, type, reportNumber, nws_day
         // Filter 'assigned-locations' within each basin
         basin['assigned-locations'] = basin['assigned-locations'].filter((location) => {
             const currentLocationId = location['location-id'];
-            const locationList = location['owner']['assigned-locations'];
+
+            // Check if 'owner' and 'assigned-locations' exist before accessing them
+            const locationList = location['owner'] && Array.isArray(location['owner']['assigned-locations'])
+                ? location['owner']['assigned-locations']
+                : [];
 
             // Check if currentLocationId exists in locationList with attribute === 1
             const foundInLocationList = locationList.some(
