@@ -393,25 +393,25 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                                         // Fetch crestTsidMap
                                         (() => {
-                                            // const crestApiUrl = setBaseUrl + `timeseries/group/${setTimeseriesGroup3}?office=${office}&category-id=${loc['location-id']}`;
-                                            // // console.log('crestApiUrl:', crestApiUrl);
-                                            // crestTsidPromises.push(
-                                            //     fetch(crestApiUrl)
-                                            //         .then(response => {
-                                            //             if (response.status === 404) return null; // Skip if not found
-                                            //             if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
-                                            //             return response.json();
-                                            //         })
-                                            //         .then(data => {
-                                            //             // // console.log('data:', data);
-                                            //             if (data) {
-                                            //                 crestTsidMap.set(loc['location-id'], data);
-                                            //             }
-                                            //         })
-                                            //         .catch(error => {
-                                            //             console.error(`Problem with the fetch operation for stage TSID data at ${crestApiUrl}:`, error);
-                                            //         })
-                                            // );
+                                            const crestApiUrl = setBaseUrl + `timeseries/group/${setTimeseriesGroup3}?office=${office}&category-id=${loc['location-id']}`;
+                                            // console.log('crestApiUrl:', crestApiUrl);
+                                            crestTsidPromises.push(
+                                                fetch(crestApiUrl)
+                                                    .then(response => {
+                                                        if (response.status === 404) return null; // Skip if not found
+                                                        if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+                                                        return response.json();
+                                                    })
+                                                    .then(data => {
+                                                        // // console.log('data:', data);
+                                                        if (data) {
+                                                            crestTsidMap.set(loc['location-id'], data);
+                                                        }
+                                                    })
+                                                    .catch(error => {
+                                                        console.error(`Problem with the fetch operation for stage TSID data at ${crestApiUrl}:`, error);
+                                                    })
+                                            );
                                         })();
 
                                         // Fetch precipLakeTsidMap
@@ -536,14 +536,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                                         loc['tsid-forecast-nws'] = null;
                                     }
 
-                                    // // Append crestTsidMapData
-                                    // const crestTsidMapData = crestTsidMap.get(loc['location-id']);
-                                    // if (crestTsidMapData) {
-                                    //     reorderByAttribute(crestTsidMapData);
-                                    //     loc['tsid-crest'] = crestTsidMapData;
-                                    // } else {
-                                    //     loc['tsid-crest'] = null;
-                                    // }
+                                    // Append crestTsidMapData
+                                    const crestTsidMapData = crestTsidMap.get(loc['location-id']);
+                                    if (crestTsidMapData) {
+                                        reorderByAttribute(crestTsidMapData);
+                                        loc['tsid-crest'] = crestTsidMapData;
+                                    } else {
+                                        loc['tsid-crest'] = null;
+                                    }
 
                                     // // Append precipLakeTsidMapData
                                     // const precipLakeTsidMapData = precipLakeTsidMap.get(loc['location-id']);
@@ -725,9 +725,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                         for (const locData of dataArray['assigned-locations'] || []) {
                             // Handle temperature, depth, and DO time series
                             const stageTimeSeries = locData['tsid-stage']?.['assigned-time-series'] || [];
-                            const twTimeSeries = locData['tsid-forecast-nws']?.['assigned-time-series'] || [];
-                            // const hingePointTimeSeries = locData['tsid-crest']?.['assigned-time-series'] || [];
-                            // const forecastNwsTimeSeries = locData['tsid-forecast-nws']?.['assigned-time-series'] || [];
+                            const forecastNwsTimeSeries = locData['tsid-forecast-nws']?.['assigned-time-series'] || [];
+                            const crestTimeSeries = locData['tsid-crest']?.['assigned-time-series'] || [];
                             // const precipLakeTimeSeries = locData['tsid-precip-lake']?.['assigned-time-series'] || [];
                             // const inflowYesterdayLakeTimeSeries = locData['tsid-inflow-yesterday-lake']?.['assigned-time-series'] || [];
                             // Add Here
@@ -780,106 +779,115 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                             // Create promises for temperature, depth, and DO time series
                             const stagePromises = timeSeriesDataFetchPromises(stageTimeSeries, 'stage');
-                            const twPromises = timeSeriesDataFetchPromises(twTimeSeries, 'forecast-nws');
-                            // const hingePointPromises = timeSeriesDataFetchPromises(hingePointTimeSeries, 'crest');
-                            // const forecastNwsPromises = timeSeriesDataFetchPromises(forecastNwsTimeSeries, 'forecast-nws');
+                            const forecastNwsPromises = timeSeriesDataFetchPromises(forecastNwsTimeSeries, 'forecast-nws');
+                            const crestPromises = timeSeriesDataFetchPromises(crestTimeSeries, 'crest');
                             // const precipLakePromises = timeSeriesDataFetchPromises(precipLakeTimeSeries, 'precip-lake');
                             // const inflowYesterdayLakePromises = timeSeriesDataFetchPromises(inflowYesterdayLakeTimeSeries, 'inflow-yesterday-lake');
                             // Add Here
 
                             // Additional API call for extents data
-                            const timeSeriesDataExtentsApiCall = async (type) => {
-                                const extentsApiUrl = setBaseUrl + `catalog/TIMESERIES?page-size=5000&office=${office}`;
-                                // console.log('extentsApiUrl:', extentsApiUrl);
+                            // const timeSeriesDataExtentsApiCall = async (type) => {
+                            //     const extentsApiUrl = setBaseUrl + `catalog/TIMESERIES?page-size=5000&office=${office}`;
+                            //     // console.log('extentsApiUrl:', extentsApiUrl);
 
-                                try {
-                                    const res = await fetch(extentsApiUrl, {
-                                        method: 'GET',
-                                        headers: {
-                                            'Accept': 'application/json;version=2'
-                                        }
-                                    });
-                                    const data = await res.json();
-                                    locData['extents-api-data'] = data;
-                                    locData[`extents-data`] = {};
+                            //     try {
+                            //         const res = await fetch(extentsApiUrl, {
+                            //             method: 'GET',
+                            //             headers: {
+                            //                 'Accept': 'application/json;version=2'
+                            //             }
+                            //         });
+                            //         const data = await res.json();
+                            //         locData['extents-api-data'] = data;
+                            //         locData[`extents-data`] = {};
 
-                                    // Collect TSIDs time series
-                                    const stageTids = stageTimeSeries.map(series => series['timeseries-id']);
-                                    const twTids = twTimeSeries.map(series => series['timeseries-id']);
-                                    // const hingePointTids = twTimeSeries.map(series => series['timeseries-id']);
-                                    // const forecastNwsTids = twTimeSeries.map(series => series['timeseries-id']);
-                                    // const precipLakeTids = precipLakeTimeSeries.map(series => series['timeseries-id']);
-                                    // const inflowYesterdayLakeTids = inflowYesterdayLakeTimeSeries.map(series => series['timeseries-id']);
-                                    // Add Here
-                                    const allTids = [...stageTids, ...twTids]; // Add Here
+                            //         // Collect TSIDs time series
+                            //         const stageTids = stageTimeSeries.map(series => series['timeseries-id']);
+                            //         // const forecastNwsTids = forecastNwsTimeSeries.map(series => series['timeseries-id']);
+                            //         // const crestTids = crestTimeSeries.map(series => series['timeseries-id']);
+                            //         // const precipLakeTids = precipLakeTimeSeries.map(series => series['timeseries-id']);
+                            //         // const inflowYesterdayLakeTids = inflowYesterdayLakeTimeSeries.map(series => series['timeseries-id']);
+                            //         // Add Here
+                            //         const allTids = [...stageTids]; // Add Here
 
-                                    allTids.forEach((tsid, index) => {
-                                        const matchingEntry = data.entries.find(entry => entry['name'] === tsid);
-                                        if (matchingEntry) {
-                                            // Convert times from UTC
-                                            let latestTimeUTC = matchingEntry.extents[0]?.['latest-time'];
-                                            let earliestTimeUTC = matchingEntry.extents[0]?.['earliest-time'];
+                            //         allTids.forEach((tsid, index) => {
+                            //             const matchingEntry = data.entries.find(entry => entry['name'] === tsid);
+                            //             if (matchingEntry) {
+                            //                 // Convert times from UTC
+                            //                 let latestTimeUTC = matchingEntry.extents[0]?.['latest-time'];
+                            //                 let earliestTimeUTC = matchingEntry.extents[0]?.['earliest-time'];
 
-                                            // Convert UTC times to Date objects
-                                            let latestTimeCST = new Date(latestTimeUTC);
-                                            let earliestTimeCST = new Date(earliestTimeUTC);
+                            //                 // Convert UTC times to Date objects
+                            //                 let latestTimeCST = new Date(latestTimeUTC);
+                            //                 let earliestTimeCST = new Date(earliestTimeUTC);
 
-                                            // Function to format date as "MM-DD-YYYY HH:mm"
-                                            const formatDate = (date) => {
-                                                return date.toLocaleString('en-US', {
-                                                    timeZone: 'America/Chicago', // Set the timezone to Central Time (CST/CDT)
-                                                    month: '2-digit',
-                                                    day: '2-digit',
-                                                    year: 'numeric',
-                                                    hour: '2-digit',
-                                                    minute: '2-digit',
-                                                    hour12: false // Use 24-hour format
-                                                }).replace(',', ''); // Remove the comma from the formatted string
-                                            };
+                            //                 // Function to format date as "MM-DD-YYYY HH:mm"
+                            //                 const formatDate = (date) => {
+                            //                     return date.toLocaleString('en-US', {
+                            //                         timeZone: 'America/Chicago', // Set the timezone to Central Time (CST/CDT)
+                            //                         month: '2-digit',
+                            //                         day: '2-digit',
+                            //                         year: 'numeric',
+                            //                         hour: '2-digit',
+                            //                         minute: '2-digit',
+                            //                         hour12: false // Use 24-hour format
+                            //                     }).replace(',', ''); // Remove the comma from the formatted string
+                            //                 };
 
-                                            // Format the times to CST/CDT
-                                            let formattedLatestTime = formatDate(latestTimeCST);
-                                            let formattedEarliestTime = formatDate(earliestTimeCST);
+                            //                 // Format the times to CST/CDT
+                            //                 let formattedLatestTime = formatDate(latestTimeCST);
+                            //                 let formattedEarliestTime = formatDate(earliestTimeCST);
 
-                                            // Construct the _data object with formatted times
-                                            let _data = {
-                                                office: matchingEntry.office,
-                                                name: matchingEntry.name,
-                                                earliestTime: formattedEarliestTime, // Use formatted earliestTime
-                                                earliestTimeISO: earliestTimeCST.toISOString(), // Store original ISO format as well
-                                                lastUpdate: matchingEntry.extents[0]?.['last-update'],
-                                                latestTime: formattedLatestTime, // Use formatted latestTime
-                                                latestTimeISO: latestTimeCST.toISOString(), // Store original ISO format as well
-                                                tsid: matchingEntry['timeseries-id'],
-                                            };
+                            //                 // Construct the _data object with formatted times
+                            //                 let _data = {
+                            //                     office: matchingEntry.office,
+                            //                     name: matchingEntry.name,
+                            //                     earliestTime: formattedEarliestTime, // Use formatted earliestTime
+                            //                     earliestTimeISO: earliestTimeCST.toISOString(), // Store original ISO format as well
+                            //                     lastUpdate: matchingEntry.extents[0]?.['last-update'],
+                            //                     latestTime: formattedLatestTime, // Use formatted latestTime
+                            //                     latestTimeISO: latestTimeCST.toISOString(), // Store original ISO format as well
+                            //                     tsid: matchingEntry['timeseries-id'],
+                            //                 };
 
-                                            // Determine extent key based on tsid
-                                            let extent_key;
-                                            if (tsid.includes('Precip') || tsid.includes('Stage') || tsid.includes('Elev') || tsid.includes('Flow') || tsid.includes('Conc-DO')) {
-                                                extent_key = 'datman';
-                                            } else {
-                                                return; // Ignore if it doesn't match the condition
-                                            }
+                            //                 // Determine extent key based on tsid
+                            //                 let extent_key;
 
-                                            // Update locData with extents-data
-                                            if (!locData[`extents-data`][extent_key]) {
-                                                locData[`extents-data`][extent_key] = [_data];
-                                            } else {
-                                                locData[`extents-data`][extent_key].push(_data);
-                                            }
+                            //                 if (tsid.includes('Precip')) {
+                            //                     extent_key = 'precip';
+                            //                 } else if (tsid.includes('Stage')) {
+                            //                     extent_key = 'stage';
+                            //                 } else if (tsid.includes('Elev')) {
+                            //                     extent_key = 'elev';
+                            //                 } else if (tsid.includes('Flow')) {
+                            //                     extent_key = 'flow';
+                            //                 } else if (tsid.includes('Conc-DO')) {
+                            //                     extent_key = 'do';
+                            //                 } else {
+                            //                     return; // Ignore if it doesn't match any condition
+                            //                 }
 
-                                        } else {
-                                            console.warn(`No matching entry found for TSID: ${tsid}`);
-                                        }
-                                    });
-                                } catch (error) {
-                                    console.error(`Error fetching additional data for location ${locData['location-id']}:`, error);
-                                }
-                            };
+
+                            //                 // Update locData with extents-data
+                            //                 if (!locData[`extents-data`][extent_key]) {
+                            //                     locData[`extents-data`][extent_key] = [_data];
+                            //                 } else {
+                            //                     locData[`extents-data`][extent_key].push(_data);
+                            //                 }
+
+                            //             } else {
+                            //                 console.warn(`No matching entry found for TSID: ${tsid}`);
+                            //             }
+                            //         });
+                            //     } catch (error) {
+                            //         console.error(`Error fetching additional data for location ${locData['location-id']}:`, error);
+                            //     }
+                            // };
 
                             // Combine all promises for this location 
                             // Add Here
-                            timeSeriesDataPromises.push(Promise.all([...stagePromises, ...twPromises, timeSeriesDataExtentsApiCall()]));
+                            // timeSeriesDataPromises.push(Promise.all([...stagePromises, ...forecastNwsPromises, ...crestPromises, timeSeriesDataExtentsApiCall()]));
+                            timeSeriesDataPromises.push(Promise.all([...stagePromises, ...forecastNwsPromises, ...crestPromises]));
                         }
                     }
 
@@ -2668,13 +2676,13 @@ function updateNwsForecastTimeHTML(filteredData, forecastTimeCell) {
 // Create a function to process fetch requests in batches
 async function fetchInBatches(urls) {
     const results = [];
-    
+
     // Loop over urls array in chunks
     for (let i = 0; i < urls.length; i += BATCH_SIZE) {
         const batch = urls.slice(i, i + BATCH_SIZE);
-        
+
         // Fetch all URLs in the current batch concurrently
-        const batchPromises = batch.map(url => 
+        const batchPromises = batch.map(url =>
             fetch(url)
                 .then(response => {
                     if (response.status === 404) return null; // Skip if not found
