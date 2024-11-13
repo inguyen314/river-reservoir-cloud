@@ -2047,6 +2047,13 @@ function createTableReservoir(combinedDataReservoir, type, reportNumber, nws_day
             (() => {
                 const recordDateCell = document.createElement('td');
 
+                // const recordStage = location['record-stage'];
+                // const recordStageDate = recordStage ? recordStage['level-date'] : null;
+                // Check if recordStageDate is valid and within the required range
+                // recordDateCell.textContent = recordStageDate != null
+                //     ? recordStageDate
+                //     : '';
+
                 const recordDateValue = location['river-mile'] && location['river-mile']['record_stage_date_hard_coded'];
                 recordDateCell.textContent = recordDateValue != null ? recordDateValue : "";
                 // Set the title for the cell
