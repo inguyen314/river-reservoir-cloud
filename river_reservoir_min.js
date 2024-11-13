@@ -143,6 +143,39 @@ document.addEventListener('DOMContentLoaded', async function () {
                             .catch(error => console.error(`Error fetching record stage for ${loc['location-id']}:`, error))
                     );
 
+                    riverMilePromises.push(
+                        fetch('json/gage_control_official.json')
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error(`Network response was not ok: ${response.statusText}`);
+                                }
+                                return response.json();
+                            })
+                            .then(riverMilesJson => {
+                                for (const basin in riverMilesJson) {
+                                    const locations = riverMilesJson[basin];
+                                    for (const locId in locations) {
+                                        const ownerData = locations[locId];
+                                        const riverMile = ownerData.river_mile_hard_coded;
+                                        const outputData = {
+                                            locationId: locId,
+                                            basin: basin,
+                                            riverMile: riverMile
+                                        };
+                                        riverMileMap.set(locId, ownerData);
+                                    }
+                                }
+                            })
+                            .catch(error => console.error('Problem with the fetch operation:', error))
+                    );
+
+                    const ownerApiUrl = `${setBaseUrl}location/group/${setLocationGroupOwner}?office=${office}&category-id=${office}`;
+                    ownerPromises.push(fetch(ownerApiUrl)
+                        .then(response => response.ok ? response.json() : null)
+                        .then(data => data && ownerMap.set(loc['location-id'], data))
+                        .catch(error => console.error(`Error fetching owner for ${loc['location-id']}:`, error))
+                    );
+
                     const levelIdLwrp = `${loc['location-id']}.Stage.Inst.0.LWRP`;
                     const lwrpApiUrl = `${setBaseUrl}levels/${levelIdLwrp}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ft`;
                     lwrpPromises.push(
@@ -201,39 +234,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 bottomOfConservationMap.set(loc['location-id'], bottomOfConservationData != null ? bottomOfConservationData : null);
                             })
                             .catch(error => console.error(`Error fetching bottom of conservation level for ${loc['location-id']}:`, error))
-                    );
-
-                    riverMilePromises.push(
-                        fetch('json/gage_control_official.json')
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error(`Network response was not ok: ${response.statusText}`);
-                                }
-                                return response.json();
-                            })
-                            .then(riverMilesJson => {
-                                for (const basin in riverMilesJson) {
-                                    const locations = riverMilesJson[basin];
-                                    for (const locId in locations) {
-                                        const ownerData = locations[locId];
-                                        const riverMile = ownerData.river_mile_hard_coded;
-                                        const outputData = {
-                                            locationId: locId,
-                                            basin: basin,
-                                            riverMile: riverMile
-                                        };
-                                        riverMileMap.set(locId, ownerData);
-                                    }
-                                }
-                            })
-                            .catch(error => console.error('Problem with the fetch operation:', error))
-                    );
-
-                    const ownerApiUrl = `${setBaseUrl}location/group/${setLocationGroupOwner}?office=${office}&category-id=${office}`;
-                    ownerPromises.push(fetch(ownerApiUrl)
-                        .then(response => response.ok ? response.json() : null)
-                        .then(data => data && ownerMap.set(loc['location-id'], data))
-                        .catch(error => console.error(`Error fetching owner for ${loc['location-id']}:`, error))
                     );
                 })();
 
