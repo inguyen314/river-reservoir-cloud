@@ -416,7 +416,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                         if (entry) {
                                             const latestTimeCST = new Date(entry.extents[0]?.['latest-time']).toLocaleString('en-US', { timeZone: 'America/Chicago', month: '2-digit', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).replace(',', '');
                                             const earliestTimeCST = new Date(entry.extents[0]?.['earliest-time']).toLocaleString('en-US', { timeZone: 'America/Chicago', month: '2-digit', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).replace(',', '');
-                                            const extentKey = tsid.includes('Precip') ? 'precip' : tsid.includes('Stage') ? 'stage' : tsid.includes('Elev') ? 'elev' : tsid.includes('Flow') ? 'flow' : tsid.includes('Conc-DO') ? 'do' : null;
+                                            const extentKey = tsid.includes('Precip') ? 'precip' : tsid.includes('Stage') ? 'stage' : tsid.includes('Elev') ? 'elev' : tsid.includes('Flow') ? 'flow' : tsid.includes('Conc-DO') ? 'do' : tsid.includes('Stor') ? 'stor' :null;
 
                                             if (extentKey) {
                                                 const extentData = { office: entry.office, name: entry.name, earliestTime: earliestTimeCST, latestTime: latestTimeCST, lastUpdate: entry.extents[0]?.['last-update'] };
