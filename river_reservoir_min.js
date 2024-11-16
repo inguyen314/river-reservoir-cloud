@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const reportNumber = 1;
     if (reportNumber === 1) {
         setReportDiv = "river_reservoir";
-        setLocationCategory = "River-Reservoir";
+        setLocationCategory = "River-Reservoir"; // River-Reservoir
         setLocationGroupOwner = "River-Reservoir";
         setTimeseriesGroup1 = "Stage";
         setTimeseriesGroup2 = "Forecast-NWS";
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                             if (getBasin) {
                                 // Fetch additional data needed for filtering
                                 const additionalDataPromises = getBasin['assigned-locations'].map(location => {
-                                    return fetchAdditionalData(location[`location-id`], setBaseUrl, setLocationGroupOwner, office);
+                                    return fetchAdditionalLocationGroupOwnerData(location[`location-id`], setBaseUrl, setLocationGroupOwner, office);
                                 });
 
                                 // console.log("additionalDataPromises: ", additionalDataPromises);
@@ -123,33 +123,33 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 // Wait for all promises to resolve
                                 Promise.all(additionalDataPromises)
                                     .then(results => {
-                                        results.forEach((data, index) => {
-                                            // Log the result of each resolved promise
-                                            console.log(`Data for promise at index ${index}:`, data);
-                                        });
-
-                                        console.log("results: ", results);
-                                        console.log("getBasin['assigned-locations']: ", getBasin['assigned-locations']);
-
-                                        console.log("results: ", results);
+                                        results = results[0];
+                                        // console.log("results: ", results);
 
                                         // Loop through getBasin['assigned-locations'] and compare with results
                                         getBasin['assigned-locations'] = getBasin['assigned-locations'].filter(location => {
-                                            // Find the matching location in the results array
-                                            const matchedData = results.find(result =>
-                                                result['assigned-locations'].some(loc => loc['location-id'] === location['location-id'])
-                                            );
-
-                                            console.log("matchedData: ", matchedData);
-                                            console.log("location['location-id']: ", location['location-id']);
+                                            let matchedData;
+                                            // Check if 'assigned-locations' exists in the results object
+                                            if (results && results['assigned-locations']) {
+                                                for (const loc of results['assigned-locations']) {
+                                                    // console.log('Comparing:', loc['location-id'], 'with', location['location-id']);
+                                                    if (loc['location-id'] === location['location-id']) {
+                                                        matchedData = results;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                            // console.log("matchedData: ", matchedData);
 
                                             if (matchedData) {
                                                 // If matchedData exists and contains a location with the same location-id, keep the location
                                                 return true;
+                                            } else {
+                                                // Log the location that has been removed
+                                                console.log("Removed location: ", location);
+                                                return false;  // Remove location if there is no match
                                             }
-                                            return false;  // Remove location if there is no match
                                         });
-
 
                                         // Filter locations with attribute <= 900
                                         getBasin['assigned-locations'] = getBasin['assigned-locations'].filter(location => location.attribute <= 900);
@@ -167,7 +167,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 getBasin['assigned-locations'].forEach(loc => {
                                     fetchAndStoreDataForLocation(loc);
                                 });
-
                             }
                         })
                         .catch(error => console.error(`Problem with the fetch operation for basin ${basin}:`, error))
@@ -415,13 +414,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                         console.log('Removed locations with attribute ending in .1:', combinedData);
 
                         // Step 2: Remove locations without matching 'location-id' in owner's 'assigned-locations'
-                        // combinedData.forEach(dataGroup => {
-                        //     dataGroup['assigned-locations'] = (dataGroup['assigned-locations'] || []).filter(location => {
-                        //         const ownerLocs = location['owner']?.['assigned-locations'];
-                        //         return ownerLocs && ownerLocs.some(ownerLoc => ownerLoc['location-id'] === location['location-id']);
-                        //     });
-                        // });
-                        // console.log('Filtered locations by owner match:', combinedData);
+                        combinedData.forEach(dataGroup => {
+                            dataGroup['assigned-locations'] = (dataGroup['assigned-locations'] || []).filter(location => {
+                                const ownerLocs = location['owner']?.['assigned-locations'];
+                                return ownerLocs && ownerLocs.some(ownerLoc => ownerLoc['location-id'] === location['location-id']);
+                            });
+                        });
+                        console.log('Filtered locations by owner match:', combinedData);
 
                         // Step 3: Remove locations where 'tsid-stage' is null
                         combinedData.forEach(dataGroup => {
@@ -2262,12 +2261,12 @@ function getStationForLocation(locationId, riverMileObject) {
     return null; // Return null if no match is found
 }
 
-function fetchAdditionalData(locationId, setBaseUrl, setLocationGroupOwner, office) {
+function fetchAdditionalLocationGroupOwnerData(locationId, setBaseUrl, setLocationGroupOwner, office) {
     // Construct the URL
     const additionalDataUrl = `${setBaseUrl}location/group/${setLocationGroupOwner}?office=${office}&category-id=${office}`;
 
     // Log the URL to ensure it's correctly formatted
-    console.log(`Requesting additional data from URL: ${additionalDataUrl}`);
+    // console.log(`Requesting additional data from URL: ${additionalDataUrl}`);
 
     return fetch(additionalDataUrl, {
         method: 'GET'
