@@ -198,32 +198,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                             .catch(error => console.error(`Error fetching record stage for ${loc['location-id']}:`, error))
                     );
 
-                    riverMileHardCodedPromises.push(
-                        fetch('json/gage_control_official.json')
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error(`Network response was not ok: ${response.statusText}`);
-                                }
-                                return response.json();
-                            })
-                            .then(riverMilesJson => {
-                                for (const basin in riverMilesJson) {
-                                    const locations = riverMilesJson[basin];
-                                    for (const locId in locations) {
-                                        const ownerData = locations[locId];
-                                        const riverMile = ownerData.river_mile_hard_coded;
-                                        const outputData = {
-                                            locationId: locId,
-                                            basin: basin,
-                                            riverMile: riverMile
-                                        };
-                                        riverMileHardCodedMap.set(locId, ownerData);
-                                    }
-                                }
-                            })
-                            .catch(error => console.error('Problem with the fetch operation:', error))
-                    );
-
                     const ownerApiUrl = `${setBaseUrl}location/group/${setLocationGroupOwner}?office=${office}&category-id=${office}`;
                     ownerPromises.push(fetch(ownerApiUrl)
                         .then(response => response.ok ? response.json() : null)
@@ -231,72 +205,104 @@ document.addEventListener('DOMContentLoaded', async function () {
                         .catch(error => console.error(`Error fetching owner for ${loc['location-id']}:`, error))
                     );
 
-                    const riverMileApiUrl = `${setBaseUrl}stream-locations?office-mask=MVS`;
-                    riverMilePromises.push(fetch(riverMileApiUrl)
-                        .then(response => response.ok ? response.json() : null)
-                        .then(data => data && riverMileMap.set(loc['location-id'], data))
-                        .catch(error => console.error(`Error fetching river mile for ${loc['location-id']}:`, error))
-                    );
+                    // For Rivers only
+                    if (loc['location-id'] !== "Lk Shelbyville-Kaskaskia" || loc['location-id'] !== "Carlyle Lk-Kaskaskia" || loc['location-id'] !== "Rend Lk-Big Muddy" || loc['location-id'] !== "Wappapello Lk-St Francis" || loc['location-id'] !== "Mark Twain Lk-Salt") {
+                        riverMileHardCodedPromises.push(
+                            fetch('json/gage_control_official.json')
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error(`Network response was not ok: ${response.statusText}`);
+                                    }
+                                    return response.json();
+                                })
+                                .then(riverMilesJson => {
+                                    for (const basin in riverMilesJson) {
+                                        const locations = riverMilesJson[basin];
+                                        for (const locId in locations) {
+                                            const ownerData = locations[locId];
+                                            const riverMile = ownerData.river_mile_hard_coded;
+                                            const outputData = {
+                                                locationId: locId,
+                                                basin: basin,
+                                                riverMile: riverMile
+                                            };
+                                            riverMileHardCodedMap.set(locId, ownerData);
+                                        }
+                                    }
+                                })
+                                .catch(error => console.error('Problem with the fetch operation:', error))
+                        );
 
-                    const levelIdLwrp = `${loc['location-id']}.Stage.Inst.0.LWRP`;
-                    const lwrpApiUrl = `${setBaseUrl}levels/${levelIdLwrp}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ft`;
-                    lwrpPromises.push(
-                        fetch(lwrpApiUrl)
-                            .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
-                            .then(lwrpData => {
-                                // Set map to null if the data is null or undefined
-                                lwrpMap.set(loc['location-id'], lwrpData != null ? lwrpData : null);
-                            })
-                            .catch(error => console.error(`Error fetching lwrp level for ${loc['location-id']}:`, error))
-                    );
+                        const riverMileApiUrl = `${setBaseUrl}stream-locations?office-mask=MVS`;
+                        riverMilePromises.push(fetch(riverMileApiUrl)
+                            .then(response => response.ok ? response.json() : null)
+                            .then(data => data && riverMileMap.set(loc['location-id'], data))
+                            .catch(error => console.error(`Error fetching river mile for ${loc['location-id']}:`, error))
+                        );
 
-                    const levelIdTopOfFlood = `${loc['location-id'].split('-')[0]}.Stor.Inst.0.Top of Flood`;
-                    const topOfFloodApiUrl = `${setBaseUrl}levels/${levelIdTopOfFlood}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ac-ft`;
-                    topOfFloodPromises.push(
-                        fetch(topOfFloodApiUrl)
-                            .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
-                            .then(topOfFloodData => {
-                                // Set map to null if the data is null or undefined
-                                topOfFloodMap.set(loc['location-id'], topOfFloodData != null ? topOfFloodData : null);
-                            })
-                            .catch(error => console.error(`Error fetching top of flood level for ${loc['location-id']}:`, error))
-                    );
+                        const levelIdLwrp = `${loc['location-id']}.Stage.Inst.0.LWRP`;
+                        const lwrpApiUrl = `${setBaseUrl}levels/${levelIdLwrp}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ft`;
+                        lwrpPromises.push(
+                            fetch(lwrpApiUrl)
+                                .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
+                                .then(lwrpData => {
+                                    // Set map to null if the data is null or undefined
+                                    lwrpMap.set(loc['location-id'], lwrpData != null ? lwrpData : null);
+                                })
+                                .catch(error => console.error(`Error fetching lwrp level for ${loc['location-id']}:`, error))
+                        );
+                    }
 
-                    const levelIdBottomOfFlood = `${loc['location-id'].split('-')[0]}.Stor.Inst.0.Bottom of Flood`;
-                    const bottomOfFloodApiUrl = `${setBaseUrl}levels/${levelIdBottomOfFlood}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ac-ft`;
-                    bottomOfFloodPromises.push(
-                        fetch(bottomOfFloodApiUrl)
-                            .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
-                            .then(bottomOfFloodData => {
-                                // Set map to null if the data is null or undefined
-                                bottomOfFloodMap.set(loc['location-id'], bottomOfFloodData != null ? bottomOfFloodData : null);
-                            })
-                            .catch(error => console.error(`Error fetching bottom of flood level for ${loc['location-id']}:`, error))
-                    );
+                    // For Lakes only
+                    if (loc['location-id'] === "Lk Shelbyville-Kaskaskia" || loc['location-id'] === "Carlyle Lk-Kaskaskia" || loc['location-id'] === "Rend Lk-Big Muddy" || loc['location-id'] === "Wappapello Lk-St Francis" || loc['location-id'] === "Mark Twain Lk-Salt") {
+                        const levelIdTopOfFlood = `${loc['location-id'].split('-')[0]}.Stor.Inst.0.Top of Flood`;
+                        const topOfFloodApiUrl = `${setBaseUrl}levels/${levelIdTopOfFlood}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ac-ft`;
+                        topOfFloodPromises.push(
+                            fetch(topOfFloodApiUrl)
+                                .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
+                                .then(topOfFloodData => {
+                                    // Set map to null if the data is null or undefined
+                                    topOfFloodMap.set(loc['location-id'], topOfFloodData != null ? topOfFloodData : null);
+                                })
+                                .catch(error => console.error(`Error fetching top of flood level for ${loc['location-id']}:`, error))
+                        );
 
-                    const levelIdTopOfConservation = `${loc['location-id'].split('-')[0]}.Stor.Inst.0.Top of Conservation`;
-                    const topOfConservationApiUrl = `${setBaseUrl}levels/${levelIdTopOfConservation}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ac-ft`;
-                    topOfConservationPromises.push(
-                        fetch(topOfConservationApiUrl)
-                            .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
-                            .then(topOfConservationData => {
-                                // Set map to null if the data is null or undefined
-                                topOfConservationMap.set(loc['location-id'], topOfConservationData != null ? topOfConservationData : null);
-                            })
-                            .catch(error => console.error(`Error fetching top of conservation level for ${loc['location-id']}:`, error))
-                    );
+                        const levelIdBottomOfFlood = `${loc['location-id'].split('-')[0]}.Stor.Inst.0.Bottom of Flood`;
+                        const bottomOfFloodApiUrl = `${setBaseUrl}levels/${levelIdBottomOfFlood}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ac-ft`;
+                        bottomOfFloodPromises.push(
+                            fetch(bottomOfFloodApiUrl)
+                                .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
+                                .then(bottomOfFloodData => {
+                                    // Set map to null if the data is null or undefined
+                                    bottomOfFloodMap.set(loc['location-id'], bottomOfFloodData != null ? bottomOfFloodData : null);
+                                })
+                                .catch(error => console.error(`Error fetching bottom of flood level for ${loc['location-id']}:`, error))
+                        );
 
-                    const levelIdBottomOfConservation = `${loc['location-id'].split('-')[0]}.Stor.Inst.0.Bottom of Conservation`;
-                    const bottomOfConservationApiUrl = `${setBaseUrl}levels/${levelIdBottomOfConservation}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ac-ft`;
-                    bottomOfConservationPromises.push(
-                        fetch(bottomOfConservationApiUrl)
-                            .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
-                            .then(bottomOfConservationData => {
-                                // Set map to null if the data is null or undefined
-                                bottomOfConservationMap.set(loc['location-id'], bottomOfConservationData != null ? bottomOfConservationData : null);
-                            })
-                            .catch(error => console.error(`Error fetching bottom of conservation level for ${loc['location-id']}:`, error))
-                    );
+                        const levelIdTopOfConservation = `${loc['location-id'].split('-')[0]}.Stor.Inst.0.Top of Conservation`;
+                        const topOfConservationApiUrl = `${setBaseUrl}levels/${levelIdTopOfConservation}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ac-ft`;
+                        topOfConservationPromises.push(
+                            fetch(topOfConservationApiUrl)
+                                .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
+                                .then(topOfConservationData => {
+                                    // Set map to null if the data is null or undefined
+                                    topOfConservationMap.set(loc['location-id'], topOfConservationData != null ? topOfConservationData : null);
+                                })
+                                .catch(error => console.error(`Error fetching top of conservation level for ${loc['location-id']}:`, error))
+                        );
+
+                        const levelIdBottomOfConservation = `${loc['location-id'].split('-')[0]}.Stor.Inst.0.Bottom of Conservation`;
+                        const bottomOfConservationApiUrl = `${setBaseUrl}levels/${levelIdBottomOfConservation}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ac-ft`;
+                        bottomOfConservationPromises.push(
+                            fetch(bottomOfConservationApiUrl)
+                                .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
+                                .then(bottomOfConservationData => {
+                                    // Set map to null if the data is null or undefined
+                                    bottomOfConservationMap.set(loc['location-id'], bottomOfConservationData != null ? bottomOfConservationData : null);
+                                })
+                                .catch(error => console.error(`Error fetching bottom of conservation level for ${loc['location-id']}:`, error))
+                        );
+                    }
                 })();
 
                 // Fetch tsids
@@ -308,43 +314,49 @@ document.addEventListener('DOMContentLoaded', async function () {
                         .catch(error => console.error(`Error fetching stage TSID for ${loc['location-id']}:`, error))
                     );
 
-                    const forecastNwsApiUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup2}?office=${office}&category-id=${loc['location-id']}`;
-                    forecastNwsTsidPromises.push(fetch(forecastNwsApiUrl)
-                        .then(response => response.ok ? response.json() : null)
-                        .then(data => data && forecastNwsTsidMap.set(loc['location-id'], data))
-                        .catch(error => console.error(`Error fetching forecast NWS TSID for ${loc['location-id']}:`, error))
-                    );
+                    // For Rivers only
+                    if (loc['location-id'] !== "Lk Shelbyville-Kaskaskia" || loc['location-id'] !== "Carlyle Lk-Kaskaskia" || loc['location-id'] !== "Rend Lk-Big Muddy" || loc['location-id'] !== "Wappapello Lk-St Francis" || loc['location-id'] !== "Mark Twain Lk-Salt") {
+                        const forecastNwsApiUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup2}?office=${office}&category-id=${loc['location-id']}`;
+                        forecastNwsTsidPromises.push(fetch(forecastNwsApiUrl)
+                            .then(response => response.ok ? response.json() : null)
+                            .then(data => data && forecastNwsTsidMap.set(loc['location-id'], data))
+                            .catch(error => console.error(`Error fetching forecast NWS TSID for ${loc['location-id']}:`, error))
+                        );
 
-                    const crestApiUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup3}?office=${office}&category-id=${loc['location-id']}`;
-                    crestTsidPromises.push(fetch(crestApiUrl)
-                        .then(response => response.ok ? response.json() : null)
-                        .then(data => data && crestTsidMap.set(loc['location-id'], data))
-                        .catch(error => console.error(`Error fetching crest TSID for ${loc['location-id']}:`, error))
-                    );
+                        const crestApiUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup3}?office=${office}&category-id=${loc['location-id']}`;
+                        crestTsidPromises.push(fetch(crestApiUrl)
+                            .then(response => response.ok ? response.json() : null)
+                            .then(data => data && crestTsidMap.set(loc['location-id'], data))
+                            .catch(error => console.error(`Error fetching crest TSID for ${loc['location-id']}:`, error))
+                        );
+                    }
 
-                    const precipLakeApiUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup4}?office=${office}&category-id=${loc['location-id']}`;
-                    precipLakeTsidPromises.push(
-                        fetch(precipLakeApiUrl)
-                            .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
-                            .then(data => data && precipLakeTsidMap.set(loc['location-id'], data))
-                            .catch(error => console.error(`Error fetching precipLake TSID for ${loc['location-id']}:`, error))
-                    );
+                    // For Lakes only
+                    if (loc['location-id'] === "Lk Shelbyville-Kaskaskia" || loc['location-id'] === "Carlyle Lk-Kaskaskia" || loc['location-id'] === "Rend Lk-Big Muddy" || loc['location-id'] === "Wappapello Lk-St Francis" || loc['location-id'] === "Mark Twain Lk-Salt") {
+                        const precipLakeApiUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup4}?office=${office}&category-id=${loc['location-id']}`;
+                        precipLakeTsidPromises.push(
+                            fetch(precipLakeApiUrl)
+                                .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
+                                .then(data => data && precipLakeTsidMap.set(loc['location-id'], data))
+                                .catch(error => console.error(`Error fetching precipLake TSID for ${loc['location-id']}:`, error))
+                        );
 
-                    const inflowYesterdayLakeApiUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup5}?office=${office}&category-id=${loc['location-id']}`;
-                    inflowYesterdayLakeTsidPromises.push(
-                        fetch(inflowYesterdayLakeApiUrl)
-                            .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
-                            .then(data => data && inflowYesterdayLakeTsidMap.set(loc['location-id'], data))
-                            .catch(error => console.error(`Error fetching inflowYesterdayLake TSID for ${loc['location-id']}:`, error))
-                    );
+                        const inflowYesterdayLakeApiUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup5}?office=${office}&category-id=${loc['location-id']}`;
+                        inflowYesterdayLakeTsidPromises.push(
+                            fetch(inflowYesterdayLakeApiUrl)
+                                .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
+                                .then(data => data && inflowYesterdayLakeTsidMap.set(loc['location-id'], data))
+                                .catch(error => console.error(`Error fetching inflowYesterdayLake TSID for ${loc['location-id']}:`, error))
+                        );
 
-                    const storageLakeApiUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup6}?office=${office}&category-id=${loc['location-id']}`;
-                    storageLakeTsidPromises.push(
-                        fetch(storageLakeApiUrl)
-                            .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
-                            .then(data => data && storageLakeTsidMap.set(loc['location-id'], data))
-                            .catch(error => console.error(`Error fetching storageLake TSID for ${loc['location-id']}:`, error))
-                    );
+                        const storageLakeApiUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup6}?office=${office}&category-id=${loc['location-id']}`;
+                        storageLakeTsidPromises.push(
+                            fetch(storageLakeApiUrl)
+                                .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
+                                .then(data => data && storageLakeTsidMap.set(loc['location-id'], data))
+                                .catch(error => console.error(`Error fetching storageLake TSID for ${loc['location-id']}:`, error))
+                        );
+                    }
                 })();
             }
 
@@ -455,14 +467,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                                             if (data.values) {
                                                 data.values.forEach(entry => entry[0] = formatISODate2ReadableDate(entry[0]));
                                             }
-                                            updateLocData(
+                                            updateLocDataRiverReservoir(
                                                 locData, type, data,
                                                 getLastNonNullValueWithDelta24hrs(data, tsid),
-                                                getMaxValue(data, tsid),
-                                                getMinValue(data, tsid),
-                                                getCumValue(data, tsid),
-                                                getIncValue(data, tsid),
-                                                getHourlyDataOnTopOfHour(data, tsid),
                                                 getNoonDataForDay1(data, tsid),
                                                 getNoonDataForDay2(data, tsid),
                                                 getNoonDataForDay3(data, tsid)
