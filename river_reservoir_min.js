@@ -178,8 +178,8 @@ document.addEventListener('DOMContentLoaded', async function () {
             function fetchAndStoreDataForLocation(loc) {
                 // Fetch location levels
                 (() => {
-                    const locApiUrl = `${setBaseUrl}locations/${loc['location-id']}?office=${office}`;
-                    metadataPromises.push(fetch(locApiUrl)
+                    const metadataApiUrl = `${setBaseUrl}locations/${loc['location-id']}?office=${office}`;
+                    metadataPromises.push(fetch(metadataApiUrl)
                         .then(response => response.ok ? response.json() : null)
                         .then(data => data && metadataMap.set(loc['location-id'], data))
                         .catch(error => console.error(`Error fetching metadata for ${loc['location-id']}:`, error))
