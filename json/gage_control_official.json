@@ -480,7 +480,7 @@
         "LD 22 Pool-Mississippi": {
             "river_mile_hard_coded": 301.20,
             "tsid_null": null,
-            "record_stage_date_hard_coded": "07-25-1993"
+            "record_stage_date_hard_coded": null
         },
         "LD 22 TW-Mississippi": {
             "river_mile_hard_coded": 301.20,
