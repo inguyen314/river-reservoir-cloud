@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const reportNumber = 1;
     if (reportNumber === 1) {
         setReportDiv = "river_reservoir";
-        setLocationCategory = "Basins"; // River-Reservoir // Basins
+        setLocationCategory = "River-Reservoir"; // River-Reservoir
         setLocationGroupOwner = "River-Reservoir";
         setTimeseriesGroup1 = "Stage";
         setTimeseriesGroup2 = "Forecast-NWS";
@@ -1539,7 +1539,6 @@ function createTableRiver(combinedDataRiver, type, reportNumber, nws_day1_date_t
 
                 const currentLevel = stageLastValue['value'];
                 const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
-                const lwrpValue = location['lwrp'] ? location['lwrp']['constant-value'] : null;
                 const recordStage = location['record-stage'];
                 const recordStageValue = recordStage ? recordStage['constant-value'] : null;
 
@@ -1554,10 +1553,6 @@ function createTableRiver(combinedDataRiver, type, reportNumber, nws_day1_date_t
 
                     if (floodValue != null && currentLevel >= floodValue) {
                         linkElement.style.color = 'red';  // Make text red if currentLevel exceeds floodValue
-                    }
-
-                    if (lwrpValue != null && currentLevel <= lwrpValue && lwrpValue < 900) {
-                        linkElement.style.color = 'red';  // Make text red if currentLevel lower lwrpValue
                     }
                 } else {
                     linkElement.textContent = '';  // Display an empty string if currentLevel is null
@@ -1578,7 +1573,7 @@ function createTableRiver(combinedDataRiver, type, reportNumber, nws_day1_date_t
                 const deltaValue = stageLastValue ? stageLastValue['delta'] : null;
 
                 // Display the delta value, or 'N/A' if delta is not available
-                deltaCell.textContent = deltaValue != null ? parseFloat(deltaValue).toFixed(2) : '--';
+                deltaCell.textContent = deltaValue != null ? parseFloat(deltaValue).toFixed(2) : 'N/A';
                 row.appendChild(deltaCell);
             })();
 
