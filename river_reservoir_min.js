@@ -2257,6 +2257,10 @@ function updateLocDataRiverReservoir(locData, type, data, lastValue, day1NwsValu
 }
 
 function getStationForLocation(locationId, riverMileObject) {
+    if (!Array.isArray(riverMileObject)) {
+        console.error("riverMileObject is not an array or is undefined/null");
+        return null;
+    }
     for (const entry of riverMileObject) {
         const name = entry["stream-location-node"].id.name;
         if (name === locationId) {
