@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const reportNumber = 1;
     if (reportNumber === 1) {
         setReportDiv = "river_reservoir";
-        setLocationCategory = "Basins"; // River-Reservoir // Basins
+        setLocationCategory = "River-Reservoir"; // River-Reservoir // Basins
         setLocationGroupOwner = "River-Reservoir";
         setTimeseriesGroup1 = "Stage";
         setTimeseriesGroup2 = "Forecast-NWS";
@@ -525,22 +525,26 @@ document.addEventListener('DOMContentLoaded', async function () {
                 .then(() => {
                     console.log('All combinedData fetched successfully:', combinedData);
 
-                    const formatDate = (daysToAdd) => {
-                        const date = new Date();
-                        date.setDate(date.getDate() + daysToAdd);
-                        return ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
-                    };
+                    if (type === "morning") {
 
-                    const [day1, day2, day3] = [1, 2, 3].map(days => formatDate(days));
-                    const combinedDataRiver = structuredClone ? structuredClone(combinedData) : JSON.parse(JSON.stringify(combinedData));
-                    const combinedDataReservoir = structuredClone ? structuredClone(combinedData) : JSON.parse(JSON.stringify(combinedData));
+                    } else {
+                        const formatDate = (daysToAdd) => {
+                            const date = new Date();
+                            date.setDate(date.getDate() + daysToAdd);
+                            return ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
+                        };
 
-                    const tableRiver = createTableRiver(combinedDataRiver, type, reportNumber, day1, day2, day3);
-                    const tableReservoir = createTableReservoir(combinedDataReservoir, type, reportNumber, day1, day2, day3);
+                        const [day1, day2, day3] = [1, 2, 3].map(days => formatDate(days));
+                        const combinedDataRiver = structuredClone ? structuredClone(combinedData) : JSON.parse(JSON.stringify(combinedData));
+                        const combinedDataReservoir = structuredClone ? structuredClone(combinedData) : JSON.parse(JSON.stringify(combinedData));
 
-                    // document.getElementById(`table_container_${setReportDiv}`).append(tableRiver);
-                    // document.getElementById(`table_container_${setReportDiv}`).append(tableReservoir);
-                    document.getElementById(`table_container_${setReportDiv}`).append(tableRiver, tableReservoir);
+                        const tableRiver = createTableRiver(combinedDataRiver, type, reportNumber, day1, day2, day3);
+                        const tableReservoir = createTableReservoir(combinedDataReservoir, type, reportNumber, day1, day2, day3);
+
+                        // document.getElementById(`table_container_${setReportDiv}`).append(tableRiver);
+                        // document.getElementById(`table_container_${setReportDiv}`).append(tableReservoir);
+                        document.getElementById(`table_container_${setReportDiv}`).append(tableRiver, tableReservoir);
+                    }
                     loadingIndicator.style.display = 'none';
                 })
                 .catch(error => {
