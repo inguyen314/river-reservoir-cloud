@@ -98,7 +98,11 @@
 
         // Update the River Reservoir
         let title;
-        title = `${office} - Realtime River Reservoir`;
+        if (type === "morning") {
+            title = `${office} - Realtime Morning Report`;
+        } else {
+            title = `${office} - Realtime River Reservoir`;
+        }
 
         if (title) {
             document.title = title;

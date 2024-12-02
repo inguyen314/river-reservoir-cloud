@@ -526,8 +526,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                     console.log('All combinedData fetched successfully:', combinedData);
 
                     if (type === "morning") {
+                        console.log("Calling morning report here.");
 
+                        const tableRiver = createTableMorning(combinedData, type, reportNumber);
+                        document.getElementById(`table_container_${setReportDiv}`).append(tableRiver);
                     } else {
+                        console.log("Calling river reservoir report here.");
+
                         const formatDate = (daysToAdd) => {
                             const date = new Date();
                             date.setDate(date.getDate() + daysToAdd);
@@ -541,8 +546,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                         const tableRiver = createTableRiver(combinedDataRiver, type, reportNumber, day1, day2, day3);
                         const tableReservoir = createTableReservoir(combinedDataReservoir, type, reportNumber, day1, day2, day3);
 
-                        // document.getElementById(`table_container_${setReportDiv}`).append(tableRiver);
-                        // document.getElementById(`table_container_${setReportDiv}`).append(tableReservoir);
                         document.getElementById(`table_container_${setReportDiv}`).append(tableRiver, tableReservoir);
                     }
                     loadingIndicator.style.display = 'none';
@@ -2168,6 +2171,184 @@ function createTableReservoir(combinedDataReservoir, type, reportNumber, nws_day
     return table;
 }
 
+function createTableMorning(combinedDataRiver, type, reportNumber, nws_day1_date_title, nws_day2_date_title, nws_day3_date_title) {
+    // Create a table element and set an ID for styling or selection purposes
+    const table = document.createElement('table');
+    table.setAttribute('id', 'webrep');
+
+    combinedDataRiver = combinedDataRiver.filter((basin) => {
+        // Ensure 'assigned-locations' exists before proceeding
+        if (!Array.isArray(basin['assigned-locations'])) {
+            return false; // Filter out basins without 'assigned-locations'
+        }
+
+        // Filter 'assigned-locations' within each basin
+        basin['assigned-locations'] = basin['assigned-locations'].filter((location) => {
+            const currentLocationId = location['location-id'];
+            const locationList = location['owner']?.['assigned-locations'];
+
+            // Check if currentLocationId exists in locationList with attribute === 1
+            const foundInLocationList = locationList?.some(
+                loc => loc['location-id'] === currentLocationId && loc['attribute'] === 1
+            );
+
+            // Remove location if attribute is 1, keep it otherwise
+            return !foundInLocationList;
+        });
+
+        // Return true if there are remaining assigned-locations, otherwise filter out the basin
+        return basin['assigned-locations'].length > 0;
+    });
+
+    // Add 3-rows title
+    (() => {
+        // TITLE ROW 1
+        // Insert the first header row (main headers) for the table
+        const headerRow = table.insertRow(0);
+
+        // Define the main column headers
+        const columns = ["River Mile", "Gage Station", "Current Level", "24hr Delta"];
+
+        // Create and append headers for each main column
+        columns.forEach((columnName) => {
+            const th = document.createElement('th');
+            th.textContent = columnName;
+
+            // Set row spans or column spans based on header requirements
+            if (columnName === "River Mile" || columnName === "Gage Station" ||
+                columnName === "Current Level" || columnName === "24hr Delta" ||
+                columnName === "Flood Level" || columnName === "Gage Zero" ||
+                columnName === "Record Stage" || columnName === "Record Date") {
+                th.rowSpan = 3;
+            }
+            // Apply styling for header cells
+            th.style.backgroundColor = 'darkblue';
+            th.style.color = 'white';
+            headerRow.appendChild(th);
+        });
+    })();
+
+    // Loop through each basin in the combined data
+    combinedDataRiver.forEach((basin) => {
+        const basinRow = document.createElement('tr');
+        const basinCell = document.createElement('th');
+        basinCell.colSpan = 14;
+        basinCell.textContent = basin[`id`];
+        basinCell.style.height = '30px';
+        basinCell.style.textAlign = 'left'; // Align text to the left
+        basinCell.style.paddingLeft = '10px'; // Add left padding of 10px
+        basinCell.style.backgroundColor = 'darkblue';
+        basinRow.appendChild(basinCell);
+        table.appendChild(basinRow);
+
+        basin['assigned-locations'].forEach((location) => {
+            const row = document.createElement('tr');
+
+            // 01 - River Mile
+            (() => {
+                const riverMileCell = document.createElement('td');
+
+                // use hard coded river mile
+                (() => {
+                    // const riverMileValue = location['river-mile-hard-coded'] && location['river-mile-hard-coded']['river_mile_hard_coded'];
+                    // riverMileCell.textContent = riverMileValue != null ? parseFloat(riverMileValue).toFixed(1) : "N/A";
+                    // riverMileCell.title = "Hard Coded with Json File";
+                    // riverMileCell.style.textShadow = '0 0 2px rgba(255, 165, 0, 0.7), 0 0 2px rgba(255, 140, 0, 0.5)';
+                })();
+
+                // use hard coded river mile
+                (() => {
+                    // Example usage
+                    const locationId = location['location-id'];
+                    const riverMileObject = location['river-mile'];
+                    const riverMileValue = getStationForLocation(locationId, riverMileObject);
+                    // console.log(`Station for location ${locationId}: ${riverMileValue}`);
+                    riverMileCell.textContent = riverMileValue != null ? parseFloat(riverMileValue).toFixed(1) : "N/A";
+                })();
+
+
+                row.appendChild(riverMileCell);
+            })();
+
+            // 02 - Gage Station
+            (() => {
+                // Location cell without link
+                const locationCell = document.createElement('td');
+                // locationCell.textContent = location['location-id'];
+                locationCell.textContent = location['location-id'].split('-')[0];
+                row.appendChild(locationCell);
+            })();
+
+            // 03 - Current Level
+            (() => {
+                // Ensure 'stage-last-value' exists and has at least one entry
+                const stageLastValue = location['stage-last-value'] && location['stage-last-value'][0];
+                if (!stageLastValue || !stageLastValue['tsid']) {
+                    console.warn("Missing 'tsid' or 'stage-last-value' data for location:", location);
+                    return; // Exit early if data is missing
+                }
+
+                // Create the link element for current level
+                const tsid = stageLastValue['tsid'];
+                const link = `https://wm.mvs.ds.usace.army.mil/apps/chart/index.html?&office=MVS&cwms_ts_id=${tsid}&cda=internal&lookback=4&lookforward=0`;
+                const currentLevelCell = document.createElement('td');
+                const linkElement = document.createElement('a');
+                linkElement.href = link;
+                linkElement.target = '_blank';
+
+                const currentLevel = stageLastValue['value'];
+                const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
+                const lwrpValue = location['lwrp'] ? location['lwrp']['constant-value'] : null;
+                const recordStage = location['record-stage'];
+                const recordStageValue = recordStage ? recordStage['constant-value'] : null;
+
+                // Set text content and styles based on flood and recordStage thresholds
+                if (currentLevel != null) {
+                    const formattedLevel = currentLevel.toFixed(2);
+                    linkElement.textContent = formattedLevel;
+
+                    if (recordStageValue !== null && currentLevel >= recordStageValue) {
+                        linkElement.classList.add('record_breaking'); // Add "alert" class when currentLevel >= recordStageValue
+                    }
+
+                    if (floodValue != null && currentLevel >= floodValue) {
+                        linkElement.style.color = 'red';  // Make text red if currentLevel exceeds floodValue
+                    }
+
+                    if (lwrpValue != null && currentLevel <= lwrpValue && lwrpValue < 900) {
+                        linkElement.style.color = 'red';  // Make text red if currentLevel lower lwrpValue
+                    }
+                } else {
+                    linkElement.textContent = '';  // Display an empty string if currentLevel is null
+                }
+
+                currentLevelCell.appendChild(linkElement);
+                row.appendChild(currentLevelCell);
+            })();
+
+            // 04 - 24hr Delta
+            (() => {
+                const deltaCell = document.createElement('td');
+
+                // Ensure 'stage-last-value' exists, is an array, and has at least one entry
+                const stageLastValue = location['stage-last-value'] && Array.isArray(location['stage-last-value']) && location['stage-last-value'][0];
+
+                // If stageLastValue is valid, get 'delta', otherwise default to null
+                const deltaValue = stageLastValue ? stageLastValue['delta'] : null;
+
+                // Display the delta value, or 'N/A' if delta is not available
+                deltaCell.textContent = deltaValue != null ? parseFloat(deltaValue).toFixed(2) : '--';
+                row.appendChild(deltaCell);
+            })();
+
+            table.appendChild(row);
+        });
+    });
+
+    // Return the constructed table element
+    return table;
+}
+
 function updateLocData(locData, type, data, lastValue, maxValue, minValue, cumValue, incValue, hourlyValue, day1NwsValue, day2NwsValue, day3NwsValue) {
     const keys = {
         apiDataKey: `${type}-api-data`,
@@ -2426,7 +2607,7 @@ async function fetchInBatches(urls) {
 // ******************************************************
 // ******* Hard Coded Lake Outflow and Crest ************
 // ******************************************************
-// Function to fetch R output for lake table
+
 async function fetchDataFromROutput() {
     let url = null;
     url = 'https://wm.mvs.ds.usace.army.mil/web_apps/board/public/outputR.json';
