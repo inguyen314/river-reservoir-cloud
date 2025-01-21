@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const reportNumber = 1;
     if (reportNumber === 1) {
         setReportDiv = "river_reservoir";
-        setLocationCategory = "River-Reservoir"; // River-Reservoir // Basins
+        setLocationCategory = "Basins"; // "River-Reservoir"
         setLocationGroupOwner = "River-Reservoir";
         setTimeseriesGroup1 = "Stage";
         setTimeseriesGroup2 = "Forecast-NWS";
@@ -1379,6 +1379,8 @@ function createTableRiver(combinedDataRiver, type, reportNumber, nws_day1_date_t
     const table = document.createElement('table');
     table.setAttribute('id', 'webrep');
 
+    console.log("combinedDataRiver before: ", combinedDataRiver);
+
     combinedDataRiver = combinedDataRiver.filter((basin) => {
         // Ensure 'assigned-locations' exists before proceeding
         if (!Array.isArray(basin['assigned-locations'])) {
@@ -1402,6 +1404,8 @@ function createTableRiver(combinedDataRiver, type, reportNumber, nws_day1_date_t
         // Return true if there are remaining assigned-locations, otherwise filter out the basin
         return basin['assigned-locations'].length > 0;
     });
+
+    console.log("combinedDataRiver after: ", combinedDataRiver);
 
     // Add 3-rows title
     (() => {
