@@ -2,7 +2,14 @@
     // Create a URL object with the current page URL
     const urlParams = new URLSearchParams(window.location.search);
 
-    var office = urlParams.get('office');
+    // Calculate the document root
+    const documentRoot = window.location.protocol + "//" + window.location.host + "/";
+
+    // Determine the default value of cda based on documentRoot
+    const cdaDefault = (documentRoot === `https://wm.${office}.ds.usace.army.mil/`) ? "internal" : "public";
+    console.log("cdaDefault: ", cdaDefault);
+
+    var office = urlParams.get('office') || 'MVS';
     console.log('office: ', office);
 
     var basin = urlParams.get('basin');
@@ -14,7 +21,7 @@
     var type = urlParams.get('type');
     console.log('type: ', type);
 
-    var cda = urlParams.get('cda');
+    var cda = urlParams.get('cda') || cdaDefault;
     console.log('cda: ', cda);
 </script>
 <!DOCTYPE html>
