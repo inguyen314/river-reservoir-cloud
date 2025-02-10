@@ -91,6 +91,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const lwrpMap = new Map();
         const stageTsidMap = new Map();
         // const riverMileMap = new Map();
+        const riverMileHardCodedMap = new Map();
         const forecastNwsTsidMap = new Map();
         const crestNwsTsidMap = new Map();
         const precipLakeTsidMap = new Map();
@@ -107,6 +108,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const lwrpPromises = [];
         const stageTsidPromises = [];
         // const riverMilePromises = [];
+        const riverMileHardCodedPromises = [];
         const forecastNwsTsidPromises = [];
         const crestTsidPromises = [];
         const precipLakeTsidPromises = [];
@@ -247,6 +249,32 @@ document.addEventListener('DOMContentLoaded', async function () {
                             //     .catch(error => console.error(`Error fetching river mile for ${loc['location-id']}:`, error))
                             // );
 
+                            riverMileHardCodedPromises.push(
+                                fetch('json/gage_control_official.json')
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error(`Network response was not ok: ${response.statusText}`);
+                                        }
+                                        return response.json();
+                                    })
+                                    .then(riverMilesJson => {
+                                        for (const basin in riverMilesJson) {
+                                            const locations = riverMilesJson[basin];
+                                            for (const locId in locations) {
+                                                const ownerData = locations[locId];
+                                                const riverMile = ownerData.river_mile_hard_coded;
+                                                const outputData = {
+                                                    locationId: locId,
+                                                    basin: basin,
+                                                    riverMile: riverMile
+                                                };
+                                                riverMileHardCodedMap.set(locId, ownerData);
+                                            }
+                                        }
+                                    })
+                                    .catch(error => console.error('Problem with the fetch operation:', error))
+                            );
+
                             const levelIdLwrp = `${loc['location-id']}.Stage.Inst.0.LWRP`;
                             const lwrpApiUrl = `${setBaseUrl}levels/${levelIdLwrp}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ft`;
                             lwrpPromises.push(
@@ -378,6 +406,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         ...bottomOfFloodPromises,
                         ...bottomOfConservationPromises,
                         // ...riverMilePromises,
+                        ...riverMileHardCodedPromises,
                         ...stageTsidPromises,
                         ...forecastNwsTsidPromises,
                         ...crestTsidPromises,
@@ -397,6 +426,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     loc['bottom-of-flood'] = bottomOfFloodMap.get(loc['location-id']);
                                     loc['bottom-of-conservation'] = bottomOfConservationMap.get(loc['location-id']);
                                     // loc['river-mile'] = riverMileMap.get(loc['location-id']);
+                                    loc['river-mile-hard-coded'] = riverMileHardCodedMap.get(loc['location-id']);
                                     loc['tsid-stage'] = stageTsidMap.get(loc['location-id']);
                                     loc['tsid-nws-forecast'] = forecastNwsTsidMap.get(loc['location-id']);
                                     loc['tsid-nws-crest'] = crestNwsTsidMap.get(loc['location-id']);
@@ -1401,16 +1431,16 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
 
             // 08 - Nws Forecast Time PHP
             (() => {
-                // const nwsForecastTimeCell = document.createElement('td');
-                // const tsid_stage_nws_3_day_forecast = location['tsid-nws-forecast']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
+                const nwsForecastTimeCell = document.createElement('td');
+                const tsid_stage_nws_3_day_forecast = location['tsid-nws-forecast']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
 
-                // if (tsid_stage_nws_3_day_forecast !== null) {
-                //     fetchAndLogNwsData(tsid_stage_nws_3_day_forecast, nwsForecastTimeCell);
-                // } else {
-                //     nwsForecastTimeCell.textContent = '';
-                // }
+                if (tsid_stage_nws_3_day_forecast !== null) {
+                    fetchAndLogNwsData(tsid_stage_nws_3_day_forecast, nwsForecastTimeCell);
+                } else {
+                    nwsForecastTimeCell.textContent = '';
+                }
 
-                // row.appendChild(nwsForecastTimeCell);
+                row.appendChild(nwsForecastTimeCell);
             })();
 
             // 09 - Crest Value
@@ -2606,27 +2636,27 @@ function fetchAndUpdateNwsForecastTd(tsidStage, tsid_stage_nws_3_day_forecast, f
                 method: 'GET',
                 headers: { 'Accept': 'application/json;version=2' }
             })
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(nws3Days => {
-                nws3Days.values.forEach(entry => {
-                    entry[0] = formatNWSDate(entry[0]);
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(nws3Days => {
+                    nws3Days.values.forEach(entry => {
+                        entry[0] = formatNWSDate(entry[0]);
+                    });
+
+                    const valuesWithTimeNoon = extractValuesWithTimeNoon(nws3Days.values);
+
+                    const firstMiddleValue = valuesWithTimeNoon?.[1]?.[1] !== null ? parseFloat(valuesWithTimeNoon?.[1]?.[1]).toFixed(2) : "";
+                    const secondMiddleValue = valuesWithTimeNoon?.[2]?.[1] !== null ? parseFloat(valuesWithTimeNoon?.[2]?.[1]).toFixed(2) : "";
+                    const thirdMiddleValue = valuesWithTimeNoon?.[3]?.[1] !== null ? parseFloat(valuesWithTimeNoon?.[3]?.[1]).toFixed(2) : "";
+
+                    resolve({ nwsDay1Td: firstMiddleValue, nwsDay2Td: secondMiddleValue, nwsDay3Td: thirdMiddleValue });
+                })
+                .catch(error => {
+                    console.error("Error fetching or processing data:", error);
+                    reject(error);
                 });
-
-                const valuesWithTimeNoon = extractValuesWithTimeNoon(nws3Days.values);
-
-                const firstMiddleValue = valuesWithTimeNoon?.[1]?.[1] !== null ? parseFloat(valuesWithTimeNoon?.[1]?.[1]).toFixed(2) : "";
-                const secondMiddleValue = valuesWithTimeNoon?.[2]?.[1] !== null ? parseFloat(valuesWithTimeNoon?.[2]?.[1]).toFixed(2) : "";
-                const thirdMiddleValue = valuesWithTimeNoon?.[3]?.[1] !== null ? parseFloat(valuesWithTimeNoon?.[3]?.[1]).toFixed(2) : "";
-
-                resolve({ nwsDay1Td: firstMiddleValue, nwsDay2Td: secondMiddleValue, nwsDay3Td: thirdMiddleValue });
-            })
-            .catch(error => {
-                console.error("Error fetching or processing data:", error);
-                reject(error);
-            });
         } else {
             resolve({ nwsDay1Td: "", nwsDay2Td: "", nwsDay3Td: "" });
         }

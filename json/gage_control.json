@@ -44,6 +44,11 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 343.2,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": null
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -103,6 +108,11 @@
                     "level-date": "2024-01-01T08:00:00Z",
                     "attribute-units-id": "ft",
                     "seasonal-values": []
+                },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 343.2,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -164,6 +174,11 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 324.9,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": null
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -223,6 +238,11 @@
                     "level-date": "2024-01-01T08:00:00Z",
                     "attribute-units-id": "ft",
                     "seasonal-values": []
+                },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 324.9,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -291,6 +311,11 @@
                     "level-date": "2024-01-01T08:00:00Z",
                     "attribute-units-id": "ft",
                     "seasonal-values": []
+                },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 309,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "07-16-1993"
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -374,6 +399,11 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 301.2,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": null
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -444,6 +474,11 @@
                     "level-date": "2024-01-01T08:00:00Z",
                     "attribute-units-id": "ft",
                     "seasonal-values": []
+                },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 301.2,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "07-25-1993"
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -538,6 +573,11 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 282.9,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "07-28-1993"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -623,6 +663,11 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 273.5,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": null
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -693,6 +738,11 @@
                     "level-date": "2024-01-01T08:00:00Z",
                     "attribute-units-id": "ft",
                     "seasonal-values": []
+                },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 273.5,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "07-29-1993"
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -788,6 +838,11 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 260.3,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "07-29-1993"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -850,6 +905,11 @@
                     "level-date": "2024-01-01T08:00:00Z",
                     "attribute-units-id": "ft",
                     "seasonal-values": []
+                },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 241.5,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -921,6 +981,11 @@
                     "level-date": "2024-01-01T08:00:00Z",
                     "attribute-units-id": "ft",
                     "seasonal-values": []
+                },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 241.2,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "08-01-1993"
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -1016,6 +1081,11 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 218,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "08-01-1993"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -1102,6 +1172,11 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 201.1,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": null
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -1172,6 +1247,11 @@
                     "level-date": "2024-01-01T08:00:00Z",
                     "attribute-units-id": "ft",
                     "seasonal-values": []
+                },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 200.5,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "08-01-1993"
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -1259,6 +1339,11 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 185.3,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": null
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -1322,6 +1407,11 @@
                     "level-date": "2024-01-01T08:00:00Z",
                     "attribute-units-id": "ft",
                     "seasonal-values": []
+                },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 185.3,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -1394,6 +1484,11 @@
                     "level-date": "2024-01-01T08:00:00Z",
                     "attribute-units-id": "ft",
                     "seasonal-values": []
+                },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 179.6,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "08-01-1993"
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -1481,6 +1576,11 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 176.8,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": null
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -1544,6 +1644,11 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 168.7,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": null
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -1603,6 +1708,11 @@
                     "level-date": "2024-01-01T08:00:00Z",
                     "attribute-units-id": "ft",
                     "seasonal-values": []
+                },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 151.9,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -1674,6 +1784,11 @@
                     "level-date": "2024-01-01T08:00:00Z",
                     "attribute-units-id": "ft",
                     "seasonal-values": []
+                },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 109.9,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "08-07-1993"
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -1770,6 +1885,11 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 52.1,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "01-01-2016"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -1863,6 +1983,11 @@
                     "level-date": "2024-01-01T08:00:00Z",
                     "attribute-units-id": "ft",
                     "seasonal-values": []
+                },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 43.7,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "01-02-2016"
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -1958,6 +2083,11 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 20.2,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "01-03-2016"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -2028,6 +2158,11 @@
                     "level-date": "2024-01-01T08:00:00Z",
                     "attribute-units-id": "ft",
                     "seasonal-values": []
+                },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 2,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "05-02-2011"
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -2102,6 +2237,11 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 263.1,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "04-19-2013"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -2186,6 +2326,11 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 224.7,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "04-20-2013"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -2270,6 +2415,11 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 164.6,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "04-23-2013"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -2356,6 +2506,11 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 88.6,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "04-27-2013"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -2450,6 +2605,11 @@
                     "level-date": "2024-01-01T08:00:00Z",
                     "attribute-units-id": "ft",
                     "seasonal-values": []
+                },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 70.8,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "07-02-2015"
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -2546,6 +2706,11 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 61.3,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "05-26-1943"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -2632,6 +2797,11 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 56,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "08-01-1993"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -2703,6 +2873,11 @@
                     "level-date": "2024-01-01T08:00:00Z",
                     "attribute-units-id": "ft",
                     "seasonal-values": []
+                },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 21.5,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "08-03-1993"
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -2803,6 +2978,11 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 20,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "04-12-1994"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -2883,6 +3063,11 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 97.9,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "07-31-1993"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -2966,6 +3151,11 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 67,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "07-31-1993"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -3051,6 +3241,11 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 27.9,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "08-02-1993"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -3149,6 +3344,11 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 117,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "12-04-1982"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -3234,6 +3434,11 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 13.4,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "12-29-2015"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -3321,6 +3526,11 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 50.85,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "12-30-2015"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -3408,6 +3618,11 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 14.1,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "08-21-2015"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -3495,6 +3710,11 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 34.1,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "05-03-2017"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -3581,6 +3801,11 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 21.4,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "12-31-2015"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -3658,6 +3883,11 @@
                 },
                 "record-stage": null,
                 "lwrp": null,
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 75.3,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": null
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -3722,6 +3952,11 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 6,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "12-31-2015"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -3828,6 +4063,11 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 2,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "05-02-2011"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -3912,6 +4152,11 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 42.8,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "02-02-1937"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -4046,6 +4291,11 @@
                     "attribute-units-id": "ac-ft",
                     "seasonal-values": []
                 },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 197.9,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "06-29-1974"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -4146,6 +4396,11 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 135.7,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "04-19-2013"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -4269,6 +4524,11 @@
                     "attribute-units-id": "ac-ft",
                     "seasonal-values": []
                 },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 94.2,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "05-18-2002"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -4367,6 +4627,11 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 19.3,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "01-02-2016"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -4431,6 +4696,11 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 0.8,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "08-06-1993"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -4502,6 +4772,11 @@
                     "level-date": "2024-01-01T08:00:00Z",
                     "attribute-units-id": "ft",
                     "seasonal-values": []
+                },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 0.8,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "08-06-1993"
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -4613,6 +4888,11 @@
                     "attribute-units-id": "ac-ft",
                     "seasonal-values": []
                 },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 103.9,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "05-19-1995"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -4713,6 +4993,11 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 86.6,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "05-01-1996"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -4800,6 +5085,11 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 36,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "05-15-1961"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -4891,6 +5181,11 @@
                 },
                 "record-stage": null,
                 "lwrp": null,
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": null,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": null
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -4997,6 +5292,11 @@
                     "attribute-units-id": "ac-ft",
                     "seasonal-values": []
                 },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 213.2,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "05-03-2011"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -5089,6 +5389,11 @@
                 },
                 "record-stage": null,
                 "lwrp": null,
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 211.9,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": null
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -5192,6 +5497,11 @@
                     "attribute-units-id": "ac-ft",
                     "seasonal-values": []
                 },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 63,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "07-30-2008"
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -5284,6 +5594,11 @@
                 },
                 "record-stage": null,
                 "lwrp": null,
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 53.1,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": null
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
