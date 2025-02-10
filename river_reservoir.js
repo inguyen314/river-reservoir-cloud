@@ -2719,7 +2719,7 @@ function fetchAndUpdateCrestTd(stageTd, DeltaTd, tsidStage, flood_level, current
 
                     let innerHTMLStage;
                     if (valueLast === null) {
-                        innerHTMLStage = "<span class='missing'>-M-</span>";
+                        innerHTMLStage = "<span class='missing'></span>";
                     } else {
                         const floodClass = determineStageClass(valueLast, flood_level);
                         innerHTMLStage = `<span class='${floodClass}' title='${stage.name}, Value = ${valueLast}, Date Time = ${timestampLast}'>
@@ -2730,7 +2730,7 @@ function fetchAndUpdateCrestTd(stageTd, DeltaTd, tsidStage, flood_level, current
                     }
 
                     stageTd.innerHTML = innerHTMLStage;
-                    DeltaTd.innerHTML = delta_24 !== null ? delta_24 : "-";
+                    DeltaTd.innerHTML = delta_24 !== null ? delta_24 : "";
 
                     resolve({ stageTd: valueLast, deltaTd: delta_24 });
                 })
