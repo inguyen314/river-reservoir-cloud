@@ -1,6 +1,10 @@
 document.addEventListener('DOMContentLoaded', async function () {
-    // Display the loading_alarm_mvs indicator
-    const loadingIndicator = document.getElementById('loading_river_reservoir');
+    console.log("This is dev");
+
+    let setReportDiv = null;
+    setReportDiv = "river_reservoir";
+    
+    const loadingIndicator = document.getElementById(`loading_${setReportDiv}`);
     loadingIndicator.style.display = 'block';
 
     let setBaseUrl = null;
@@ -13,8 +17,8 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
     console.log("setBaseUrl: ", setBaseUrl);
 
-    if (json === "true" && (basin === "Mississippi" || basin === "Kaskaskia")) {
-        fetch(`json/json.json`)
+    if (json === "true") {
+        fetch(`json/gage_data.json`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -25,51 +29,76 @@ document.addEventListener('DOMContentLoaded', async function () {
                 console.log('combinedData:', combinedData);
 
                 // Call the function to create and populate the table
-                createGageDataTable(combinedData, setBaseUrl);
+                // createGageDataTable(combinedData, setBaseUrl);
                 loadingIndicator.style.display = 'none';
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
             });
     } else {
-        // Store location metadata and flood data
+        const currentDateTime = new Date();
+
+        // Report-specific configurations
+        let setLocationCategory = null;
+        let setLocationGroupOwner = null;
+        let setTimeseriesGroup1 = null;
+        let setTimeseriesGroup2 = null;
+        let setTimeseriesGroup3 = null;
+        let setTimeseriesGroup4 = null;
+        let setTimeseriesGroup5 = null;
+        let setTimeseriesGroup6 = null;
+        let setLookBack = null;
+        let setLookForward = null;
+        
+        setLocationCategory = "Basins";
+        setLocationGroupOwner = "River-Reservoir";
+        setTimeseriesGroup1 = "Stage";
+        setTimeseriesGroup2 = "Forecast-NWS";
+        setTimeseriesGroup3 = "Crest";
+        setTimeseriesGroup4 = "Precip-Lake";
+        setTimeseriesGroup5 = "Inflow-Yesterday-Lake";
+        setTimeseriesGroup6 = "Storage";
+        setLookBack = subtractDaysFromDate(new Date(), 2);
+        setLookForward = addDaysFromDate(new Date(), 14);
+
+        const categoryApiUrl = `${setBaseUrl}location/group?office=${office}&include-assigned=false&location-category-like=${setLocationCategory}`;
+
+        // Initialize Maps to hold various datasets
         const metadataMap = new Map();
-        const floodMap = new Map();
+        const recordStageMap = new Map();
+        const lwrpMap = new Map();
         const stageTsidMap = new Map();
+        // const riverMileMap = new Map();
         const forecastNwsTsidMap = new Map();
-        const flowTsidMap = new Map();
-        const precipTsidMap = new Map();
-        const precipLakeTsidMap = new Map();
-        const ownerMap = new Map();
-        const riverMileMap = new Map();
         const crestTsidMap = new Map();
+        const precipLakeTsidMap = new Map();
+        const inflowYesterdayLakeTsidMap = new Map();
+        const storageLakeTsidMap = new Map();
+        const topOfFloodMap = new Map();
+        const topOfConservationMap = new Map();
+        const bottomOfFloodMap = new Map();
+        const bottomOfConservationMap = new Map();
 
-        // Arrays to track promises for metadata and flood data fetches
+        // Fetch data functions with promise arrays for async processing
         const metadataPromises = [];
-        const floodPromises = [];
+        const recordStageTsidPromises = [];
+        const lwrpPromises = [];
         const stageTsidPromises = [];
+        // const riverMilePromises = [];
         const forecastNwsTsidPromises = [];
-        const flowTsidPromises = [];
-        const precipTsidPromises = [];
-        const precipLakeTsidPromises = [];
-        const ownerPromises = [];
-        const riverMilePromises = [];
         const crestTsidPromises = [];
-        const apiPromises = [];
-        const combinedData = [];
+        const precipLakeTsidPromises = [];
+        const inflowYesterdayLakeTsidPromises = [];
+        const storageLakeTsidPromises = [];
+        const topOfFloodPromises = [];
+        const topOfConservationPromises = [];
+        const bottomOfFloodPromises = [];
+        const bottomOfConservationPromises = [];
 
-        if (cda === "internal" || cda === "public") {
-            apiUrl = `${setBaseUrl}location/group?office=${office}&include-assigned=false&location-category-like=Basins`;
-        }
-
-        console.log("apiUrl: ", apiUrl);
-
-        // Fetch the initial data
-        fetch(apiUrl)
+        // Initial category fetch
+        fetch(categoryApiUrl)
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
+                if (!response.ok) throw new Error('Network response was not ok');
                 return response.json();
             })
             .then(data => {
@@ -78,248 +107,351 @@ document.addEventListener('DOMContentLoaded', async function () {
                     return;
                 }
 
-                const targetCategory = { "office-id": office, "id": "Basins" };
+                // Filter data where category is "Basins"
+                const targetCategory = { "office-id": office, "id": setLocationCategory };
                 const filteredArray = filterByLocationCategory(data, targetCategory);
-                console.log("filteredArray: ", filteredArray);
-
-                const basins = filteredArray.map(item => item.id);
+                let basins = filteredArray.map(item => item.id);
                 if (basins.length === 0) {
                     console.warn('No basins found for the given category.');
                     return;
                 }
 
-                console.log("basins: ", basins);
+                const apiPromises = [];
+                let combinedData = [];
 
-                // Loop through each basin and fetch its data
+                // Loop through each basin and get all the assigned locations
                 basins.forEach(basin => {
-                    const basinApiUrl = `${setBaseUrl}location/group/${basin}?office=${office}&category-id=Basins`;
-                    console.log("basinApiUrl: ", basinApiUrl);
-
+                    const basinApiUrl = `${setBaseUrl}location/group/${basin}?office=${office}&category-id=${setLocationCategory}`;
                     apiPromises.push(
                         fetch(basinApiUrl)
                             .then(response => {
-                                if (!response.ok) {
-                                    throw new Error(`Network response was not ok for basin ${basin}: ${response.statusText}`);
-                                }
+                                if (!response.ok) throw new Error(`Network response was not ok for basin ${basin}`);
                                 return response.json();
                             })
-                            .then(data => {
-                                if (!data) {
-                                    console.log(`No data for basin: ${basin}`);
-                                    return;
-                                }
+                            .then(getBasin => {
+                                // console.log("getBasin: ", getBasin);
 
-                                console.log('data:', data);
+                                if (getBasin) {
+                                    // Fetch additional data needed for filtering
+                                    const additionalDataPromises = getBasin['assigned-locations'].map(location => {
+                                        return fetchAdditionalLocationGroupOwnerData(location[`location-id`], setBaseUrl, setLocationGroupOwner, office);
+                                    });
 
-                                if (Array.isArray(data['assigned-locations'])) {
-                                    // Filter and sort assigned locations
-                                    const filteredLocations = data['assigned-locations'].filter(location => location.attribute <= 900);
-                                    filteredLocations.sort((a, b) => a.attribute - b.attribute);
-                                    console.log('Filtered and sorted locations:', filteredLocations);
+                                    // console.log("additionalDataPromises: ", additionalDataPromises);
 
-                                    data['assigned-locations'] = filteredLocations;
-                                } else {
-                                    console.log(`No assigned-locations found.`);
-                                }
+                                    // Wait for all promises to resolve
+                                    Promise.all(additionalDataPromises)
+                                        .then(results => {
+                                            results = results[0];
+                                            // console.log("results: ", results);
 
-                                combinedData.push(data);
+                                            // Loop through getBasin['assigned-locations'] and compare with results
+                                            getBasin['assigned-locations'] = getBasin['assigned-locations'].filter(location => {
+                                                let matchedData;
+                                                // Check if 'assigned-locations' exists in the results object
+                                                if (results && results['assigned-locations']) {
+                                                    for (const loc of results['assigned-locations']) {
+                                                        // console.log('Comparing:', loc['location-id'], 'with', location['location-id']);
+                                                        if (loc['location-id'] === location['location-id']) {
+                                                            matchedData = results;
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                                // console.log("matchedData: ", matchedData);
 
-                                if (data['assigned-locations']) {
-                                    data['assigned-locations'].forEach(loc => {
-                                        const locId = loc['location-id'];
+                                                if (matchedData) {
+                                                    // If matchedData exists and contains a location with the same location-id, keep the location
+                                                    return true;
+                                                } else {
+                                                    // Log the location that has been removed
+                                                    console.log("Removed location: ", location);
+                                                    return false;  // Remove location if there is no match
+                                                }
+                                            });
 
-                                        // Fetch metadata
-                                        metadataPromises.push(
-                                            fetch(`${setBaseUrl}locations/${locId}?office=${office}`)
-                                                .then(response => response.ok ? response.json() : null)
-                                                .then(locData => {
-                                                    if (locData) metadataMap.set(locId, locData);
-                                                })
-                                                .catch(error => console.error(`Error fetching metadata for ${locId}:`, error))
-                                        );
+                                            // Filter locations with attribute <= 900
+                                            getBasin['assigned-locations'] = getBasin['assigned-locations'].filter(location => location.attribute <= 900);
 
-                                        // Fetch flood data
-                                        floodPromises.push(
-                                            fetch(`${setBaseUrl}levels/${locId}.Stage.Inst.0.Flood?office=${office}&effective-date=2024-01-01T08:00:00&unit=ft`)
-                                                .then(response => response.ok ? response.json() : null)
-                                                .then(floodData => {
-                                                    if (floodData) floodMap.set(locId, floodData);
-                                                })
-                                                .catch(error => console.error(`Error fetching flood data for ${locId}:`, error))
-                                        );
+                                            // Sort the locations by their attribute
+                                            getBasin['assigned-locations'].sort((a, b) => a.attribute - b.attribute);
 
-                                        // Fetch stage tsid data
-                                        stageTsidPromises.push(
-                                            fetch(`${setBaseUrl}timeseries/group/Stage?office=${office}&category-id=${locId}`)
-                                                .then(response => response.ok ? response.json() : null)
-                                                .then(stageTsidData => {
-                                                    if (stageTsidData) stageTsidMap.set(locId, stageTsidData);
-                                                })
-                                                .catch(error => console.error(`Error fetching stage TSID data for ${locId}:`, error))
-                                        );
+                                            // Push the updated basin data to combinedData
+                                            combinedData.push(getBasin);
+                                        })
+                                        .catch(error => {
+                                            console.error('Error in fetching additional data:', error);
+                                        });
 
-                                        // Forecast-NWS TSID data request
-                                        forecastNwsTsidPromises.push(
-                                            fetch(`${setBaseUrl}timeseries/group/Forecast-NWS?office=${office}&category-id=${locId}`)
-                                                .then(response => response.ok ? response.json() : null)
-                                                .then(forecastNwsTsidData => {
-                                                    if (forecastNwsTsidData) forecastNwsTsidMap.set(locId, forecastNwsTsidData);
-                                                })
-                                                .catch(error => console.error(`Error fetching Forecast-NWS TSID data for ${locId}:`, error))
-                                        );
-
-                                        // Fetch flow tsid data
-                                        flowTsidPromises.push(
-                                            fetch(`${setBaseUrl}timeseries/group/Flow?office=${office}&category-id=${locId}`)
-                                                .then(response => response.ok ? response.json() : null)
-                                                .then(flowTsidData => {
-                                                    if (flowTsidData) flowTsidMap.set(locId, flowTsidData);
-                                                })
-                                                .catch(error => console.error(`Error fetching flow TSID data for ${locId}:`, error))
-                                        );
-
-                                        // precip tsid data request
-                                        precipTsidPromises.push(
-                                            fetch(`${setBaseUrl}timeseries/group/Precip?office=${office}&category-id=${locId}`)
-                                                .then(response => response.ok ? response.json() : null)
-                                                .then(precipTsidData => {
-                                                    if (precipTsidData) precipTsidMap.set(locId, precipTsidData);
-                                                })
-                                                .catch(error => console.error(`Error fetching precip TSID data for ${locId}:`, error))
-                                        );
-
-                                        // precip lake tsid data request
-                                        precipLakeTsidPromises.push(
-                                            fetch(`${setBaseUrl}timeseries/group/Precip-Lake?office=${office}&category-id=${locId}`)
-                                                .then(response => response.ok ? response.json() : null)
-                                                .then(precipLakeTsidData => {
-                                                    if (precipLakeTsidData) precipLakeTsidMap.set(locId, precipLakeTsidData);
-                                                })
-                                                .catch(error => console.error(`Error fetching precip lake TSID data for ${locId}:`, error))
-                                        );
-
-                                        // owner data request
-                                        ownerPromises.push(
-                                            fetch(`${setBaseUrl}location/group/River-Reservoir?office=${office}&category-id=${office}`)
-                                                .then(response => response.ok ? response.json() : null)
-                                                .then(ownerData => {
-                                                    if (ownerData) ownerMap.set(loc['location-id'], ownerData);
-                                                })
-                                                .catch(error => console.error(`Error fetching Owner data for ${loc['location-id']}:`, error))
-                                        );
-
-                                        // river mile data request
-                                        riverMilePromises.push(
-                                            fetch(`${setBaseUrl}stream-locations?office-mask=MVS`)
-                                                .then(response => response.ok ? response.json() : null)
-                                                .then(riverMileData => {
-                                                    if (riverMileData) riverMileMap.set(loc['location-id'], riverMileData);
-                                                })
-                                                .catch(error => console.error(`Error fetching River Mile data for ${loc['location-id']}:`, error))
-                                        );
-
-                                        // Fetch crest tsid data
-                                        crestTsidPromises.push(
-                                            fetch(`${setBaseUrl}timeseries/group/Crest?office=${office}&category-id=${locId}`)
-                                                .then(response => response.ok ? response.json() : null)
-                                                .then(crestTsidData => {
-                                                    if (crestTsidData) crestTsidMap.set(locId, crestTsidData);
-                                                })
-                                                .catch(error => console.error(`Error fetching crest TSID data for ${locId}:`, error))
-                                        );
+                                    getBasin['assigned-locations'].forEach(loc => {
+                                        fetchAndStoreDataForLocation(loc);
                                     });
                                 }
                             })
-                            .catch(error => console.error(`Error fetching data for basin ${basin}:`, error))
+                            .catch(error => console.error(`Problem with the fetch operation for basin ${basin}:`, error))
                     );
                 });
 
-                // Wait for all API requests to complete
+                // Fetch data for each location's attributes
+                function fetchAndStoreDataForLocation(loc) {
+                    // Fetch location levels
+                    (() => {
+                        const metadataApiUrl = `${setBaseUrl}locations/${loc['location-id']}?office=${office}`;
+                        metadataPromises.push(fetch(metadataApiUrl)
+                            .then(response => response.ok ? response.json() : null)
+                            .then(data => data && metadataMap.set(loc['location-id'], data))
+                            .catch(error => console.error(`Error fetching metadata for ${loc['location-id']}:`, error))
+                        );
+
+                        const recordStageLevelId = `${loc['location-id']}.Stage.Inst.0.Record Stage`;
+                        const levelIdEffectiveDate = "2024-01-01T08:00:00";
+                        const recordStageApiUrl = `${setBaseUrl}levels/${recordStageLevelId}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ft`;
+                        recordStageTsidPromises.push(
+                            fetch(recordStageApiUrl)
+                                .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
+                                .then(recordStageData => {
+                                    // Set map to null if the data is null or undefined
+                                    recordStageMap.set(loc['location-id'], recordStageData != null ? recordStageData : null);
+                                })
+                                .catch(error => console.error(`Error fetching record stage for ${loc['location-id']}:`, error))
+                        );
+
+                        // For Rivers only
+                        if (loc['location-id'] !== "Lk Shelbyville-Kaskaskia" || loc['location-id'] !== "Carlyle Lk-Kaskaskia" || loc['location-id'] !== "Rend Lk-Big Muddy" || loc['location-id'] !== "Wappapello Lk-St Francis" || loc['location-id'] !== "Mark Twain Lk-Salt") {
+                            // const riverMileApiUrl = `${setBaseUrl}stream-locations?office-mask=MVS`;
+                            // riverMilePromises.push(fetch(riverMileApiUrl)
+                            //     .then(response => response.ok ? response.json() : null)
+                            //     .then(data => data && riverMileMap.set(loc['location-id'], data))
+                            //     .catch(error => console.error(`Error fetching river mile for ${loc['location-id']}:`, error))
+                            // );
+
+                            const levelIdLwrp = `${loc['location-id']}.Stage.Inst.0.LWRP`;
+                            const lwrpApiUrl = `${setBaseUrl}levels/${levelIdLwrp}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ft`;
+                            lwrpPromises.push(
+                                fetch(lwrpApiUrl)
+                                    .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
+                                    .then(lwrpData => {
+                                        // Set map to null if the data is null or undefined
+                                        lwrpMap.set(loc['location-id'], lwrpData != null ? lwrpData : null);
+                                    })
+                                    .catch(error => console.error(`Error fetching lwrp level for ${loc['location-id']}:`, error))
+                            );
+                        }
+
+                        // For Lakes only
+                        if (loc['location-id'] === "Lk Shelbyville-Kaskaskia" || loc['location-id'] === "Carlyle Lk-Kaskaskia" || loc['location-id'] === "Rend Lk-Big Muddy" || loc['location-id'] === "Wappapello Lk-St Francis" || loc['location-id'] === "Mark Twain Lk-Salt") {
+                            const levelIdTopOfFlood = `${loc['location-id'].split('-')[0]}.Stor.Inst.0.Top of Flood`;
+                            const topOfFloodApiUrl = `${setBaseUrl}levels/${levelIdTopOfFlood}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ac-ft`;
+                            topOfFloodPromises.push(
+                                fetch(topOfFloodApiUrl)
+                                    .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
+                                    .then(topOfFloodData => {
+                                        // Set map to null if the data is null or undefined
+                                        topOfFloodMap.set(loc['location-id'], topOfFloodData != null ? topOfFloodData : null);
+                                    })
+                                    .catch(error => console.error(`Error fetching top of flood level for ${loc['location-id']}:`, error))
+                            );
+
+                            const levelIdBottomOfFlood = `${loc['location-id'].split('-')[0]}.Stor.Inst.0.Bottom of Flood`;
+                            const bottomOfFloodApiUrl = `${setBaseUrl}levels/${levelIdBottomOfFlood}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ac-ft`;
+                            bottomOfFloodPromises.push(
+                                fetch(bottomOfFloodApiUrl)
+                                    .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
+                                    .then(bottomOfFloodData => {
+                                        // Set map to null if the data is null or undefined
+                                        bottomOfFloodMap.set(loc['location-id'], bottomOfFloodData != null ? bottomOfFloodData : null);
+                                    })
+                                    .catch(error => console.error(`Error fetching bottom of flood level for ${loc['location-id']}:`, error))
+                            );
+
+                            const levelIdTopOfConservation = `${loc['location-id'].split('-')[0]}.Stor.Inst.0.Top of Conservation`;
+                            const topOfConservationApiUrl = `${setBaseUrl}levels/${levelIdTopOfConservation}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ac-ft`;
+                            topOfConservationPromises.push(
+                                fetch(topOfConservationApiUrl)
+                                    .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
+                                    .then(topOfConservationData => {
+                                        // Set map to null if the data is null or undefined
+                                        topOfConservationMap.set(loc['location-id'], topOfConservationData != null ? topOfConservationData : null);
+                                    })
+                                    .catch(error => console.error(`Error fetching top of conservation level for ${loc['location-id']}:`, error))
+                            );
+
+                            const levelIdBottomOfConservation = `${loc['location-id'].split('-')[0]}.Stor.Inst.0.Bottom of Conservation`;
+                            const bottomOfConservationApiUrl = `${setBaseUrl}levels/${levelIdBottomOfConservation}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ac-ft`;
+                            bottomOfConservationPromises.push(
+                                fetch(bottomOfConservationApiUrl)
+                                    .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
+                                    .then(bottomOfConservationData => {
+                                        // Set map to null if the data is null or undefined
+                                        bottomOfConservationMap.set(loc['location-id'], bottomOfConservationData != null ? bottomOfConservationData : null);
+                                    })
+                                    .catch(error => console.error(`Error fetching bottom of conservation level for ${loc['location-id']}:`, error))
+                            );
+                        }
+                    })();
+
+                    // Fetch tsids
+                    (() => {
+                        const stageApiUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup1}?office=${office}&category-id=${loc['location-id']}`;
+                        stageTsidPromises.push(fetch(stageApiUrl)
+                            .then(response => response.ok ? response.json() : null)
+                            .then(data => data && stageTsidMap.set(loc['location-id'], data))
+                            .catch(error => console.error(`Error fetching stage TSID for ${loc['location-id']}:`, error))
+                        );
+
+                        // For Rivers only
+                        if (loc['location-id'] !== "Lk Shelbyville-Kaskaskia" || loc['location-id'] !== "Carlyle Lk-Kaskaskia" || loc['location-id'] !== "Rend Lk-Big Muddy" || loc['location-id'] !== "Wappapello Lk-St Francis" || loc['location-id'] !== "Mark Twain Lk-Salt") {
+                            const forecastNwsApiUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup2}?office=${office}&category-id=${loc['location-id']}`;
+                            forecastNwsTsidPromises.push(fetch(forecastNwsApiUrl)
+                                .then(response => response.ok ? response.json() : null)
+                                .then(data => data && forecastNwsTsidMap.set(loc['location-id'], data))
+                                .catch(error => console.error(`Error fetching forecast NWS TSID for ${loc['location-id']}:`, error))
+                            );
+
+                            const crestApiUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup3}?office=${office}&category-id=${loc['location-id']}`;
+                            crestTsidPromises.push(fetch(crestApiUrl)
+                                .then(response => response.ok ? response.json() : null)
+                                .then(data => data && crestTsidMap.set(loc['location-id'], data))
+                                .catch(error => console.error(`Error fetching crest TSID for ${loc['location-id']}:`, error))
+                            );
+                        }
+
+                        // For Lakes only
+                        if (loc['location-id'] === "Lk Shelbyville-Kaskaskia" || loc['location-id'] === "Carlyle Lk-Kaskaskia" || loc['location-id'] === "Rend Lk-Big Muddy" || loc['location-id'] === "Wappapello Lk-St Francis" || loc['location-id'] === "Mark Twain Lk-Salt") {
+                            const precipLakeApiUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup4}?office=${office}&category-id=${loc['location-id']}`;
+                            precipLakeTsidPromises.push(
+                                fetch(precipLakeApiUrl)
+                                    .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
+                                    .then(data => data && precipLakeTsidMap.set(loc['location-id'], data))
+                                    .catch(error => console.error(`Error fetching precipLake TSID for ${loc['location-id']}:`, error))
+                            );
+
+                            const inflowYesterdayLakeApiUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup5}?office=${office}&category-id=${loc['location-id']}`;
+                            inflowYesterdayLakeTsidPromises.push(
+                                fetch(inflowYesterdayLakeApiUrl)
+                                    .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
+                                    .then(data => data && inflowYesterdayLakeTsidMap.set(loc['location-id'], data))
+                                    .catch(error => console.error(`Error fetching inflowYesterdayLake TSID for ${loc['location-id']}:`, error))
+                            );
+
+                            const storageLakeApiUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup6}?office=${office}&category-id=${loc['location-id']}`;
+                            storageLakeTsidPromises.push(
+                                fetch(storageLakeApiUrl)
+                                    .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
+                                    .then(data => data && storageLakeTsidMap.set(loc['location-id'], data))
+                                    .catch(error => console.error(`Error fetching storageLake TSID for ${loc['location-id']}:`, error))
+                            );
+                        }
+                    })();
+                }
+
+                // Resolve all initial fetches before processing
                 Promise.all(apiPromises)
-                    .then(() => Promise.all(metadataPromises))
-                    .then(() => Promise.all(floodPromises))
-                    .then(() => Promise.all(stageTsidPromises))
-                    .then(() => Promise.all(forecastNwsTsidPromises))
-                    .then(() => Promise.all(flowTsidPromises))
-                    .then(() => Promise.all(precipTsidPromises))
-                    .then(() => Promise.all(precipLakeTsidPromises))
-                    .then(() => Promise.all(ownerPromises))
-                    .then(() => Promise.all(riverMilePromises))
-                    .then(() => Promise.all(crestTsidPromises))
+                    .then(() => Promise.all([
+                        ...metadataPromises,
+                        ...recordStageTsidPromises,
+                        ...lwrpPromises,
+                        ...topOfFloodPromises,
+                        ...topOfConservationPromises,
+                        ...bottomOfFloodPromises,
+                        ...bottomOfConservationPromises,
+                        // ...riverMilePromises,
+                        ...stageTsidPromises,
+                        ...forecastNwsTsidPromises,
+                        ...crestTsidPromises,
+                        ...precipLakeTsidPromises,
+                        ...inflowYesterdayLakeTsidPromises,
+                        ...storageLakeTsidPromises]))
                     .then(() => {
-                        // Append fetched metadata, flood, and TSID data to combinedData
+                        // Process data to add to each location and display combinedData
                         combinedData.forEach(basinData => {
                             if (basinData['assigned-locations']) {
                                 basinData['assigned-locations'].forEach(loc => {
-                                    // append data to main basin
-                                    (() => {
-                                        const metadataMapData = metadataMap.get(loc['location-id']);
-                                        if (metadataMapData) {
-                                            loc['metadata'] = metadataMapData;
-                                        }
-
-                                        const floodMapData = floodMap.get(loc['location-id']);
-                                        if (floodMapData) {
-                                            loc['flood'] = floodMapData;
-                                        }
-
-                                        const stageTsidMapData = stageTsidMap.get(loc['location-id']);
-                                        if (stageTsidMapData) {
-                                            loc['tsid-stage'] = stageTsidMapData;
-                                        }
-
-                                        const forecastNwsTsidMapData = forecastNwsTsidMap.get(loc['location-id']);
-                                        if (forecastNwsTsidMapData) {
-                                            loc['tsid-forecast-nws'] = forecastNwsTsidMapData;
-                                        }
-
-                                        const flowTsidMapData = flowTsidMap.get(loc['location-id']);
-                                        if (flowTsidMapData) {
-                                            loc['tsid-flow'] = flowTsidMapData;
-                                        }
-
-                                        const precipTsidMapData = precipTsidMap.get(loc['location-id']);
-                                        if (precipTsidMapData) {
-                                            loc['tsid-precip'] = precipTsidMapData;
-                                        }
-
-                                        const precipLakeTsidMapData = precipLakeTsidMap.get(loc['location-id']);
-                                        if (precipLakeTsidMapData) {
-                                            loc['tsid-precip-lake'] = precipLakeTsidMapData;
-                                        }
-
-                                        const ownerMapData = ownerMap.get(loc['location-id']);
-                                        if (ownerMapData) {
-                                            loc['owner'] = ownerMapData;
-                                        }
-
-                                        const riverMileMapData = riverMileMap.get(loc['location-id']);
-                                        if (riverMileMapData) {
-                                            loc['river-mile'] = riverMileMapData;
-                                        }
-
-                                        const crestTsidMapData = crestTsidMap.get(loc['location-id']);
-                                        if (crestTsidMapData) {
-                                            loc['crest'] = crestTsidMapData;
-                                        }
-                                    })();
+                                    loc['metadata'] = metadataMap.get(loc['location-id']);
+                                    loc['record-stage'] = recordStageMap.get(loc['location-id']);
+                                    loc['lwrp'] = lwrpMap.get(loc['location-id']);
+                                    loc['top-of-flood'] = topOfFloodMap.get(loc['location-id']);
+                                    loc['top-of-conservation'] = topOfConservationMap.get(loc['location-id']);
+                                    loc['bottom-of-flood'] = bottomOfFloodMap.get(loc['location-id']);
+                                    loc['bottom-of-conservation'] = bottomOfConservationMap.get(loc['location-id']);
+                                    // loc['river-mile'] = riverMileMap.get(loc['location-id']);
+                                    loc['tsid-stage'] = stageTsidMap.get(loc['location-id']);
+                                    loc['tsid-forecast-nws'] = forecastNwsTsidMap.get(loc['location-id']);
+                                    loc['tsid-crest'] = crestTsidMap.get(loc['location-id']);
+                                    loc['tsid-precip-lake'] = precipLakeTsidMap.get(loc['location-id']);
+                                    loc['tsid-inflow-yesterday-lake'] = inflowYesterdayLakeTsidMap.get(loc['location-id']);
+                                    loc['tsid-storage-lake'] = storageLakeTsidMap.get(loc['location-id']);
                                 });
                             }
                         });
 
-                        // Output the combined data
-                        console.log('Final combinedData:', combinedData);
+                        console.log('All combined data fetched successfully:', combinedData);
 
-                        // Call the function to create and populate the table
-                        // createGageDataTable(combinedData, setBaseUrl);
+                        // Filter data
+                        (() => {
+                            // Step 1: Remove locations where 'attribute' ends with '.1'
+                            combinedData.forEach(dataObj => {
+                                dataObj['assigned-locations'] = dataObj['assigned-locations'].filter(location => !location['attribute'].toString().endsWith('.1'));
+                            });
+                            console.log('Filtered locations with attribute ending in .1:', combinedData);
+
+                            // Step 2: Remove locations without matching 'location-id' in owner's 'assigned-locations'
+                            // combinedData.forEach(dataGroup => {
+                            //     dataGroup['assigned-locations'] = (dataGroup['assigned-locations'] || []).filter(location => {
+                            //         const ownerLocs = location['owner']?.['assigned-locations'];
+                            //         return ownerLocs && ownerLocs.some(ownerLoc => ownerLoc['location-id'] === location['location-id']);
+                            //     });
+                            // });
+                            // console.log('Filtered locations by owner match:', combinedData);
+
+                            // Step 3: Remove locations where 'tsid-stage' is null
+                            combinedData.forEach(dataGroup => {
+                                dataGroup['assigned-locations'] = dataGroup['assigned-locations'].filter(location => location['tsid-stage'] != null);
+                            });
+                            console.log('Filtered locations with null tsid-stage:', combinedData);
+
+                            // Step 4: Remove basins with no 'assigned-locations'
+                            combinedData = combinedData.filter(item => item['assigned-locations']?.length > 0);
+                            console.log('Filtered empty basins:', combinedData);
+
+                            // Step 5: Sort basins by predefined order
+                            const sortOrderBasin = ['Mississippi', 'Illinois', 'Cuivre', 'Missouri', 'Meramec', 'Ohio', 'Kaskaskia', 'Big Muddy', 'St Francis', 'Salt'];
+                            combinedData.sort((a, b) => {
+                                const indexA = sortOrderBasin.indexOf(a.id);
+                                const indexB = sortOrderBasin.indexOf(b.id);
+                                return (indexA === -1 ? 1 : indexA) - (indexB === -1 ? 1 : indexB);
+                            });
+                            console.log('Sorted basins:', combinedData);
+                        })();
+                    })
+                    .then(() => {
+                        console.log('All combinedData fetched and filtered successfully:', combinedData);
+
+                        const formatDate = (daysToAdd) => {
+                            const date = new Date();
+                            date.setDate(date.getDate() + daysToAdd);
+                            return ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
+                        };
+
+                        const [day1, day2, day3] = [1, 2, 3].map(days => formatDate(days));
+                        const combinedDataRiver = structuredClone ? structuredClone(combinedData) : JSON.parse(JSON.stringify(combinedData));
+                        const combinedDataReservoir = structuredClone ? structuredClone(combinedData) : JSON.parse(JSON.stringify(combinedData));
+
+                        // const tableRiver = createTableRiver(combinedDataRiver, type, day1, day2, day3);
+                        // const tableReservoir = createTableReservoir(combinedDataReservoir, type, day1, day2, day3);
+
+                        // document.getElementById(`table_container_${setReportDiv}`).append(tableRiver, tableReservoir);
+
                         loadingIndicator.style.display = 'none';
                     })
                     .catch(error => {
-                        console.error('Error processing fetch operations:', error);
+                        console.error('There was a problem with one or more fetch operations:', error);
+                        loadingIndicator.style.display = 'none';
                     });
             })
             .catch(error => {
-                console.error('Error with the initial fetch operation:', error);
+                console.error('There was a problem with the initial fetch operation:', error);
+                loadingIndicator.style.display = 'none';
             });
     }
 });
