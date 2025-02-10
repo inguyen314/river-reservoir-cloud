@@ -6,13 +6,19 @@
     const documentRoot = window.location.protocol + "//" + window.location.host + "/";
 
     // Determine the default value of cda based on documentRoot
-    const cdaDefault = (documentRoot === `https://wm.${office}.ds.usace.army.mil/`) ? "internal" : "public";
-    console.log("cdaDefault: ", cdaDefault);
-
     var office = urlParams.get('office') || 'MVS';
     console.log('office: ', office);
 
-    var basin = urlParams.get('basin');
+    if (documentRoot === `https://wm.${office.toLocaleLowerCase()}.ds.usace.army.mil/`) {
+        cdaDefault = "internal";
+    } else if (documentRoot === `https://wm-${office.toLocaleLowerCase()}coop.mvk.ds.usace.army.mil/`) {
+        cdaDefault = "internal-coop";
+    } else {
+        cdaDefault = "public";
+    }
+    console.log("cdaDefault: ", cdaDefault);
+
+    var basin = urlParams.get('basin') || "Mississippi";
     console.log('basin: ', basin);
 
     var selectedBasin = urlParams.get('basin');
@@ -23,6 +29,9 @@
 
     var cda = urlParams.get('cda') || cdaDefault;
     console.log('cda: ', cda);
+
+    var json = urlParams.get('json') || "true";
+    console.log('json: ', json);
 </script>
 <!DOCTYPE html>
 <html lang="en">
