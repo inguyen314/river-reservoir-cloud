@@ -1,11 +1,8 @@
 <script>
-    // Create a URL object with the current page URL
     const urlParams = new URLSearchParams(window.location.search);
 
-    // Calculate the document root
     const documentRoot = window.location.protocol + "//" + window.location.host + "/";
 
-    // Determine the default value of cda based on documentRoot
     var office = urlParams.get('office') || 'MVS';
     console.log('office: ', office);
 
@@ -78,12 +75,11 @@
                         </div>
                     </div>
                 </div>
-                <!-- Start Div -->
-                <div id="loading_river_reservoir" style="display: none;"><img src="images/loading4.gif"
-                        style='height: 50px; width: 50px;' alt="Loading..." /></div>
+                <div id="loading_river_reservoir" style="display: none;">
+                    <img src="images/loading4.gif" style='height: 50px; width: 50px;' alt="Loading..." />
+                </div>
                 <div id="table_container_river_reservoir"></div>
                 <script src="river_reservoir_min.js"></script>
-                <!-- End Div -->
             </div>
             <button id="returnTop" title="Return to Top of Page">Top</button>
         </div>
@@ -111,9 +107,9 @@
         // Update the River Reservoir
         let title;
         if (type === "morning") {
-            title = `${office} - Realtime Morning Report`;
+            title = `${office} Realtime Morning Report`;
         } else {
-            title = `${office} - Realtime River Reservoir`;
+            title = `${office} Realtime River Reservoir`;
         }
 
         if (title) {
