@@ -89,6 +89,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const metadataMap = new Map();
         const recordStageMap = new Map();
         const lwrpMap = new Map();
+        const floodMap = new Map();
         const stageTsidMap = new Map();
         // const riverMileMap = new Map();
         const riverMileHardCodedMap = new Map();
@@ -106,6 +107,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const metadataPromises = [];
         const recordStageTsidPromises = [];
         const lwrpPromises = [];
+        const floodPromises = [];
         const stageTsidPromises = [];
         // const riverMilePromises = [];
         const riverMileHardCodedPromises = [];
@@ -286,6 +288,19 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     })
                                     .catch(error => console.error(`Error fetching lwrp level for ${loc['location-id']}:`, error))
                             );
+
+                            const levelIdFlood = `${loc['location-id']}.Stage.Inst.0.Flood`;
+                            const floodApiUrl = `${setBaseUrl}levels/${levelIdFlood}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ft`;
+                            floodPromises.push(
+                                fetch(floodApiUrl)
+                                    .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
+                                    .then(floodData => {
+                                        // Set map to null if the data is null or undefined
+                                        floodMap.set(loc['location-id'], floodData != null ? floodData : null);
+                                    })
+                                    .catch(error => console.error(`Error fetching flood level for ${loc['location-id']}:`, error))
+                            );
+
                         }
 
                         // For Lakes only
@@ -401,6 +416,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         ...metadataPromises,
                         ...recordStageTsidPromises,
                         ...lwrpPromises,
+                        ...floodPromises,
                         ...topOfFloodPromises,
                         ...topOfConservationPromises,
                         ...bottomOfFloodPromises,
@@ -421,6 +437,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     loc['metadata'] = metadataMap.get(loc['location-id']);
                                     loc['record-stage'] = recordStageMap.get(loc['location-id']);
                                     loc['lwrp'] = lwrpMap.get(loc['location-id']);
+                                    loc['flood'] = floodMap.get(loc['location-id']);
                                     loc['top-of-flood'] = topOfFloodMap.get(loc['location-id']);
                                     loc['top-of-conservation'] = topOfConservationMap.get(loc['location-id']);
                                     loc['bottom-of-flood'] = bottomOfFloodMap.get(loc['location-id']);
