@@ -1443,33 +1443,20 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                 row.appendChild(nwsForecastTimeCell);
             })();
 
-            // 09 - Crest Value
+            // 09 and 10 - Crest Value and Date Time
             (() => {
-                const crestValueCell = document.createElement('td');
-                const crest = location['crest-last-value']?.[0]?.['value'] ?? null;
-                const crestValue = crest !== null ? Number(crest) : null;
+                const crestTd = document.createElement('td');
+                const crestDateTd = document.createElement('td');
 
-                if (crestValue !== null && !isNaN(crestValue)) {
-                    crestValueCell.textContent = crestValue.toFixed(2);
-                } else {
-                    crestValueCell.textContent = '';
+                const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
+                const crestTsid = location?.['tsid-nws-crest']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
+
+                if (crestTsid) {
+                    fetchAndUpdateCrestTd(crestTd, crestDateTd, crestTsid, floodValue, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl);
                 }
 
-                row.appendChild(crestValueCell);
-            })();
-
-            // 10 - Crest Date
-            (() => {
-                const crestDateCell = document.createElement('td');
-                const crestDate = location['crest-last-value']?.[0]?.['timestamp'] ?? null;
-
-                if (crestDate !== null) {
-                    crestDateCell.textContent = crestDate.substring(0, 5);
-                } else {
-                    crestDateCell.textContent = '';
-                }
-
-                row.appendChild(crestDateCell);
+                row.appendChild(crestTd);
+                row.appendChild(crestDateTd);
             })();
 
             // 11 - Flood Level
@@ -2665,6 +2652,79 @@ function fetchAndUpdateNwsForecastTd(tsidStage, tsid_stage_nws_3_day_forecast, f
 
 function fetchAndUpdateNWSForecastDate(stageCell, tsid_stage_nws_3_day_forecast) {
     fetchAndLogNwsData(stageCell, tsid_stage_nws_3_day_forecast); // Fetch and update the data
+}
+
+function fetchAndUpdateCrestTd(stageTd, DeltaTd, tsidStage, flood_level, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl) {
+    return new Promise((resolve, reject) => {
+        if (tsidStage !== null) {
+            const urlStage = `${setBaseUrl}timeseries?name=${tsidStage}&begin=${currentDateTimeMinus30Hours.toISOString()}&end=${currentDateTime.toISOString()}&office=${office}`;
+
+            // console.log("urlStage = ", urlStage);
+            fetch(urlStage, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json;version=2'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(stage => {
+                    stage.values.forEach(entry => {
+                        entry[0] = formatNWSDate(entry[0]);
+                    });
+
+                    const lastNonNullValue = getLastNonNullValue(stage);
+                    let valueLast = null;
+                    let timestampLast = null;
+
+                    if (lastNonNullValue !== null) {
+                        timestampLast = lastNonNullValue.timestamp;
+                        valueLast = parseFloat(lastNonNullValue.value).toFixed(2);
+                    }
+
+                    const c_count = calculateCCount(tsidStage);
+                    const lastNonNull24HoursValue = getLastNonNull24HoursValue(stage, c_count);
+                    let value24HoursLast = null;
+                    let timestamp24HoursLast = null;
+
+                    if (lastNonNull24HoursValue !== null) {
+                        timestamp24HoursLast = lastNonNull24HoursValue.timestamp;
+                        value24HoursLast = parseFloat(lastNonNull24HoursValue.value).toFixed(2);
+                    }
+
+                    const delta_24 = (valueLast !== null && value24HoursLast !== null)
+                        ? (valueLast - value24HoursLast).toFixed(2)
+                        : null;
+
+                    let innerHTMLStage;
+                    if (valueLast === null) {
+                        innerHTMLStage = "<span class='missing'>-M-</span>";
+                    } else {
+                        const floodClass = determineStageClass(valueLast, flood_level);
+                        innerHTMLStage = `<span class='${floodClass}' title='${stage.name}, Value = ${valueLast}, Date Time = ${timestampLast}'>
+                                            <a href='../chart?office=${office}&cwms_ts_id=${stage.name}&lookback=4' target='_blank'>
+                                                ${valueLast}
+                                            </a>
+                                         </span>`;
+                    }
+
+                    stageTd.innerHTML = innerHTMLStage;
+                    DeltaTd.innerHTML = delta_24 !== null ? delta_24 : "-";
+
+                    resolve({ stageTd: valueLast, deltaTd: delta_24 });
+                })
+                .catch(error => {
+                    console.error("Error fetching or processing data:", error);
+                    reject(error);
+                });
+        } else {
+            resolve({ stageTd: null, deltaTd: null });
+        }
+    });
 }
 
 function fetchAndUpdateFlow(flowCell, tsidFlow, label, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl) {
