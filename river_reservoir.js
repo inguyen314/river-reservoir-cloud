@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const lwrpMap = new Map();
         const floodMap = new Map();
         const stageTsidMap = new Map();
-        // const riverMileMap = new Map();
+        const riverMileMap = new Map();
         const riverMileHardCodedMap = new Map();
         const forecastNwsTsidMap = new Map();
         const crestNwsTsidMap = new Map();
@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const lwrpPromises = [];
         const floodPromises = [];
         const stageTsidPromises = [];
-        // const riverMilePromises = [];
+        const riverMilePromises = [];
         const riverMileHardCodedPromises = [];
         const forecastNwsTsidPromises = [];
         const crestTsidPromises = [];
@@ -244,12 +244,12 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         // For Rivers only
                         if (!lakeLocs.includes(loc['location-id'])) {
-                            // const riverMileApiUrl = `${setBaseUrl}stream-locations?office-mask=MVS`;
-                            // riverMilePromises.push(fetch(riverMileApiUrl)
-                            //     .then(response => response.ok ? response.json() : null)
-                            //     .then(data => data && riverMileMap.set(loc['location-id'], data))
-                            //     .catch(error => console.error(`Error fetching river mile for ${loc['location-id']}:`, error))
-                            // );
+                            const riverMileApiUrl = `${setBaseUrl}stream-locations?office-mask=MVS&name-mask=${loc['location-id']}`;
+                            riverMilePromises.push(fetch(riverMileApiUrl)
+                                .then(response => response.ok ? response.json() : null)
+                                .then(data => data && riverMileMap.set(loc['location-id'], data))
+                                .catch(error => console.error(`Error fetching river mile for ${loc['location-id']}:`, error))
+                            );
 
                             riverMileHardCodedPromises.push(
                                 fetch('json/gage_control_official.json')
@@ -421,7 +421,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         ...topOfConservationPromises,
                         ...bottomOfFloodPromises,
                         ...bottomOfConservationPromises,
-                        // ...riverMilePromises,
+                        ...riverMilePromises,
                         ...riverMileHardCodedPromises,
                         ...stageTsidPromises,
                         ...forecastNwsTsidPromises,
@@ -442,7 +442,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     loc['top-of-conservation'] = topOfConservationMap.get(loc['location-id']);
                                     loc['bottom-of-flood'] = bottomOfFloodMap.get(loc['location-id']);
                                     loc['bottom-of-conservation'] = bottomOfConservationMap.get(loc['location-id']);
-                                    // loc['river-mile'] = riverMileMap.get(loc['location-id']);
+                                    loc['river-mile'] = riverMileMap.get(loc['location-id']);
                                     loc['river-mile-hard-coded'] = riverMileHardCodedMap.get(loc['location-id']);
                                     loc['tsid-stage'] = stageTsidMap.get(loc['location-id']);
                                     loc['tsid-nws-forecast'] = forecastNwsTsidMap.get(loc['location-id']);
