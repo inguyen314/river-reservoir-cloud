@@ -1357,23 +1357,19 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                 row.appendChild(locationCell);
             })();
 
-            // 03 - Current Level
+            // 03 and 04 - Stage and Delta
             (() => {
-                const currentLevelTd = document.createElement('td');
+                const stageTd = document.createElement('td');
                 const deltaTd = document.createElement('td');
 
                 const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
-                const lwrpValue = location['lwrp'] ? location['lwrp']['constant-value'] : null;
-                const recordStage = location['record-stage'];
-                const recordStageValue = recordStage ? recordStage['constant-value'] : null;
                 const stageTsid = location['tsid-stage']['assigned-time-series'][0]['timeseries-id'];
 
                 if (stageTsid) {
-                    fetchAndUpdateStageTd(currentLevelTd, deltaTd, stageTsid, floodValue, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl);
+                    fetchAndUpdateStageTd(stageTd, deltaTd, stageTsid, floodValue, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl);
                 }
 
-
-                row.appendChild(currentLevelTd);
+                row.appendChild(stageTd);
                 row.appendChild(deltaTd);
             })();
 
