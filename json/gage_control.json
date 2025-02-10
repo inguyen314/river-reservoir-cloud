@@ -59,7 +59,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -119,7 +119,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -179,7 +179,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -239,7 +239,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -307,7 +307,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -322,7 +322,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -389,7 +389,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -460,7 +460,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -475,7 +475,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -553,7 +553,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -568,7 +568,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -638,7 +638,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -709,7 +709,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -725,7 +725,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -803,7 +803,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -866,7 +866,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -937,7 +937,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -953,7 +953,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -1031,7 +1031,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -1047,7 +1047,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -1117,7 +1117,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -1188,7 +1188,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -1204,7 +1204,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -1275,7 +1275,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -1338,7 +1338,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -1410,7 +1410,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -1426,7 +1426,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -1496,7 +1496,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -1559,7 +1559,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -1619,7 +1619,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -1691,7 +1691,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -1707,7 +1707,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -1785,7 +1785,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -1801,7 +1801,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -1879,7 +1879,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -1895,7 +1895,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -1973,7 +1973,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -2044,7 +2044,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -2118,7 +2118,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -2134,7 +2134,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -2202,7 +2202,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -2218,7 +2218,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -2286,7 +2286,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -2302,7 +2302,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -2372,7 +2372,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -2388,7 +2388,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -2467,7 +2467,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -2483,7 +2483,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -2561,7 +2561,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -2577,7 +2577,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -2648,7 +2648,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -2720,7 +2720,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -2736,7 +2736,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -2818,7 +2818,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -2898,7 +2898,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -2913,7 +2913,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -2981,7 +2981,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -2996,7 +2996,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -3066,7 +3066,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -3082,7 +3082,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -3164,7 +3164,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -3180,7 +3180,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -3250,7 +3250,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -3266,7 +3266,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -3337,7 +3337,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -3353,7 +3353,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -3424,7 +3424,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -3440,7 +3440,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -3510,7 +3510,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -3526,7 +3526,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -3597,7 +3597,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -3613,7 +3613,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -3674,7 +3674,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -3738,7 +3738,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -3754,7 +3754,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -3844,7 +3844,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -3860,7 +3860,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -3928,7 +3928,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -3944,7 +3944,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -4010,7 +4010,6 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
-                "lwrp": null,
                 "top-of-flood": {
                     "office-id": "MVS",
                     "location-level-id": "Lk Shelbyville.Stor.Inst.0.Top of Flood",
@@ -4063,7 +4062,7 @@
                         }
                     ]
                 },
-                "tsid-precip-lake": {
+                "tsid-lake-precip": {
                     "office-id": "MVS",
                     "id": "Precip-Lake",
                     "time-series-category": {
@@ -4078,7 +4077,7 @@
                         }
                     ]
                 },
-                "tsid-inflow-yesterday-lake": {
+                "tsid-lake-inflow-yesterday": {
                     "office-id": "MVS",
                     "id": "Inflow-Yesterday-Lake",
                     "time-series-category": {
@@ -4093,7 +4092,7 @@
                         }
                     ]
                 },
-                "tsid-storage-lake": {
+                "tsid-lake-storage": {
                     "office-id": "MVS",
                     "id": "Storage",
                     "time-series-category": {
@@ -4163,7 +4162,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -4179,7 +4178,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -4234,7 +4233,6 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
-                "lwrp": null,
                 "top-of-flood": {
                     "office-id": "MVS",
                     "location-level-id": "Carlyle Lk.Stor.Inst.0.Top of Flood",
@@ -4287,7 +4285,7 @@
                         }
                     ]
                 },
-                "tsid-precip-lake": {
+                "tsid-lake-precip": {
                     "office-id": "MVS",
                     "id": "Precip-Lake",
                     "time-series-category": {
@@ -4302,7 +4300,7 @@
                         }
                     ]
                 },
-                "tsid-inflow-yesterday-lake": {
+                "tsid-lake-inflow-yesterday": {
                     "office-id": "MVS",
                     "id": "Inflow-Yesterday-Lake",
                     "time-series-category": {
@@ -4317,7 +4315,7 @@
                         }
                     ]
                 },
-                "tsid-storage-lake": {
+                "tsid-lake-storage": {
                     "office-id": "MVS",
                     "id": "Storage",
                     "time-series-category": {
@@ -4385,7 +4383,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -4449,7 +4447,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -4520,7 +4518,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -4579,7 +4577,6 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
-                "lwrp": null,
                 "top-of-flood": {
                     "office-id": "MVS",
                     "location-level-id": "Rend Lk.Stor.Inst.0.Top of Flood",
@@ -4632,7 +4629,7 @@
                         }
                     ]
                 },
-                "tsid-precip-lake": {
+                "tsid-lake-precip": {
                     "office-id": "MVS",
                     "id": "Precip-Lake",
                     "time-series-category": {
@@ -4647,7 +4644,7 @@
                         }
                     ]
                 },
-                "tsid-inflow-yesterday-lake": {
+                "tsid-lake-inflow-yesterday": {
                     "office-id": "MVS",
                     "id": "Inflow-Yesterday-Lake",
                     "time-series-category": {
@@ -4662,7 +4659,7 @@
                         }
                     ]
                 },
-                "tsid-storage-lake": {
+                "tsid-lake-storage": {
                     "office-id": "MVS",
                     "id": "Storage",
                     "time-series-category": {
@@ -4732,7 +4729,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -4748,7 +4745,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -4819,7 +4816,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -4835,7 +4832,7 @@
                         }
                     ]
                 },
-                "tsid-crest": {
+                "tsid-nws-crest": {
                     "office-id": "MVS",
                     "id": "Crest",
                     "time-series-category": {
@@ -4910,7 +4907,7 @@
                         }
                     ]
                 },
-                "tsid-forecast-nws": {
+                "tsid-nws-forecast": {
                     "office-id": "MVS",
                     "id": "Forecast-NWS",
                     "time-series-category": {
@@ -4964,7 +4961,6 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
-                "lwrp": null,
                 "top-of-flood": {
                     "office-id": "MVS",
                     "location-level-id": "Wappapello Lk.Stor.Inst.0.Top of Flood",
@@ -5017,7 +5013,7 @@
                         }
                     ]
                 },
-                "tsid-precip-lake": {
+                "tsid-lake-precip": {
                     "office-id": "MVS",
                     "id": "Precip-Lake",
                     "time-series-category": {
@@ -5032,7 +5028,7 @@
                         }
                     ]
                 },
-                "tsid-inflow-yesterday-lake": {
+                "tsid-lake-inflow-yesterday": {
                     "office-id": "MVS",
                     "id": "Inflow-Yesterday-Lake",
                     "time-series-category": {
@@ -5047,7 +5043,7 @@
                         }
                     ]
                 },
-                "tsid-storage-lake": {
+                "tsid-lake-storage": {
                     "office-id": "MVS",
                     "id": "Storage",
                     "time-series-category": {
@@ -5160,7 +5156,6 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
-                "lwrp": null,
                 "top-of-flood": {
                     "office-id": "MVS",
                     "location-level-id": "Mark Twain Lk.Stor.Inst.0.Top of Flood",
@@ -5213,7 +5208,7 @@
                         }
                     ]
                 },
-                "tsid-precip-lake": {
+                "tsid-lake-precip": {
                     "office-id": "MVS",
                     "id": "Precip-Lake",
                     "time-series-category": {
@@ -5228,7 +5223,7 @@
                         }
                     ]
                 },
-                "tsid-inflow-yesterday-lake": {
+                "tsid-lake-inflow-yesterday": {
                     "office-id": "MVS",
                     "id": "Inflow-Yesterday-Lake",
                     "time-series-category": {
@@ -5243,7 +5238,7 @@
                         }
                     ]
                 },
-                "tsid-storage-lake": {
+                "tsid-lake-storage": {
                     "office-id": "MVS",
                     "id": "Storage",
                     "time-series-category": {

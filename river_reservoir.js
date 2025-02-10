@@ -17,6 +17,14 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
     console.log("setBaseUrl: ", setBaseUrl);
 
+    const lakeLocs = [
+        "Lk Shelbyville-Kaskaskia",
+        "Carlyle Lk-Kaskaskia",
+        "Rend Lk-Big Muddy",
+        "Wappapello Lk-St Francis",
+        "Mark Twain Lk-Salt"
+      ];
+
     if (json === "true") {
         fetch(`json/gage_data.json`)
             .then(response => {
@@ -36,9 +44,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 console.error('Error fetching data:', error);
             });
     } else {
-        const currentDateTime = new Date();
-
-        // Report-specific configurations
         let setLocationCategory = null;
         let setLocationGroupOwner = null;
         let setTimeseriesGroup1 = null;
@@ -70,7 +75,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const stageTsidMap = new Map();
         // const riverMileMap = new Map();
         const forecastNwsTsidMap = new Map();
-        const crestTsidMap = new Map();
+        const crestNwsTsidMap = new Map();
         const precipLakeTsidMap = new Map();
         const inflowYesterdayLakeTsidMap = new Map();
         const storageLakeTsidMap = new Map();
@@ -217,7 +222,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         );
 
                         // For Rivers only
-                        if (loc['location-id'] !== "Lk Shelbyville-Kaskaskia" || loc['location-id'] !== "Carlyle Lk-Kaskaskia" || loc['location-id'] !== "Rend Lk-Big Muddy" || loc['location-id'] !== "Wappapello Lk-St Francis" || loc['location-id'] !== "Mark Twain Lk-Salt") {
+                        if (!lakeLocs.includes(loc['location-id'])) {
                             // const riverMileApiUrl = `${setBaseUrl}stream-locations?office-mask=MVS`;
                             // riverMilePromises.push(fetch(riverMileApiUrl)
                             //     .then(response => response.ok ? response.json() : null)
@@ -239,7 +244,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }
 
                         // For Lakes only
-                        if (loc['location-id'] === "Lk Shelbyville-Kaskaskia" || loc['location-id'] === "Carlyle Lk-Kaskaskia" || loc['location-id'] === "Rend Lk-Big Muddy" || loc['location-id'] === "Wappapello Lk-St Francis" || loc['location-id'] === "Mark Twain Lk-Salt") {
+                        if (lakeLocs.includes(loc['location-id'])) {
                             const levelIdTopOfFlood = `${loc['location-id'].split('-')[0]}.Stor.Inst.0.Top of Flood`;
                             const topOfFloodApiUrl = `${setBaseUrl}levels/${levelIdTopOfFlood}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ac-ft`;
                             topOfFloodPromises.push(
@@ -300,7 +305,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         );
 
                         // For Rivers only
-                        if (loc['location-id'] !== "Lk Shelbyville-Kaskaskia" || loc['location-id'] !== "Carlyle Lk-Kaskaskia" || loc['location-id'] !== "Rend Lk-Big Muddy" || loc['location-id'] !== "Wappapello Lk-St Francis" || loc['location-id'] !== "Mark Twain Lk-Salt") {
+                        if (!lakeLocs.includes(loc['location-id'])) {
                             const forecastNwsApiUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup2}?office=${office}&category-id=${loc['location-id']}`;
                             forecastNwsTsidPromises.push(fetch(forecastNwsApiUrl)
                                 .then(response => response.ok ? response.json() : null)
@@ -311,13 +316,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                             const crestApiUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup3}?office=${office}&category-id=${loc['location-id']}`;
                             crestTsidPromises.push(fetch(crestApiUrl)
                                 .then(response => response.ok ? response.json() : null)
-                                .then(data => data && crestTsidMap.set(loc['location-id'], data))
+                                .then(data => data && crestNwsTsidMap.set(loc['location-id'], data))
                                 .catch(error => console.error(`Error fetching crest TSID for ${loc['location-id']}:`, error))
                             );
                         }
 
                         // For Lakes only
-                        if (loc['location-id'] === "Lk Shelbyville-Kaskaskia" || loc['location-id'] === "Carlyle Lk-Kaskaskia" || loc['location-id'] === "Rend Lk-Big Muddy" || loc['location-id'] === "Wappapello Lk-St Francis" || loc['location-id'] === "Mark Twain Lk-Salt") {
+                        if (lakeLocs.includes(loc['location-id'])) {
                             const precipLakeApiUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup4}?office=${office}&category-id=${loc['location-id']}`;
                             precipLakeTsidPromises.push(
                                 fetch(precipLakeApiUrl)
@@ -376,11 +381,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     loc['bottom-of-conservation'] = bottomOfConservationMap.get(loc['location-id']);
                                     // loc['river-mile'] = riverMileMap.get(loc['location-id']);
                                     loc['tsid-stage'] = stageTsidMap.get(loc['location-id']);
-                                    loc['tsid-forecast-nws'] = forecastNwsTsidMap.get(loc['location-id']);
-                                    loc['tsid-crest'] = crestTsidMap.get(loc['location-id']);
-                                    loc['tsid-precip-lake'] = precipLakeTsidMap.get(loc['location-id']);
-                                    loc['tsid-inflow-yesterday-lake'] = inflowYesterdayLakeTsidMap.get(loc['location-id']);
-                                    loc['tsid-storage-lake'] = storageLakeTsidMap.get(loc['location-id']);
+                                    loc['tsid-nws-forecast'] = forecastNwsTsidMap.get(loc['location-id']);
+                                    loc['tsid-nws-crest'] = crestNwsTsidMap.get(loc['location-id']);
+                                    loc['tsid-lake-precip'] = precipLakeTsidMap.get(loc['location-id']);
+                                    loc['tsid-lake-inflow-yesterday'] = inflowYesterdayLakeTsidMap.get(loc['location-id']);
+                                    loc['tsid-lake-storage'] = storageLakeTsidMap.get(loc['location-id']);
                                 });
                             }
                         });
@@ -394,15 +399,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 dataObj['assigned-locations'] = dataObj['assigned-locations'].filter(location => !location['attribute'].toString().endsWith('.1'));
                             });
                             console.log('Filtered locations with attribute ending in .1:', combinedData);
-
-                            // Step 2: Remove locations without matching 'location-id' in owner's 'assigned-locations'
-                            // combinedData.forEach(dataGroup => {
-                            //     dataGroup['assigned-locations'] = (dataGroup['assigned-locations'] || []).filter(location => {
-                            //         const ownerLocs = location['owner']?.['assigned-locations'];
-                            //         return ownerLocs && ownerLocs.some(ownerLoc => ownerLoc['location-id'] === location['location-id']);
-                            //     });
-                            // });
-                            // console.log('Filtered locations by owner match:', combinedData);
 
                             // Step 3: Remove locations where 'tsid-stage' is null
                             combinedData.forEach(dataGroup => {
@@ -1575,7 +1571,7 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
             // 08 - Nws Forecast Time
             (() => {
                 const nwsForecastTimeCell = document.createElement('td');
-                const tsid_stage_nws_3_day_forecast = location['tsid-forecast-nws']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
+                const tsid_stage_nws_3_day_forecast = location['tsid-nws-forecast']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
 
                 if (tsid_stage_nws_3_day_forecast !== null) {
                     fetchAndLogNwsData(tsid_stage_nws_3_day_forecast, nwsForecastTimeCell);
