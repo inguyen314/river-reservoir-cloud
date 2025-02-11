@@ -1448,16 +1448,16 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
 
             // 08 - Nws Forecast Time PHP
             (() => {
-                const nwsForecastTimeCell = document.createElement('td');
-                const tsid_stage_nws_3_day_forecast = location['tsid-nws-forecast']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
+                const nwsForecastTimeTd = document.createElement('td');
+                const nwsForecastTsid = location['tsid-nws-forecast']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
 
-                if (tsid_stage_nws_3_day_forecast !== null) {
-                    fetchAndLogNwsData(tsid_stage_nws_3_day_forecast, nwsForecastTimeCell);
+                if (nwsForecastTsid !== null) {
+                    fetchAndLogNwsData(nwsForecastTsid, nwsForecastTimeTd);
                 } else {
-                    nwsForecastTimeCell.textContent = '';
+                    nwsForecastTimeTd.textContent = '';
                 }
 
-                row.appendChild(nwsForecastTimeCell);
+                row.appendChild(nwsForecastTimeTd);
             })();
 
             // 09 and 10 - Crest Value and Date Time
@@ -2278,13 +2278,13 @@ function filterDataByTsid(NwsOutput, cwms_ts_id) {
     return filteredData;
 }
 
-async function fetchAndLogNwsData(tsid_stage_nws_3_day_forecast, forecastTimeCell) {
+async function fetchAndLogNwsData(nwsForecastTsid, forecastTimeCell) {
     try {
         const NwsOutput = await fetchDataFromNwsForecastsOutput();
         // console.log('NwsOutput:', NwsOutput);
 
-        const filteredData = filterDataByTsid(NwsOutput, tsid_stage_nws_3_day_forecast);
-        // console.log("Filtered NwsOutput Data for", tsid_stage_nws_3_day_forecast + ":", filteredData);
+        const filteredData = filterDataByTsid(NwsOutput, nwsForecastTsid);
+        // console.log("Filtered NwsOutput Data for", nwsForecastTsid + ":", filteredData);
 
         // Update the HTML element with filtered data
         updateNwsForecastTimeHTML(filteredData, forecastTimeCell);
@@ -2629,12 +2629,12 @@ function fetchAndUpdateStageTd(stageTd, DeltaTd, tsidStage, flood_level, current
     });
 }
 
-function fetchAndUpdateNwsForecastTd(tsidStage, tsid_stage_nws_3_day_forecast, flood_level, currentDateTime, currentDateTimePlus4Days, setBaseUrl) {
+function fetchAndUpdateNwsForecastTd(tsidStage, nwsForecastTsid, flood_level, currentDateTime, currentDateTimePlus4Days, setBaseUrl) {
     return new Promise((resolve, reject) => {
         const { currentDateTimeMidNightISO, currentDateTimePlus4DaysMidNightISO } = generateDateTimeMidNightStringsISO(currentDateTime, currentDateTimePlus4Days);
 
-        if (tsidStage !== null && tsidStage.slice(-2) !== "29" && tsid_stage_nws_3_day_forecast !== null) {
-            const urlNWS = `${setBaseUrl}timeseries?name=${tsid_stage_nws_3_day_forecast}&begin=${currentDateTimeMidNightISO}&end=${currentDateTimePlus4DaysMidNightISO}&office=${office}`;
+        if (tsidStage !== null && tsidStage.slice(-2) !== "29" && nwsForecastTsid !== null) {
+            const urlNWS = `${setBaseUrl}timeseries?name=${nwsForecastTsid}&begin=${currentDateTimeMidNightISO}&end=${currentDateTimePlus4DaysMidNightISO}&office=${office}`;
 
             fetch(urlNWS, {
                 method: 'GET',
@@ -2677,8 +2677,8 @@ function fetchAndUpdateNwsForecastTd(tsidStage, tsid_stage_nws_3_day_forecast, f
     });
 }
 
-function fetchAndUpdateNWSForecastDate(stageCell, tsid_stage_nws_3_day_forecast) {
-    fetchAndLogNwsData(stageCell, tsid_stage_nws_3_day_forecast); // Fetch and update the data
+function fetchAndUpdateNWSForecastDate(stageCell, nwsForecastTsid) {
+    fetchAndLogNwsData(stageCell, nwsForecastTsid); // Fetch and update the data
 }
 
 function fetchAndUpdateCrestTd(stageTd, DeltaTd, tsidStage, flood_level, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl) {
