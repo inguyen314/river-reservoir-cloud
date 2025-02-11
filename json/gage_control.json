@@ -4260,6 +4260,246 @@
                         }
                     ]
                 }
+            },
+            {
+                "location-id": "Washington-Missouri",
+                "office-id": "MVS",
+                "attribute": 4,
+                "metadata": {
+                    "office-id": "MVS",
+                    "name": "Washington-Missouri",
+                    "latitude": 38.559722,
+                    "longitude": -91.0075,
+                    "active": true,
+                    "public-name": "Washington",
+                    "long-name": "Washington-Missouri",
+                    "description": "Missouri River at Washington",
+                    "timezone-name": "US/Central",
+                    "location-kind": "STREAM_LOCATION",
+                    "nation": "US",
+                    "state-initial": "MO",
+                    "county-name": "Franklin",
+                    "nearest-city": "O'Fallon",
+                    "horizontal-datum": "WGS84",
+                    "vertical-datum": "NGVD29",
+                    "elevation": 457.56,
+                    "map-label": "Washington",
+                    "bounding-office-id": "MVS",
+                    "elevation-units": "ft"
+                },
+                "record-stage": {
+                    "office-id": "MVS",
+                    "location-level-id": "Washington-Missouri.Stage.Inst.0.Record Stage",
+                    "constant-value": 457.56,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
+                "lwrp": null,
+                "flood": {
+                    "office-id": "MVS",
+                    "location-level-id": "Washington-Missouri.Stage.Inst.0.Flood",
+                    "constant-value": 19.999999999999996,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
+                "river-mile": [
+                    {
+                        "stream-location-node": {
+                            "id": {
+                                "office-id": "MVS",
+                                "name": "Washington-Missouri"
+                            },
+                            "stream-node": {
+                                "stream-id": {
+                                    "office-id": "MVS",
+                                    "name": "Missouri R"
+                                },
+                                "station": 67,
+                                "station-units": "mi"
+                            }
+                        },
+                        "area-units": "mile2",
+                        "stage-units": "ft"
+                    }
+                ],
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 67,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "07-31-1993"
+                },
+                "tsid-stage": {
+                    "office-id": "MVS",
+                    "id": "Stage",
+                    "time-series-category": {
+                        "office-id": "MVS",
+                        "id": "Washington-Missouri"
+                    },
+                    "assigned-time-series": [
+                        {
+                            "office-id": "MVS",
+                            "timeseries-id": "Washington-Missouri.Stage.Inst.15Minutes.0.lrgsShef-rev",
+                            "ts-code": 3303018
+                        }
+                    ]
+                },
+                "tsid-nws-forecast": {
+                    "office-id": "MVS",
+                    "id": "Forecast-NWS",
+                    "time-series-category": {
+                        "office-id": "MVS",
+                        "id": "Washington-Missouri"
+                    },
+                    "assigned-time-series": [
+                        {
+                            "office-id": "MVS",
+                            "timeseries-id": "Washington-Missouri.Stage.Inst.6Hours.0.RVFShef-FF",
+                            "ts-code": 1788018
+                        }
+                    ]
+                },
+                "tsid-nws-crest": {
+                    "office-id": "MVS",
+                    "id": "Crest",
+                    "time-series-category": {
+                        "office-id": "MVS",
+                        "id": "Washington-Missouri"
+                    },
+                    "assigned-time-series": [
+                        {
+                            "office-id": "MVS",
+                            "timeseries-id": "Washington-Missouri.Stage.Inst.6Hours.0.RVFShef-FX",
+                            "ts-code": 3307018,
+                            "attribute": 1
+                        }
+                    ]
+                }
+            },
+            {
+                "location-id": "St Charles-Missouri",
+                "office-id": "MVS",
+                "attribute": 6,
+                "metadata": {
+                    "office-id": "MVS",
+                    "name": "St Charles-Missouri",
+                    "latitude": 38.7872,
+                    "longitude": -90.471797,
+                    "active": true,
+                    "public-name": "St Charles",
+                    "long-name": "St Charles-Missouri",
+                    "description": "IN SE 1/4 SEC.29, T.47 N., R.5 E., ST. LOUIS COUNTY, ON THE RIGHT BANK APPROXIMATELY A QUARTER MILE DOWNSTREAM FROM HIGHWAY 115 BRIDGE, ON THE ST. CHARLES SAND COMPANY GROUNDS AND AT MILE 27.9 FROM THE MOUTH OF THE MISSOURI RIVER.",
+                    "timezone-name": "US/Central",
+                    "location-kind": "STREAM_LOCATION",
+                    "nation": "US",
+                    "state-initial": "MO",
+                    "county-name": "St. Charles",
+                    "nearest-city": "Saint Charles",
+                    "horizontal-datum": "WGS84",
+                    "published-longitude": -90.471797,
+                    "published-latitude": 38.7872,
+                    "vertical-datum": "NAVD88",
+                    "elevation": 413.46999999999997,
+                    "map-label": "St Charles",
+                    "bounding-office-id": "MVS",
+                    "elevation-units": "ft"
+                },
+                "record-stage": {
+                    "office-id": "MVS",
+                    "location-level-id": "St Charles-Missouri.Stage.Inst.0.Record Stage",
+                    "constant-value": 39.6,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
+                "lwrp": null,
+                "flood": {
+                    "office-id": "MVS",
+                    "location-level-id": "St Charles-Missouri.Stage.Inst.0.Flood",
+                    "constant-value": 24.999999999999996,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
+                "river-mile": [
+                    {
+                        "stream-location-node": {
+                            "id": {
+                                "office-id": "MVS",
+                                "name": "St Charles-Missouri"
+                            },
+                            "stream-node": {
+                                "stream-id": {
+                                    "office-id": "MVS",
+                                    "name": "Missouri R"
+                                },
+                                "bank": "R",
+                                "station": 27.9,
+                                "station-units": "mi"
+                            }
+                        },
+                        "published-station": 27.9,
+                        "total-drainage-area": 529200,
+                        "area-units": "mile2",
+                        "stage-units": "ft"
+                    }
+                ],
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 27.9,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "08-02-1993"
+                },
+                "tsid-stage": {
+                    "office-id": "MVS",
+                    "id": "Stage",
+                    "time-series-category": {
+                        "office-id": "MVS",
+                        "id": "St Charles-Missouri"
+                    },
+                    "assigned-time-series": [
+                        {
+                            "office-id": "MVS",
+                            "timeseries-id": "St Charles-Missouri.Stage.Inst.30Minutes.0.lrgsShef-rev",
+                            "ts-code": 3457018
+                        }
+                    ]
+                },
+                "tsid-nws-forecast": {
+                    "office-id": "MVS",
+                    "id": "Forecast-NWS",
+                    "time-series-category": {
+                        "office-id": "MVS",
+                        "id": "St Charles-Missouri"
+                    },
+                    "assigned-time-series": [
+                        {
+                            "office-id": "MVS",
+                            "timeseries-id": "St Charles-Missouri.Stage.Inst.6Hours.0.RVFShef-FF",
+                            "ts-code": 1789018,
+                            "attribute": 1
+                        }
+                    ]
+                },
+                "tsid-nws-crest": {
+                    "office-id": "MVS",
+                    "id": "Crest",
+                    "time-series-category": {
+                        "office-id": "MVS",
+                        "id": "St Charles-Missouri"
+                    },
+                    "assigned-time-series": [
+                        {
+                            "office-id": "MVS",
+                            "timeseries-id": "St Charles-Missouri.Stage.Inst.6Hours.0.RVFShef-FX",
+                            "ts-code": 3459018,
+                            "attribute": 1
+                        }
+                    ]
+                }
             }
         ]
     },
@@ -6609,6 +6849,339 @@
     },
     {
         "office-id": "MVS",
+        "id": "St Francis",
+        "location-category": {
+            "office-id": "MVS",
+            "id": "Basins",
+            "description": "Clound Apps"
+        },
+        "description": "St Francis",
+        "assigned-locations": [
+            {
+                "location-id": "Patterson-St Francis",
+                "office-id": "MVS",
+                "attribute": 11,
+                "metadata": {
+                    "office-id": "MVS",
+                    "name": "Patterson-St Francis",
+                    "latitude": 37.194581,
+                    "longitude": -90.503361,
+                    "active": true,
+                    "public-name": "Patterson",
+                    "long-name": "Patterson-St Francis",
+                    "description": "IN NE 1/4 SEC.16, T.29 N., R.5 E., WAYNE COUNTY, NEAR LEFT BANK ON DOWNSTREAM SIDE OF BRIDGE PIER ON STATE HIGHWAY 34, 1 MI. UPSTREAM FROM CLARK CREEK, AND 3 MI. EAST OF PATTERSON.",
+                    "timezone-name": "US/Central",
+                    "location-kind": "STREAM_LOCATION",
+                    "nation": "US",
+                    "state-initial": "MO",
+                    "county-name": "Wayne",
+                    "nearest-city": "Patterson",
+                    "horizontal-datum": "WGS84",
+                    "published-longitude": -90.503361,
+                    "published-latitude": 37.194581,
+                    "vertical-datum": "NAVD88",
+                    "elevation": 370.3299999999999,
+                    "map-label": "Patterson",
+                    "bounding-office-id": "MVS",
+                    "elevation-units": "ft"
+                },
+                "record-stage": null,
+                "lwrp": null,
+                "flood": {
+                    "office-id": "MVS",
+                    "location-level-id": "Patterson-St Francis.Stage.Inst.0.Flood",
+                    "constant-value": 15.999999999999998,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
+                "river-mile": [
+                    {
+                        "stream-location-node": {
+                            "id": {
+                                "office-id": "MVS",
+                                "name": "Patterson-St Francis"
+                            },
+                            "stream-node": {
+                                "stream-id": {
+                                    "office-id": "MVS",
+                                    "name": "St Francis R"
+                                },
+                                "station": 0,
+                                "station-units": "mi"
+                            }
+                        },
+                        "total-drainage-area": 955.9999999999999,
+                        "area-units": "mile2",
+                        "stage-units": "ft"
+                    }
+                ],
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": null,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": null
+                },
+                "tsid-stage": {
+                    "office-id": "MVS",
+                    "id": "Stage",
+                    "time-series-category": {
+                        "office-id": "MVS",
+                        "id": "Patterson-St Francis"
+                    },
+                    "assigned-time-series": [
+                        {
+                            "office-id": "MVS",
+                            "timeseries-id": "Patterson-St Francis.Stage.Inst.15Minutes.0.lrgsShef-rev",
+                            "ts-code": 3859018,
+                            "attribute": 1
+                        }
+                    ]
+                },
+                "tsid-nws-forecast": {
+                    "office-id": "MVS",
+                    "id": "Forecast-NWS",
+                    "time-series-category": {
+                        "office-id": "MVS",
+                        "id": "Patterson-St Francis"
+                    },
+                    "assigned-time-series": [
+                        {
+                            "office-id": "MVS",
+                            "timeseries-id": "Patterson-St Francis.Stage.Inst.6Hours.0.RVFShef-FF",
+                            "ts-code": 3863018,
+                            "attribute": 1
+                        }
+                    ]
+                }
+            },
+            {
+                "location-id": "Wappapello Lk-St Francis",
+                "office-id": "MVS",
+                "attribute": 13,
+                "metadata": {
+                    "office-id": "MVS",
+                    "name": "Wappapello Lk-St Francis",
+                    "latitude": 36.9277,
+                    "longitude": -90.284361,
+                    "active": true,
+                    "public-name": "Wappapello Pool",
+                    "long-name": "Wappapello Lk-St Francis",
+                    "description": "AT 0.8 MILES SOUTHWEST OF WAPPAPPELLO, MO. ON THE ST. FRANCIS RIVER, IN GATE HOUSE ON SOUTH SIDE AND AT MILE 213.2 ABOVE THE MOUTH OF THE ST. FRANCIS RIVER",
+                    "timezone-name": "US/Central",
+                    "location-kind": "STREAM_LOCATION",
+                    "nation": "US",
+                    "state-initial": "MO",
+                    "county-name": "Wayne",
+                    "nearest-city": "Wappapello",
+                    "horizontal-datum": "WGS84",
+                    "published-longitude": -90.284361,
+                    "published-latitude": 36.9277,
+                    "vertical-datum": "NAVD88",
+                    "elevation": 347.33,
+                    "map-label": "Wappapello Lk",
+                    "bounding-office-id": "MVS",
+                    "elevation-units": "ft"
+                },
+                "record-stage": {
+                    "office-id": "MVS",
+                    "location-level-id": "Wappapello Lk-St Francis.Stage.Inst.0.Record Stage",
+                    "constant-value": 400.04,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
+                "top-of-flood": {
+                    "office-id": "MVS",
+                    "location-level-id": "Wappapello Lk.Stor.Inst.0.Top of Flood",
+                    "constant-value": 611311.9999999999,
+                    "level-units-id": "ac-ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ac-ft",
+                    "seasonal-values": []
+                },
+                "top-of-conservation": {
+                    "office-id": "MVS",
+                    "location-level-id": "Wappapello Lk.Stor.Inst.0.Top of Conservation",
+                    "constant-value": 27576.999999999996,
+                    "level-units-id": "ac-ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ac-ft",
+                    "seasonal-values": []
+                },
+                "bottom-of-flood": {
+                    "office-id": "MVS",
+                    "location-level-id": "Wappapello Lk.Stor.Inst.0.Bottom of Flood",
+                    "constant-value": 27576.999999999996,
+                    "level-units-id": "ac-ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ac-ft",
+                    "seasonal-values": []
+                },
+                "bottom-of-conservation": {
+                    "office-id": "MVS",
+                    "location-level-id": "Wappapello Lk.Stor.Inst.0.Bottom of Conservation",
+                    "constant-value": 0,
+                    "level-units-id": "ac-ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ac-ft",
+                    "seasonal-values": []
+                },
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 213.2,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": "05-03-2011"
+                },
+                "tsid-stage": {
+                    "office-id": "MVS",
+                    "id": "Stage",
+                    "time-series-category": {
+                        "office-id": "MVS",
+                        "id": "Wappapello Lk-St Francis"
+                    },
+                    "assigned-time-series": [
+                        {
+                            "office-id": "MVS",
+                            "timeseries-id": "Wappapello Lk-St Francis.Stage.Inst.30Minutes.0.29",
+                            "ts-code": 43616018,
+                            "attribute": 1
+                        }
+                    ]
+                },
+                "tsid-lake-precip": {
+                    "office-id": "MVS",
+                    "id": "Precip-Lake",
+                    "time-series-category": {
+                        "office-id": "MVS",
+                        "id": "Wappapello Lk-St Francis"
+                    },
+                    "assigned-time-series": [
+                        {
+                            "office-id": "MVS",
+                            "timeseries-id": "Wappapello Lk-St Francis.Precip.Total.~1Day.1Day.lakerep-rev",
+                            "ts-code": 44150018
+                        }
+                    ]
+                },
+                "tsid-lake-inflow-yesterday": {
+                    "office-id": "MVS",
+                    "id": "Inflow-Yesterday-Lake",
+                    "time-series-category": {
+                        "office-id": "MVS",
+                        "id": "Wappapello Lk-St Francis"
+                    },
+                    "assigned-time-series": [
+                        {
+                            "office-id": "MVS",
+                            "timeseries-id": "Wappapello Lk-St Francis.Flow-In.Ave.~1Day.1Day.lakerep-rev",
+                            "ts-code": 45279018
+                        }
+                    ]
+                },
+                "tsid-lake-storage": {
+                    "office-id": "MVS",
+                    "id": "Storage",
+                    "time-series-category": {
+                        "office-id": "MVS",
+                        "id": "Wappapello Lk-St Francis"
+                    },
+                    "assigned-time-series": [
+                        {
+                            "office-id": "MVS",
+                            "timeseries-id": "Wappapello Lk-St Francis.Stor.Inst.30Minutes.0.RatingCOE",
+                            "ts-code": 15246018
+                        }
+                    ]
+                }
+            },
+            {
+                "location-id": "Iron Bridge-St Francis",
+                "office-id": "MVS",
+                "attribute": 14,
+                "metadata": {
+                    "office-id": "MVS",
+                    "name": "Iron Bridge-St Francis",
+                    "latitude": 36.928083,
+                    "longitude": -90.265358,
+                    "active": true,
+                    "public-name": "Iron Bridge",
+                    "long-name": "Iron Bridge-St Francis",
+                    "description": "AT 0.8 MILES SOUTHWEST OF WAPPAPELLO, MO. ON THE ST. FRANCIS RIVER, AND AT RIVER MILE 211.9 ABOVE THE MOUTH OF THE ST. FRANCIS.",
+                    "timezone-name": "US/Central",
+                    "location-kind": "STREAM_LOCATION",
+                    "nation": "US",
+                    "state-initial": "MO",
+                    "county-name": "Madison",
+                    "nearest-city": "Wappapello",
+                    "horizontal-datum": "WGS84",
+                    "published-longitude": -90.265358,
+                    "published-latitude": 36.928083,
+                    "vertical-datum": "NAVD88",
+                    "elevation": 314.68,
+                    "map-label": "Iron Bridge",
+                    "bounding-office-id": "MVS",
+                    "elevation-units": "ft"
+                },
+                "record-stage": null,
+                "lwrp": null,
+                "flood": {
+                    "office-id": "MVS",
+                    "location-level-id": "Iron Bridge-St Francis.Stage.Inst.0.Flood",
+                    "constant-value": 908.9999999999999,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
+                "river-mile": [
+                    {
+                        "stream-location-node": {
+                            "id": {
+                                "office-id": "MVS",
+                                "name": "Iron Bridge-St Francis"
+                            },
+                            "stream-node": {
+                                "stream-id": {
+                                    "office-id": "MVS",
+                                    "name": "St Francis R"
+                                },
+                                "bank": "R",
+                                "station": 211.9,
+                                "station-units": "mi"
+                            }
+                        },
+                        "total-drainage-area": 1311,
+                        "area-units": "mile2",
+                        "stage-units": "ft"
+                    }
+                ],
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 211.9,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": null
+                },
+                "tsid-stage": {
+                    "office-id": "MVS",
+                    "id": "Stage",
+                    "time-series-category": {
+                        "office-id": "MVS",
+                        "id": "Iron Bridge-St Francis"
+                    },
+                    "assigned-time-series": [
+                        {
+                            "office-id": "MVS",
+                            "timeseries-id": "Iron Bridge-St Francis.Stage.Inst.30Minutes.0.lrgsShef-rev",
+                            "ts-code": 4438018,
+                            "attribute": 1
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "office-id": "MVS",
         "id": "Salt",
         "location-category": {
             "office-id": "MVS",
@@ -6754,6 +7327,90 @@
                             "office-id": "MVS",
                             "timeseries-id": "Mark Twain Lk-Salt.Stor.Inst.30Minutes.0.RatingCOE",
                             "ts-code": 15248018
+                        }
+                    ]
+                }
+            },
+            {
+                "location-id": "Norton Bridge-Salt",
+                "office-id": "MVS",
+                "attribute": 13,
+                "metadata": {
+                    "office-id": "MVS",
+                    "name": "Norton Bridge-Salt",
+                    "latitude": 39.574067,
+                    "longitude": -91.572306,
+                    "active": true,
+                    "public-name": "Norton Bridge",
+                    "long-name": "Norton Bridge-Salt",
+                    "description": "ON DOWNSTREAM HANDRAIL OF BRIDGE AND AT MILE 53.1 ABOVE THE MOUTH OF THE SALT RIVER.",
+                    "timezone-name": "US/Central",
+                    "location-kind": "STREAM_LOCATION",
+                    "nation": "US",
+                    "state-initial": "MO",
+                    "county-name": "Ralls",
+                    "nearest-city": "Hannibal",
+                    "horizontal-datum": "WGS84",
+                    "published-longitude": -91.572306,
+                    "published-latitude": 39.574067,
+                    "vertical-datum": "NAVD88",
+                    "elevation": 499.66999999999996,
+                    "map-label": "Norton Bridge",
+                    "bounding-office-id": "MVS",
+                    "elevation-units": "ft"
+                },
+                "record-stage": null,
+                "lwrp": null,
+                "flood": {
+                    "office-id": "MVS",
+                    "location-level-id": "Norton Bridge-Salt.Stage.Inst.0.Flood",
+                    "constant-value": 24.999999999999996,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
+                "river-mile": [
+                    {
+                        "stream-location-node": {
+                            "id": {
+                                "office-id": "MVS",
+                                "name": "Norton Bridge-Salt"
+                            },
+                            "stream-node": {
+                                "stream-id": {
+                                    "office-id": "MVS",
+                                    "name": "Salt R"
+                                },
+                                "bank": "L",
+                                "station": 53.10000000000001,
+                                "station-units": "mi"
+                            }
+                        },
+                        "published-station": 53.10000000000001,
+                        "total-drainage-area": 2347.9999999999995,
+                        "area-units": "mile2",
+                        "stage-units": "ft"
+                    }
+                ],
+                "river-mile-hard-coded": {
+                    "river_mile_hard_coded": 53.1,
+                    "tsid_null": null,
+                    "record_stage_date_hard_coded": null
+                },
+                "tsid-stage": {
+                    "office-id": "MVS",
+                    "id": "Stage",
+                    "time-series-category": {
+                        "office-id": "MVS",
+                        "id": "Norton Bridge-Salt"
+                    },
+                    "assigned-time-series": [
+                        {
+                            "office-id": "MVS",
+                            "timeseries-id": "Norton Bridge-Salt.Stage.Inst.15Minutes.0.lrgsShef-rev",
+                            "ts-code": 3818018,
+                            "attribute": 1
                         }
                     ]
                 }

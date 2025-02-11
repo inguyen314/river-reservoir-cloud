@@ -492,19 +492,18 @@ document.addEventListener('DOMContentLoaded', async function () {
                             date.setDate(date.getDate() + daysToAdd);
                             return ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
                         };
-
+        
                         const [day1, day2, day3] = [1, 2, 3].map(days => formatDate(days));
                         const combinedDataRiver = structuredClone ? structuredClone(combinedData) : JSON.parse(JSON.stringify(combinedData));
                         const combinedDataReservoir = structuredClone ? structuredClone(combinedData) : JSON.parse(JSON.stringify(combinedData));
-
+        
                         console.log('combinedDataRiver:', combinedDataRiver);
                         console.log('combinedDataReservoir:', combinedDataReservoir);
-
+        
                         const tableRiver = createTableRiver(combinedDataRiver, type, day1, day2, day3, setBaseUrl);
-                        // const tableReservoir = createTableReservoir(combinedDataReservoir, type, day1, day2, day3);
-
-                        // document.getElementById(`table_container_${setReportDiv}`).append(tableRiver, tableReservoir);
-                        document.getElementById(`table_container_${setReportDiv}`).append(tableRiver);
+                        const tableReservoir = createTableReservoir(combinedDataReservoir, type, day1, day2, day3, lakeLocs);
+        
+                        document.getElementById(`table_container_${setReportDiv}`).append(tableRiver, tableReservoir);
 
                         loadingIndicator.style.display = 'none';
                     })
@@ -1600,7 +1599,7 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
             if (["Storage Utilized", "Controlled Outflow", "Pool Forecast"].includes(columnName)) {
                 th.colSpan = 2;
             }
-            th.style.backgroundColor = 'darkblue'; // Set background color to dark blue
+            th.style.backgroundColor = 'darkblue';
             headerRow.appendChild(th);
         });
 
@@ -1615,301 +1614,301 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
             if (columnName === "Storage Utilized") {
                 const thStorageConsr = document.createElement('th');
                 thStorageConsr.textContent = "Consr";
-                thStorageConsr.style.backgroundColor = 'darkblue'; // Set background color to dark blue
+                thStorageConsr.style.backgroundColor = 'darkblue';
                 headerRowLake2.appendChild(thStorageConsr);
 
                 const thStorageFlood = document.createElement('th');
                 thStorageFlood.textContent = "Flood";
-                thStorageFlood.style.backgroundColor = 'darkblue'; // Set background color to dark blue
+                thStorageFlood.style.backgroundColor = 'darkblue';
                 headerRowLake2.appendChild(thStorageFlood);
             }
             if (columnName === "Controlled Outflow") {
                 const thMidnightOutflow = document.createElement('th');
                 thMidnightOutflow.textContent = "Midnight";
-                thMidnightOutflow.style.backgroundColor = 'darkblue'; // Set background color to dark blue
+                thMidnightOutflow.style.backgroundColor = 'darkblue';
                 headerRowLake2.appendChild(thMidnightOutflow);
 
                 const thEveningOutflow = document.createElement('th');
                 thEveningOutflow.textContent = "Evening";
-                thEveningOutflow.style.backgroundColor = 'darkblue'; // Set background color to dark blue
+                thEveningOutflow.style.backgroundColor = 'darkblue';
                 headerRowLake2.appendChild(thEveningOutflow);
             }
             if (columnName === "Pool Forecast") {
                 const thForecastCrest = document.createElement('th');
                 thForecastCrest.textContent = "Crest";
-                thForecastCrest.style.backgroundColor = 'darkblue'; // Set background color to dark blue
+                thForecastCrest.style.backgroundColor = 'darkblue';
                 headerRowLake2.appendChild(thForecastCrest);
 
                 const thForecastDate = document.createElement('th');
                 thForecastDate.textContent = "Date";
-                thForecastDate.style.backgroundColor = 'darkblue'; // Set background color to dark blue
+                thForecastDate.style.backgroundColor = 'darkblue';
                 headerRowLake2.appendChild(thForecastDate);
             }
         });
     })();
 
     // Loop through each basin in the combined data
-    // combinedDataReservoir.forEach((basin) => {
-    //     basin['assigned-locations'].forEach((location) => {
-    //         const row = document.createElement('tr');
+    combinedDataReservoir.forEach((basin) => {
+        basin['assigned-locations'].forEach((location) => {
+            const row = document.createElement('tr');
 
-    //         // 01 - Lake
-    //         (() => {
-    //             const lakeCell = document.createElement('td');
-    //             const lakeValue = location['location-id'].split('-')[0];
-    //             lakeCell.textContent = lakeValue;
-    //             row.appendChild(lakeCell);
-    //         })();
+            // 01 - Lake
+            (() => {
+                const lakeTd = document.createElement('td');
+                const lakeValue = location['location-id'].split('-')[0];
+                lakeTd.textContent = lakeValue;
+                row.appendChild(lakeTd);
+            })();
 
-    //         // 02 - Current Level
-    //         (() => {
-    //             // Check if 'stage-last-value' exists, is an array, and has the necessary properties
-    //             const tsid = (location['stage-last-value'] && Array.isArray(location['stage-last-value']) && location['stage-last-value'][0]?.['tsid'])
-    //                 ? location['stage-last-value'][0]['tsid']
-    //                 : null;
+            // 02 - Current Level
+            // (() => {
+            //     // Check if 'stage-last-value' exists, is an array, and has the necessary properties
+            //     const tsid = (location['stage-last-value'] && Array.isArray(location['stage-last-value']) && location['stage-last-value'][0]?.['tsid'])
+            //         ? location['stage-last-value'][0]['tsid']
+            //         : null;
 
-    //             const link = tsid
-    //                 ? `https://wm.mvs.ds.usace.army.mil/apps/chart/index.html?&office=MVS&cwms_ts_id=${tsid}&cda=internal&lookback=4&lookforward=0`
-    //                 : '#'; // Use a placeholder if tsid is missing
+            //     const link = tsid
+            //         ? `https://wm.mvs.ds.usace.army.mil/apps/chart/index.html?&office=MVS&cwms_ts_id=${tsid}&cda=internal&lookback=4&lookforward=0`
+            //         : '#'; // Use a placeholder if tsid is missing
 
-    //             const currentLevelTd = document.createElement('td');
-    //             const linkElement = document.createElement('a');
-    //             linkElement.href = link;
-    //             linkElement.target = '_blank';
+            //     const currentLevelTd = document.createElement('td');
+            //     const linkElement = document.createElement('a');
+            //     linkElement.href = link;
+            //     linkElement.target = '_blank';
 
-    //             const currentLevel = (location['stage-last-value'] && Array.isArray(location['stage-last-value']) && location['stage-last-value'][0]?.['value'])
-    //                 ? location['stage-last-value'][0]['value']
-    //                 : null;
+            //     const currentLevel = (location['stage-last-value'] && Array.isArray(location['stage-last-value']) && location['stage-last-value'][0]?.['value'])
+            //         ? location['stage-last-value'][0]['value']
+            //         : null;
 
-    //             const floodValue = location['flood']?.['constant-value'] ?? null;
-    //             const recordStage = location['record-stage'];
-    //             const recordStageValue = recordStage ? recordStage['constant-value'] : null;
+            //     const floodValue = location['flood']?.['constant-value'] ?? null;
+            //     const recordStage = location['record-stage'];
+            //     const recordStageValue = recordStage ? recordStage['constant-value'] : null;
 
-    //             // Set text content and styles based on flood and recordStage thresholds
-    //             if (currentLevel != null) {
-    //                 const formattedLevel = currentLevel.toFixed(2);
-    //                 linkElement.textContent = formattedLevel;
+            //     // Set text content and styles based on flood and recordStage thresholds
+            //     if (currentLevel != null) {
+            //         const formattedLevel = currentLevel.toFixed(2);
+            //         linkElement.textContent = formattedLevel;
 
-    //                 if (recordStageValue !== null && currentLevel >= recordStageValue) {
-    //                     linkElement.classList.add('record_breaking'); // Add "alert" class when currentLevel >= recordStageValue
-    //                 }
+            //         if (recordStageValue !== null && currentLevel >= recordStageValue) {
+            //             linkElement.classList.add('record_breaking'); // Add "alert" class when currentLevel >= recordStageValue
+            //         }
 
-    //                 if (floodValue != null && currentLevel >= floodValue) {
-    //                     linkElement.style.color = 'red';  // Make text red if currentLevel exceeds floodValue
-    //                 }
+            //         if (floodValue != null && currentLevel >= floodValue) {
+            //             linkElement.style.color = 'red';  // Make text red if currentLevel exceeds floodValue
+            //         }
 
-    //             } else {
-    //                 linkElement.textContent = '';  // Display an empty string if currentLevel is null
-    //             }
+            //     } else {
+            //         linkElement.textContent = '';  // Display an empty string if currentLevel is null
+            //     }
 
-    //             currentLevelTd.appendChild(linkElement);
-    //             row.appendChild(currentLevelTd);
-    //         })();
+            //     currentLevelTd.appendChild(linkElement);
+            //     row.appendChild(currentLevelTd);
+            // })();
 
-    //         // 03 - 24hr Delta
-    //         (() => {
-    //             const deltaCell = document.createElement('td');
+            // 03 - 24hr Delta
+            // (() => {
+            //     const deltaCell = document.createElement('td');
 
-    //             // Check if 'stage-last-value' exists, is an array, and has at least one element with 'delta' property
-    //             let deltaValue = (location['stage-last-value'] && Array.isArray(location['stage-last-value']) && location['stage-last-value'][0]?.['delta'] !== undefined)
-    //                 ? location['stage-last-value'][0]['delta']
-    //                 : "N/A";  // Default to "N/A" if 'delta' is not available
+            //     // Check if 'stage-last-value' exists, is an array, and has at least one element with 'delta' property
+            //     let deltaValue = (location['stage-last-value'] && Array.isArray(location['stage-last-value']) && location['stage-last-value'][0]?.['delta'] !== undefined)
+            //         ? location['stage-last-value'][0]['delta']
+            //         : "N/A";  // Default to "N/A" if 'delta' is not available
 
-    //             // Format deltaValue to 2 decimal places if it's a number
-    //             deltaCell.textContent = typeof deltaValue === 'number' ? deltaValue.toFixed(2) : deltaValue;
-    //             row.appendChild(deltaCell);
-    //         })();
+            //     // Format deltaValue to 2 decimal places if it's a number
+            //     deltaCell.textContent = typeof deltaValue === 'number' ? deltaValue.toFixed(2) : deltaValue;
+            //     row.appendChild(deltaCell);
+            // })();
 
-    //         // 04 - Consr Storage
-    //         (() => {
-    //             const conservationStorageCell = document.createElement('td');
+            // 04 - Consr Storage
+            // (() => {
+            //     const conservationStorageCell = document.createElement('td');
 
-    //             let conservationStorageValue = null;
+            //     let conservationStorageValue = null;
 
-    //             const storageLevel = (location['storage-lake-last-value'] && Array.isArray(location['storage-lake-last-value']) && location['storage-lake-last-value'][0]?.['value'])
-    //                 ? location['storage-lake-last-value'][0]['value']
-    //                 : null;
-    //             // console.log("storageLevel: ", storageLevel);
+            //     const storageLevel = (location['storage-lake-last-value'] && Array.isArray(location['storage-lake-last-value']) && location['storage-lake-last-value'][0]?.['value'])
+            //         ? location['storage-lake-last-value'][0]['value']
+            //         : null;
+            //     // console.log("storageLevel: ", storageLevel);
 
-    //             const topOfConservationLevel = location['top-of-conservation']?.['constant-value'] || null;
-    //             // console.log("topOfConservationLevel: ", topOfConservationLevel);
+            //     const topOfConservationLevel = location['top-of-conservation']?.['constant-value'] || null;
+            //     // console.log("topOfConservationLevel: ", topOfConservationLevel);
 
-    //             const bottomOfConservationLevel = location['bottom-of-conservation']?.['constant-value'] || null;
-    //             // console.log("bottomOfConservationLevel: ", bottomOfConservationLevel);
+            //     const bottomOfConservationLevel = location['bottom-of-conservation']?.['constant-value'] || null;
+            //     // console.log("bottomOfConservationLevel: ", bottomOfConservationLevel);
 
-    //             if (storageLevel > 0.0 && topOfConservationLevel > 0.0 && bottomOfConservationLevel >= 0.0) {
-    //                 if (storageLevel < bottomOfConservationLevel) {
-    //                     conservationStorageValue = "0.00%";
-    //                 } else if (storageLevel > topOfConservationLevel) {
-    //                     conservationStorageValue = "100.00%";
-    //                 } else {
-    //                     const total = (storageLevel - bottomOfConservationLevel) / (topOfConservationLevel - bottomOfConservationLevel) * 100;
-    //                     conservationStorageValue = total.toFixed(2) + "%";
-    //                 }
-    //             } else {
-    //                 conservationStorageValue = "%";
-    //             }
+            //     if (storageLevel > 0.0 && topOfConservationLevel > 0.0 && bottomOfConservationLevel >= 0.0) {
+            //         if (storageLevel < bottomOfConservationLevel) {
+            //             conservationStorageValue = "0.00%";
+            //         } else if (storageLevel > topOfConservationLevel) {
+            //             conservationStorageValue = "100.00%";
+            //         } else {
+            //             const total = (storageLevel - bottomOfConservationLevel) / (topOfConservationLevel - bottomOfConservationLevel) * 100;
+            //             conservationStorageValue = total.toFixed(2) + "%";
+            //         }
+            //     } else {
+            //         conservationStorageValue = "%";
+            //     }
 
-    //             conservationStorageCell.innerHTML = conservationStorageValue;
-    //             row.appendChild(conservationStorageCell);
-    //         })();
+            //     conservationStorageCell.innerHTML = conservationStorageValue;
+            //     row.appendChild(conservationStorageCell);
+            // })();
 
-    //         // 05 - Flood Storage
-    //         (() => {
-    //             const floodStorageCell = document.createElement('td');
-    //             let floodStorageValue = null;
+            // 05 - Flood Storage
+            // (() => {
+            //     const floodStorageCell = document.createElement('td');
+            //     let floodStorageValue = null;
 
-    //             const storageLevel = (location['storage-lake-last-value'] && Array.isArray(location['storage-lake-last-value']) && location['storage-lake-last-value'][0]?.['value'])
-    //                 ? location['storage-lake-last-value'][0]['value']
-    //                 : null;
-    //             // console.log("storageLevel: ", storageLevel);
+            //     const storageLevel = (location['storage-lake-last-value'] && Array.isArray(location['storage-lake-last-value']) && location['storage-lake-last-value'][0]?.['value'])
+            //         ? location['storage-lake-last-value'][0]['value']
+            //         : null;
+            //     // console.log("storageLevel: ", storageLevel);
 
-    //             const topOfFloodLevel = location['top-of-flood']?.['constant-value'] || null;
-    //             // console.log("topOfFloodLevel: ", topOfFloodLevel);
+            //     const topOfFloodLevel = location['top-of-flood']?.['constant-value'] || null;
+            //     // console.log("topOfFloodLevel: ", topOfFloodLevel);
 
-    //             const bottomOfFloodLevel = location['bottom-of-flood']?.['constant-value'] || null;
-    //             // console.log("bottomOfFloodLevel: ", bottomOfFloodLevel);
+            //     const bottomOfFloodLevel = location['bottom-of-flood']?.['constant-value'] || null;
+            //     // console.log("bottomOfFloodLevel: ", bottomOfFloodLevel);
 
-    //             if (storageLevel > 0.0 && topOfFloodLevel > 0.0 && bottomOfFloodLevel >= 0.0) {
-    //                 if (storageLevel < bottomOfFloodLevel) {
-    //                     floodStorageValue = "0.0%";
-    //                 } else if (storageLevel > topOfFloodLevel) {
-    //                     floodStorageValue = "100.0%";
-    //                 } else {
-    //                     const total = ((storageLevel) - (bottomOfFloodLevel)) / ((topOfFloodLevel) - (bottomOfFloodLevel)) * 100;
-    //                     floodStorageValue = total.toFixed(1) + "%";
-    //                 }
-    //             } else {
-    //                 floodStorageValue = "%";
-    //             }
+            //     if (storageLevel > 0.0 && topOfFloodLevel > 0.0 && bottomOfFloodLevel >= 0.0) {
+            //         if (storageLevel < bottomOfFloodLevel) {
+            //             floodStorageValue = "0.0%";
+            //         } else if (storageLevel > topOfFloodLevel) {
+            //             floodStorageValue = "100.0%";
+            //         } else {
+            //             const total = ((storageLevel) - (bottomOfFloodLevel)) / ((topOfFloodLevel) - (bottomOfFloodLevel)) * 100;
+            //             floodStorageValue = total.toFixed(1) + "%";
+            //         }
+            //     } else {
+            //         floodStorageValue = "%";
+            //     }
 
-    //             floodStorageCell.textContent = floodStorageValue;
-    //             row.appendChild(floodStorageCell);
-    //         })();
+            //     floodStorageCell.textContent = floodStorageValue;
+            //     row.appendChild(floodStorageCell);
+            // })();
 
-    //         // 06 - Precip
-    //         (() => {
-    //             const precipCell = document.createElement('td');
+            // 06 - Precip
+            // (() => {
+            //     const precipCell = document.createElement('td');
 
-    //             // Check if 'precip-lake-last-value' exists, is an array, and has at least one element
-    //             let precipValue = (location['precip-lake-last-value'] && Array.isArray(location['precip-lake-last-value']) && location['precip-lake-last-value'][0])
-    //                 ? location['precip-lake-last-value'][0]['value']
-    //                 : "N/A";  // Default to "N/A" if the value doesn't exist or is not an array
+            //     // Check if 'precip-lake-last-value' exists, is an array, and has at least one element
+            //     let precipValue = (location['precip-lake-last-value'] && Array.isArray(location['precip-lake-last-value']) && location['precip-lake-last-value'][0])
+            //         ? location['precip-lake-last-value'][0]['value']
+            //         : "N/A";  // Default to "N/A" if the value doesn't exist or is not an array
 
-    //             // Ensure the value is a number before calling toFixed
-    //             if (typeof precipValue === 'number') {
-    //                 precipValue = precipValue.toFixed(2); // Format to 2 decimal places
-    //             } else {
-    //                 precipValue = "--";
-    //             }
+            //     // Ensure the value is a number before calling toFixed
+            //     if (typeof precipValue === 'number') {
+            //         precipValue = precipValue.toFixed(2); // Format to 2 decimal places
+            //     } else {
+            //         precipValue = "--";
+            //     }
 
-    //             precipCell.textContent = precipValue;
-    //             row.appendChild(precipCell);
-    //         })();
+            //     precipCell.textContent = precipValue;
+            //     row.appendChild(precipCell);
+            // })();
 
-    //         // 07 - Yesterdays Inflow
-    //         (() => {
-    //             const yesterdaysInflowCell = document.createElement('td');
+            // 07 - Yesterdays Inflow
+            // (() => {
+            //     const yesterdaysInflowCell = document.createElement('td');
 
-    //             // Check if 'inflow-yesterday-lake-last-value' exists and is an array, then get the first element
-    //             let yesterdaysInflowValue = (location['inflow-yesterday-lake-last-value'] && Array.isArray(location['inflow-yesterday-lake-last-value']) && location['inflow-yesterday-lake-last-value'][0])
-    //                 ? location['inflow-yesterday-lake-last-value'][0]['value']
-    //                 : "N/A";  // Default to "N/A" if the value doesn't exist or is not an array
+            //     // Check if 'inflow-yesterday-lake-last-value' exists and is an array, then get the first element
+            //     let yesterdaysInflowValue = (location['inflow-yesterday-lake-last-value'] && Array.isArray(location['inflow-yesterday-lake-last-value']) && location['inflow-yesterday-lake-last-value'][0])
+            //         ? location['inflow-yesterday-lake-last-value'][0]['value']
+            //         : "N/A";  // Default to "N/A" if the value doesn't exist or is not an array
 
-    //             // Ensure the value is a number before calling toFixed
-    //             if (typeof yesterdaysInflowValue === 'number') {
-    //                 yesterdaysInflowValue = yesterdaysInflowValue.toFixed(0); // Format as an integer
-    //             } else {
-    //                 yesterdaysInflowValue = "--";
-    //             }
+            //     // Ensure the value is a number before calling toFixed
+            //     if (typeof yesterdaysInflowValue === 'number') {
+            //         yesterdaysInflowValue = yesterdaysInflowValue.toFixed(0); // Format as an integer
+            //     } else {
+            //         yesterdaysInflowValue = "--";
+            //     }
 
-    //             yesterdaysInflowCell.textContent = yesterdaysInflowValue;
-    //             row.appendChild(yesterdaysInflowCell);
-    //         })();
+            //     yesterdaysInflowCell.textContent = yesterdaysInflowValue;
+            //     row.appendChild(yesterdaysInflowCell);
+            // })();
 
-    //         // 08 - Midnight - Controlled Outflow
-    //         (() => {
-    //             const midnightControlledOutflowCell = document.createElement('td');
-    //             const midnightControlledOutflowValue = "--";
-    //             fetchAndLogMidnightFlowData(location['location-id'], midnightControlledOutflowCell);
-    //             midnightControlledOutflowCell.textContent = midnightControlledOutflowValue;
-    //             row.appendChild(midnightControlledOutflowCell);
-    //         })();
+            // 08 - Midnight - Controlled Outflow
+            // (() => {
+            //     const midnightControlledOutflowCell = document.createElement('td');
+            //     const midnightControlledOutflowValue = "--";
+            //     fetchAndLogMidnightFlowData(location['location-id'], midnightControlledOutflowCell);
+            //     midnightControlledOutflowCell.textContent = midnightControlledOutflowValue;
+            //     row.appendChild(midnightControlledOutflowCell);
+            // })();
 
-    //         // 09 - Evening - Controlled Outflow
-    //         (() => {
-    //             const eveningControlledOutflowCell = document.createElement('td');
-    //             const eveningControlledOutflowValue = "--";
-    //             fetchAndLogEveningFlowData(location['location-id'], eveningControlledOutflowCell);
-    //             eveningControlledOutflowCell.textContent = eveningControlledOutflowValue;
-    //             row.appendChild(eveningControlledOutflowCell);
-    //         })();
+            // 09 - Evening - Controlled Outflow
+            // (() => {
+            //     const eveningControlledOutflowCell = document.createElement('td');
+            //     const eveningControlledOutflowValue = "--";
+            //     fetchAndLogEveningFlowData(location['location-id'], eveningControlledOutflowCell);
+            //     eveningControlledOutflowCell.textContent = eveningControlledOutflowValue;
+            //     row.appendChild(eveningControlledOutflowCell);
+            // })();
 
-    //         // 10 - Seasonal Rule Curve
-    //         (() => {
-    //             const seasonalRuleCurveCell = document.createElement('td');
-    //             const seasonalRuleCurveValue = "--";
-    //             fetchAndLogSeasonalRuleCurveData(location['location-id'], seasonalRuleCurveCell);
-    //             seasonalRuleCurveCell.textContent = seasonalRuleCurveValue;
-    //             row.appendChild(seasonalRuleCurveCell);
-    //         })();
+            // 10 - Seasonal Rule Curve
+            // (() => {
+            //     const seasonalRuleCurveCell = document.createElement('td');
+            //     const seasonalRuleCurveValue = "--";
+            //     fetchAndLogSeasonalRuleCurveData(location['location-id'], seasonalRuleCurveCell);
+            //     seasonalRuleCurveCell.textContent = seasonalRuleCurveValue;
+            //     row.appendChild(seasonalRuleCurveCell);
+            // })();
 
-    //         // 11 - Crest - Pool Forecast
-    //         (() => {
-    //             const crestPoolForecastCell = document.createElement('td');
-    //             const crestPoolForecastValue = "--";
-    //             fetchAndLogPoolForecastData(location['location-id'], crestPoolForecastCell);
-    //             crestPoolForecastCell.textContent = crestPoolForecastValue;
-    //             row.appendChild(crestPoolForecastCell);
-    //         })();
+            // 11 - Crest - Pool Forecast
+            // (() => {
+            //     const crestPoolForecastCell = document.createElement('td');
+            //     const crestPoolForecastValue = "--";
+            //     fetchAndLogPoolForecastData(location['location-id'], crestPoolForecastCell);
+            //     crestPoolForecastCell.textContent = crestPoolForecastValue;
+            //     row.appendChild(crestPoolForecastCell);
+            // })();
 
-    //         // 12 - Date - Pool Forecast
-    //         (() => {
-    //             const datePoolForecastCell = document.createElement('td');
-    //             const datePoolForecastValue = "--";
-    //             fetchAndLogPoolForecastDateData(location['location-id'], datePoolForecastCell);
-    //             datePoolForecastCell.textContent = datePoolForecastValue;
-    //             row.appendChild(datePoolForecastCell);
-    //         })();
+            // 12 - Date - Pool Forecast
+            // (() => {
+            //     const datePoolForecastCell = document.createElement('td');
+            //     const datePoolForecastValue = "--";
+            //     fetchAndLogPoolForecastDateData(location['location-id'], datePoolForecastCell);
+            //     datePoolForecastCell.textContent = datePoolForecastValue;
+            //     row.appendChild(datePoolForecastCell);
+            // })();
 
-    //         // 13 - Record Stage
-    //         (() => {
-    //             const recordStageCell = document.createElement('td');
-    //             const recordStage = location['record-stage'];
-    //             const recordStageValue = recordStage ? recordStage['constant-value'] : null;
+            // 13 - Record Stage
+            // (() => {
+            //     const recordStageCell = document.createElement('td');
+            //     const recordStage = location['record-stage'];
+            //     const recordStageValue = recordStage ? recordStage['constant-value'] : null;
 
-    //             // Check if recordStageValue is valid and within the required range
-    //             recordStageCell.textContent = recordStageValue != null && recordStageValue <= 900
-    //                 ? recordStageValue.toFixed(2)
-    //                 : '';
+            //     // Check if recordStageValue is valid and within the required range
+            //     recordStageCell.textContent = recordStageValue != null && recordStageValue <= 900
+            //         ? recordStageValue.toFixed(2)
+            //         : '';
 
-    //             row.appendChild(recordStageCell);
-    //         })();
+            //     row.appendChild(recordStageCell);
+            // })();
 
-    //         // 14 - Record Date
-    //         (() => {
-    //             const recordDateCell = document.createElement('td');
+            // 14 - Record Date
+            // (() => {
+            //     const recordDateCell = document.createElement('td');
 
-    //             // const recordStage = location['record-stage'];
-    //             // const recordStageDate = recordStage ? recordStage['level-date'] : null;
-    //             // Check if recordStageDate is valid and within the required range
-    //             // recordDateCell.textContent = recordStageDate != null
-    //             //     ? recordStageDate
-    //             //     : '';
+            //     // const recordStage = location['record-stage'];
+            //     // const recordStageDate = recordStage ? recordStage['level-date'] : null;
+            //     // Check if recordStageDate is valid and within the required range
+            //     // recordDateCell.textContent = recordStageDate != null
+            //     //     ? recordStageDate
+            //     //     : '';
 
-    //             const recordDateValue = location['river-mile-hard-coded'] && location['river-mile-hard-coded']['record_stage_date_hard_coded'];
-    //             recordDateCell.textContent = recordDateValue != null ? recordDateValue : "";
-    //             // Set the title for the cell
-    //             recordDateCell.title = "Hard Coded with Json File";
-    //             // Set halo effect using text-shadow with orange color
-    //             recordDateCell.style.textShadow = '0 0 2px rgba(255, 165, 0, 0.7), 0 0 2px rgba(255, 140, 0, 0.5)';
+            //     const recordDateValue = location['river-mile-hard-coded'] && location['river-mile-hard-coded']['record_stage_date_hard_coded'];
+            //     recordDateCell.textContent = recordDateValue != null ? recordDateValue : "";
+            //     // Set the title for the cell
+            //     recordDateCell.title = "Hard Coded with Json File";
+            //     // Set halo effect using text-shadow with orange color
+            //     recordDateCell.style.textShadow = '0 0 2px rgba(255, 165, 0, 0.7), 0 0 2px rgba(255, 140, 0, 0.5)';
 
-    //             row.appendChild(recordDateCell);
-    //         })();
+            //     row.appendChild(recordDateCell);
+            // })();
 
-    //         table.appendChild(row);
-    //     });
-    // });
+            table.appendChild(row);
+        });
+    });
 
     // Return the constructed table element
     return table;
