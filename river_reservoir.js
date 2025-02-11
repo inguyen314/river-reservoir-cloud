@@ -1701,53 +1701,33 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
                 row.appendChild(deltaTd);
             })();
 
-            // 03 - 24hr Delta
-            // (() => {
-            //     const deltaCell = document.createElement('td');
-
-            //     // Check if 'stage-last-value' exists, is an array, and has at least one element with 'delta' property
-            //     let deltaValue = (location['stage-last-value'] && Array.isArray(location['stage-last-value']) && location['stage-last-value'][0]?.['delta'] !== undefined)
-            //         ? location['stage-last-value'][0]['delta']
-            //         : "N/A";  // Default to "N/A" if 'delta' is not available
-
-            //     // Format deltaValue to 2 decimal places if it's a number
-            //     deltaCell.textContent = typeof deltaValue === 'number' ? deltaValue.toFixed(2) : deltaValue;
-            //     row.appendChild(deltaCell);
-            // })();
-
             // 04 - Consr Storage
-            // (() => {
-            //     const conservationStorageCell = document.createElement('td');
+            (() => {
+                const ConsrTd = document.createElement('td');
+                const FloodTd = document.createElement('td');
 
-            //     let conservationStorageValue = null;
+                const topOfConservationLevel = location['top-of-conservation']?.['constant-value'] || null;
+                // console.log("topOfConservationLevel: ", topOfConservationLevel);
 
-            //     const storageLevel = (location['storage-lake-last-value'] && Array.isArray(location['storage-lake-last-value']) && location['storage-lake-last-value'][0]?.['value'])
-            //         ? location['storage-lake-last-value'][0]['value']
-            //         : null;
-            //     // console.log("storageLevel: ", storageLevel);
+                const bottomOfConservationLevel = location['bottom-of-conservation']?.['constant-value'] || null;
+                // console.log("bottomOfConservationLevel: ", bottomOfConservationLevel);
 
-            //     const topOfConservationLevel = location['top-of-conservation']?.['constant-value'] || null;
-            //     // console.log("topOfConservationLevel: ", topOfConservationLevel);
+                const topOfFloodLevel = location['top-of-flood']?.['constant-value'] || null;
+                // console.log("topOfFloodLevel: ", topOfFloodLevel);
 
-            //     const bottomOfConservationLevel = location['bottom-of-conservation']?.['constant-value'] || null;
-            //     // console.log("bottomOfConservationLevel: ", bottomOfConservationLevel);
+                const bottomOfFloodLevel = location['bottom-of-flood']?.['constant-value'] || null;
+                // console.log("bottomOfFloodLevel: ", bottomOfFloodLevel);
 
-            //     if (storageLevel > 0.0 && topOfConservationLevel > 0.0 && bottomOfConservationLevel >= 0.0) {
-            //         if (storageLevel < bottomOfConservationLevel) {
-            //             conservationStorageValue = "0.00%";
-            //         } else if (storageLevel > topOfConservationLevel) {
-            //             conservationStorageValue = "100.00%";
-            //         } else {
-            //             const total = (storageLevel - bottomOfConservationLevel) / (topOfConservationLevel - bottomOfConservationLevel) * 100;
-            //             conservationStorageValue = total.toFixed(2) + "%";
-            //         }
-            //     } else {
-            //         conservationStorageValue = "%";
-            //     }
+                const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
+                const storageTsid = location?.['tsid-lake-storage']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
 
-            //     conservationStorageCell.innerHTML = conservationStorageValue;
-            //     row.appendChild(conservationStorageCell);
-            // })();
+                if (storageTsid) {
+                    fetchAndUpdateStorageTd(ConsrTd, FloodTd, storageTsid, floodValue, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl, topOfConservationLevel, bottomOfConservationLevel, topOfFloodLevel, bottomOfFloodLevel);
+                }
+
+                row.appendChild(ConsrTd);
+                row.appendChild(FloodTd);
+            })();
 
             // 05 - Flood Storage
             // (() => {
@@ -3331,6 +3311,79 @@ function fetchAndUpdateWaterQuality(waterQualityCell, tsid, label, currentDateTi
                 console.error("Error fetching or processing data:", error);
             });
     }
+}
+
+function fetchAndUpdateStorageTd(stageTd, DeltaTd, tsidStage, flood_level, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl, topOfConservationLevel, bottomOfConservationLevel, topOfFloodLevel, bottomOfFloodLevel) {
+    return new Promise((resolve, reject) => {
+        if (tsidStage !== null) {
+            const urlStage = `${setBaseUrl}timeseries?name=${tsidStage}&begin=${currentDateTimeMinus30Hours.toISOString()}&end=${currentDateTime.toISOString()}&office=${office}`;
+
+            // console.log("urlStage = ", urlStage);
+            fetch(urlStage, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json;version=2'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(stage => {
+                    stage.values.forEach(entry => {
+                        entry[0] = formatNWSDate(entry[0]);
+                    });
+
+                    const lastNonNullValue = getLastNonNullValue(stage);
+                    let valueLast = null;
+                    let timestampLast = null;
+
+                    if (lastNonNullValue !== null) {
+                        timestampLast = lastNonNullValue.timestamp;
+                        valueLast = parseFloat(lastNonNullValue.value).toFixed(2);
+                    }
+
+                    const c_count = calculateCCount(tsidStage);
+                    const lastNonNull24HoursValue = getLastNonNull24HoursValue(stage, c_count);
+                    let value24HoursLast = null;
+                    let timestamp24HoursLast = null;
+
+                    if (lastNonNull24HoursValue !== null) {
+                        timestamp24HoursLast = lastNonNull24HoursValue.timestamp;
+                        value24HoursLast = parseFloat(lastNonNull24HoursValue.value).toFixed(2);
+                    }
+
+                    const delta_24 = (valueLast !== null && value24HoursLast !== null)
+                        ? (valueLast - value24HoursLast).toFixed(2)
+                        : null;
+
+                    let innerHTMLStage;
+                    if (valueLast === null) {
+                        innerHTMLStage = "<span class='missing'>-M-</span>";
+                    } else {
+                        const floodClass = determineStageClass(valueLast, flood_level);
+                        innerHTMLStage = `<span class='${floodClass}' title='${stage.name}, Value = ${valueLast}, Date Time = ${timestampLast}'>
+                                            <a href='../chart?office=${office}&cwms_ts_id=${stage.name}&lookback=4' target='_blank'>
+                                                ${valueLast}
+                                            </a>
+                                         </span>`;
+                    }
+
+                    stageTd.innerHTML = innerHTMLStage;
+                    DeltaTd.innerHTML = delta_24 !== null ? delta_24 : "-";
+
+                    resolve({ stageTd: valueLast, deltaTd: delta_24 });
+                })
+                .catch(error => {
+                    console.error("Error fetching or processing data:", error);
+                    reject(error);
+                });
+        } else {
+            resolve({ stageTd: null, deltaTd: null });
+        }
+    });
 }
 
 /******************************************************************************
