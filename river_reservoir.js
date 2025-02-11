@@ -2651,9 +2651,19 @@ function fetchAndUpdateNwsForecastTd(tsidStage, tsid_stage_nws_3_day_forecast, f
 
                     const valuesWithTimeNoon = extractValuesWithTimeNoon(nws3Days.values);
 
-                    const firstMiddleValue = valuesWithTimeNoon?.[1]?.[1] !== null ? parseFloat(valuesWithTimeNoon?.[1]?.[1]).toFixed(2) : "";
-                    const secondMiddleValue = valuesWithTimeNoon?.[2]?.[1] !== null ? parseFloat(valuesWithTimeNoon?.[2]?.[1]).toFixed(2) : "";
-                    const thirdMiddleValue = valuesWithTimeNoon?.[3]?.[1] !== null ? parseFloat(valuesWithTimeNoon?.[3]?.[1]).toFixed(2) : "";
+                    const getFormattedValue = (arr, index) => {
+                        const rawValue = arr?.[index]?.[1];
+                        return rawValue !== null && rawValue !== undefined && !isNaN(parseFloat(rawValue))
+                            ? parseFloat(rawValue).toFixed(2)
+                            : "-";
+                    };
+
+                    const firstMiddleValue = getFormattedValue(valuesWithTimeNoon, 1);
+                    const secondMiddleValue = getFormattedValue(valuesWithTimeNoon, 2);
+                    const thirdMiddleValue = getFormattedValue(valuesWithTimeNoon, 3);
+
+
+                    console.log("firstMiddleValue: ", firstMiddleValue);
 
                     resolve({ nwsDay1Td: firstMiddleValue, nwsDay2Td: secondMiddleValue, nwsDay3Td: thirdMiddleValue });
                 })
