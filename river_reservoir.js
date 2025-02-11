@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                         // For Rivers only
                         if (!lakeLocs.includes(loc['location-id'])) {
-                            const riverMileApiUrl = `${setBaseUrl}stream-locations?office-mask=MVS&name-mask=${loc['location-id']}`;
+                            const riverMileApiUrl = `${setBaseUrl}stream-locations?office-mask=${office}&name-mask=${loc['location-id']}`;
                             riverMilePromises.push(fetch(riverMileApiUrl)
                                 .then(response => response.ok ? response.json() : null)
                                 .then(data => data && riverMileMap.set(loc['location-id'], data))
