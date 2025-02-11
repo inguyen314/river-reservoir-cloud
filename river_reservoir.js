@@ -3313,13 +3313,13 @@ function fetchAndUpdateWaterQuality(waterQualityCell, tsid, label, currentDateTi
     }
 }
 
-function fetchAndUpdateStorageTd(stageTd, DeltaTd, tsidStage, flood_level, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl, topOfConservationLevel, bottomOfConservationLevel, topOfFloodLevel, bottomOfFloodLevel) {
+function fetchAndUpdateStorageTd(stageTd, DeltaTd, tsidStorage, flood_level, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl, topOfConservationLevel, bottomOfConservationLevel, topOfFloodLevel, bottomOfFloodLevel) {
     return new Promise((resolve, reject) => {
-        if (tsidStage !== null) {
-            const urlStage = `${setBaseUrl}timeseries?name=${tsidStage}&begin=${currentDateTimeMinus30Hours.toISOString()}&end=${currentDateTime.toISOString()}&office=${office}`;
+        if (tsidStorage !== null) {
+            const urlStorage = `${setBaseUrl}timeseries?name=${tsidStorage}&begin=${currentDateTimeMinus30Hours.toISOString()}&end=${currentDateTime.toISOString()}&office=${office}`;
 
-            // console.log("urlStage = ", urlStage);
-            fetch(urlStage, {
+            // console.log("urlStorage = ", urlStorage);
+            fetch(urlStorage, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json;version=2'
@@ -3345,7 +3345,7 @@ function fetchAndUpdateStorageTd(stageTd, DeltaTd, tsidStage, flood_level, curre
                         valueLast = parseFloat(lastNonNullValue.value).toFixed(2);
                     }
 
-                    const c_count = calculateCCount(tsidStage);
+                    const c_count = calculateCCount(tsidStorage);
                     const lastNonNull24HoursValue = getLastNonNull24HoursValue(stage, c_count);
                     let value24HoursLast = null;
                     let timestamp24HoursLast = null;
@@ -3359,22 +3359,36 @@ function fetchAndUpdateStorageTd(stageTd, DeltaTd, tsidStage, flood_level, curre
                         ? (valueLast - value24HoursLast).toFixed(2)
                         : null;
 
-                    let innerHTMLStage;
-                    if (valueLast === null) {
-                        innerHTMLStage = "<span class='missing'>-M-</span>";
+                    if (valueLast > 0.0 && topOfConservationLevel > 0.0 && bottomOfConservationLevel >= 0.0) {
+                        if (valueLast < bottomOfConservationLevel) {
+                            conservationStorageValue = "0.00%";
+                        } else if (valueLast > topOfConservationLevel) {
+                            conservationStorageValue = "100.00%";
+                        } else {
+                            const total = (valueLast - bottomOfConservationLevel) / (topOfConservationLevel - bottomOfConservationLevel) * 100;
+                            conservationStorageValue = total.toFixed(2) + "%";
+                        }
                     } else {
-                        const floodClass = determineStageClass(valueLast, flood_level);
-                        innerHTMLStage = `<span class='${floodClass}' title='${stage.name}, Value = ${valueLast}, Date Time = ${timestampLast}'>
-                                            <a href='../chart?office=${office}&cwms_ts_id=${stage.name}&lookback=4' target='_blank'>
-                                                ${valueLast}
-                                            </a>
-                                         </span>`;
+                        conservationStorageValue = "%";
                     }
 
-                    stageTd.innerHTML = innerHTMLStage;
-                    DeltaTd.innerHTML = delta_24 !== null ? delta_24 : "-";
+                    if (valueLast > 0.0 && topOfFloodLevel > 0.0 && bottomOfFloodLevel >= 0.0) {
+                        if (valueLast < bottomOfFloodLevel) {
+                            floodStorageValue = "0.00%";
+                        } else if (valueLast > topOfFloodLevel) {
+                            floodStorageValue = "100.00%";
+                        } else {
+                            const total = ((valueLast) - (bottomOfFloodLevel)) / ((topOfFloodLevel) - (bottomOfFloodLevel)) * 100;
+                            floodStorageValue = total.toFixed(2) + "%";
+                        }
+                    } else {
+                        floodStorageValue = "%";
+                    }
 
-                    resolve({ stageTd: valueLast, deltaTd: delta_24 });
+                    stageTd.innerHTML = conservationStorageValue !== null ? conservationStorageValue : "-";
+                    DeltaTd.innerHTML = floodStorageValue !== null ? floodStorageValue : "-";
+
+                    resolve({ stageTd: conservationStorageValue, deltaTd: floodStorageValue });
                 })
                 .catch(error => {
                     console.error("Error fetching or processing data:", error);
