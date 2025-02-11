@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 console.log('combinedDataReservoir:', combinedDataReservoir);
 
                 const tableRiver = createTableRiver(combinedDataRiver, type, day1, day2, day3, setBaseUrl);
-                const tableReservoir = createTableReservoir(combinedDataReservoir, type, day1, day2, day3, lakeLocs);
+                const tableReservoir = createTableReservoir(combinedDataReservoir, type, day1, day2, day3, lakeLocs, setBaseUrl);
 
                 document.getElementById(`table_container_${setReportDiv}`).append(tableRiver, tableReservoir);
                 // document.getElementById(`table_container_${setReportDiv}`).append(tableRiver);
@@ -492,17 +492,17 @@ document.addEventListener('DOMContentLoaded', async function () {
                             date.setDate(date.getDate() + daysToAdd);
                             return ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
                         };
-        
+
                         const [day1, day2, day3] = [1, 2, 3].map(days => formatDate(days));
                         const combinedDataRiver = structuredClone ? structuredClone(combinedData) : JSON.parse(JSON.stringify(combinedData));
                         const combinedDataReservoir = structuredClone ? structuredClone(combinedData) : JSON.parse(JSON.stringify(combinedData));
-        
+
                         console.log('combinedDataRiver:', combinedDataRiver);
                         console.log('combinedDataReservoir:', combinedDataReservoir);
-        
+
                         const tableRiver = createTableRiver(combinedDataRiver, type, day1, day2, day3, setBaseUrl);
-                        const tableReservoir = createTableReservoir(combinedDataReservoir, type, day1, day2, day3, lakeLocs);
-        
+                        const tableReservoir = createTableReservoir(combinedDataReservoir, type, day1, day2, day3, lakeLocs, setBaseUrl);
+
                         document.getElementById(`table_container_${setReportDiv}`).append(tableRiver, tableReservoir);
 
                         loadingIndicator.style.display = 'none';
@@ -1557,13 +1557,38 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
     return table;
 }
 
-function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, nws_day2_date_title, nws_day3_date_title, lakeLocs) {
+function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, nws_day2_date_title, nws_day3_date_title, lakeLocs, setBaseUrl) {
     // Create a table element
     const table = document.createElement('table');
     table.setAttribute('id', 'webreplake');
 
     console.log("lakeLocs: ", lakeLocs);
     console.log("combinedDataReservoir (before): ", combinedDataReservoir);
+
+    // Get current date and time
+    const currentDateTime = new Date();
+    // console.log('currentDateTime:', currentDateTime);
+
+    // Subtract two hours from current date and time
+    const currentDateTimeMinus2Hours = subtractHoursFromDate(currentDateTime, 2);
+    // console.log('currentDateTimeMinus2Hours :', currentDateTimeMinus2Hours);
+
+    // Subtract two hours from current date and time
+    const currentDateTimeMinus8Hours = subtractHoursFromDate(currentDateTime, 8);
+    // console.log('currentDateTimeMinus8Hours :', currentDateTimeMinus8Hours);
+
+    // Subtract thirty hours from current date and time
+    const currentDateTimeMinus30Hours = subtractHoursFromDate(currentDateTime, 64);
+    // console.log('currentDateTimeMinus30Hours :', currentDateTimeMinus30Hours);
+
+    // Add thirty hours to current date and time
+    const currentDateTimePlus30Hours = plusHoursFromDate(currentDateTime, 30);
+    // console.log('currentDateTimePlus30Hours :', currentDateTimePlus30Hours);
+
+    // Add four days to current date and time
+    const currentDateTimePlus4Days = addDaysToDate(currentDateTime, 4);
+    // console.log('currentDateTimePlus4Days :', currentDateTimePlus4Days);
+    // console.log('currentDateTimePlus4Days :', typeof(currentDateTimePlus4Days));
 
     // Filter out locations not in lakeLocs, and remove basins without assigned-locations
     combinedDataReservoir = combinedDataReservoir.filter((basin) => {
@@ -1661,49 +1686,20 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
             })();
 
             // 02 - Current Level
-            // (() => {
-            //     // Check if 'stage-last-value' exists, is an array, and has the necessary properties
-            //     const tsid = (location['stage-last-value'] && Array.isArray(location['stage-last-value']) && location['stage-last-value'][0]?.['tsid'])
-            //         ? location['stage-last-value'][0]['tsid']
-            //         : null;
+            (() => {
+                const stageTd = document.createElement('td');
+                const deltaTd = document.createElement('td');
 
-            //     const link = tsid
-            //         ? `https://wm.mvs.ds.usace.army.mil/apps/chart/index.html?&office=MVS&cwms_ts_id=${tsid}&cda=internal&lookback=4&lookforward=0`
-            //         : '#'; // Use a placeholder if tsid is missing
+                const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
+                const stageTsid = location?.['tsid-stage']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
 
-            //     const currentLevelTd = document.createElement('td');
-            //     const linkElement = document.createElement('a');
-            //     linkElement.href = link;
-            //     linkElement.target = '_blank';
+                if (stageTsid) {
+                    fetchAndUpdateStageTd(stageTd, deltaTd, stageTsid, floodValue, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl);
+                }
 
-            //     const currentLevel = (location['stage-last-value'] && Array.isArray(location['stage-last-value']) && location['stage-last-value'][0]?.['value'])
-            //         ? location['stage-last-value'][0]['value']
-            //         : null;
-
-            //     const floodValue = location['flood']?.['constant-value'] ?? null;
-            //     const recordStage = location['record-stage'];
-            //     const recordStageValue = recordStage ? recordStage['constant-value'] : null;
-
-            //     // Set text content and styles based on flood and recordStage thresholds
-            //     if (currentLevel != null) {
-            //         const formattedLevel = currentLevel.toFixed(2);
-            //         linkElement.textContent = formattedLevel;
-
-            //         if (recordStageValue !== null && currentLevel >= recordStageValue) {
-            //             linkElement.classList.add('record_breaking'); // Add "alert" class when currentLevel >= recordStageValue
-            //         }
-
-            //         if (floodValue != null && currentLevel >= floodValue) {
-            //             linkElement.style.color = 'red';  // Make text red if currentLevel exceeds floodValue
-            //         }
-
-            //     } else {
-            //         linkElement.textContent = '';  // Display an empty string if currentLevel is null
-            //     }
-
-            //     currentLevelTd.appendChild(linkElement);
-            //     row.appendChild(currentLevelTd);
-            // })();
+                row.appendChild(stageTd);
+                row.appendChild(deltaTd);
+            })();
 
             // 03 - 24hr Delta
             // (() => {
@@ -1872,39 +1868,31 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
             // })();
 
             // 13 - Record Stage
-            // (() => {
-            //     const recordStageCell = document.createElement('td');
-            //     const recordStage = location['record-stage'];
-            //     const recordStageValue = recordStage ? recordStage['constant-value'] : null;
+            (() => {
+                const recordStageTd = document.createElement('td');
+                const recordStage = location['record-stage'];
+                const recordStageValue = recordStage ? recordStage['constant-value'] : null;
 
-            //     // Check if recordStageValue is valid and within the required range
-            //     recordStageCell.textContent = recordStageValue != null && recordStageValue <= 900
-            //         ? recordStageValue.toFixed(2)
-            //         : '';
+                // Check if recordStageValue is valid and within the required range
+                recordStageTd.textContent = recordStageValue != null && recordStageValue <= 900
+                    ? recordStageValue.toFixed(2)
+                    : '';
 
-            //     row.appendChild(recordStageCell);
-            // })();
+                row.appendChild(recordStageTd);
+            })();
 
             // 14 - Record Date
-            // (() => {
-            //     const recordDateCell = document.createElement('td');
+            (() => {
+                const recordDateTd = document.createElement('td');
+                const recordDateValue = location['river-mile-hard-coded'] && location['river-mile-hard-coded']['record_stage_date_hard_coded'];
+                recordDateTd.textContent = recordDateValue != null ? recordDateValue : "";
+                // Set the title for the cell
+                recordDateTd.title = "Hard Coded with Json File";
+                // Set halo effect using text-shadow with orange color
+                recordDateTd.style.textShadow = '0 0 2px rgba(255, 165, 0, 0.7), 0 0 2px rgba(255, 140, 0, 0.5)';
 
-            //     // const recordStage = location['record-stage'];
-            //     // const recordStageDate = recordStage ? recordStage['level-date'] : null;
-            //     // Check if recordStageDate is valid and within the required range
-            //     // recordDateCell.textContent = recordStageDate != null
-            //     //     ? recordStageDate
-            //     //     : '';
-
-            //     const recordDateValue = location['river-mile-hard-coded'] && location['river-mile-hard-coded']['record_stage_date_hard_coded'];
-            //     recordDateCell.textContent = recordDateValue != null ? recordDateValue : "";
-            //     // Set the title for the cell
-            //     recordDateCell.title = "Hard Coded with Json File";
-            //     // Set halo effect using text-shadow with orange color
-            //     recordDateCell.style.textShadow = '0 0 2px rgba(255, 165, 0, 0.7), 0 0 2px rgba(255, 140, 0, 0.5)';
-
-            //     row.appendChild(recordDateCell);
-            // })();
+                row.appendChild(recordDateTd);
+            })();
 
             table.appendChild(row);
         });
