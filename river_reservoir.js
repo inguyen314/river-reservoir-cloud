@@ -17,7 +17,14 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
     console.log("setBaseUrl: ", setBaseUrl);
 
-    let setJsonFileBaseUrl = "https://wm.mvs.ds.usace.army.mil/"
+    let setJsonFileBaseUrl = null;
+    if (cda === "internal") {
+        setJsonFileBaseUrl = `https://wm.mvs.ds.usace.army.mil/`;
+    } else if (cda === "internal-coop") {
+        setJsonFileBaseUrl = `https://wm.mvs.ds.usace.army.mil/`;
+    } else if (cda === "public") {
+        setJsonFileBaseUrl = `https://www.mvs-wc.usace.army.mil/`;
+    }
     console.log("setJsonFileBaseUrl: ", setJsonFileBaseUrl);
 
     const lakeLocs = [
@@ -784,7 +791,7 @@ function createTablePrecip(combinedData, type) {
             // Location cell with link
             const value0 = location['stage-inc-value'][0]?.value0;
             const tsid = value0 ? value0.tsid : '';
-            const link = `https://wm.mvs.ds.usace.army.mil/district_templates/chart/index.html?office=MVS&cwms_ts_id=${tsid}&cda=internal&lookback=7`;
+            const link = `../chart/index.html?office=MVS&cwms_ts_id=${tsid}&lookback=7`;
             const locationCell = document.createElement('td');
             const linkElement = document.createElement('a');
             linkElement.href = link;
@@ -878,7 +885,7 @@ function createTablePrecip(combinedData, type) {
     return table;
 }
 
-function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2_date_title, nws_day3_date_title, setBaseUrl) {
+function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2_date_title, nws_day3_date_title, setBaseUrl, setJsonFileBaseUrl) {
     // Create a table element and set an ID for styling or selection purposes
     const table = document.createElement('table');
     table.setAttribute('id', 'webrep');
@@ -1078,7 +1085,7 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                 const nwsForecastTsid = location['tsid-nws-forecast']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
 
                 if (nwsForecastTsid !== null) {
-                    fetchAndLogNwsData(nwsForecastTsid, nwsForecastTimeTd);
+                    fetchAndLogNwsData(nwsForecastTsid, nwsForecastTimeTd, setJsonFileBaseUrl);
                 } else {
                     nwsForecastTimeTd.textContent = '';
                 }
@@ -1782,11 +1789,10 @@ function fetchAdditionalLocationGroupOwnerData(locationId, setBaseUrl, setLocati
 // ******* Hard Coded Nws Forecast Time *****************
 // ******************************************************
 
-async function fetchDataFromNwsForecastsOutput() {
+async function fetchDataFromNwsForecastsOutput(setJsonFileBaseUrl) {
     let url = null;
-    url = 'https://wm.mvs.ds.usace.army.mil//php_data_api/public/json/exportNwsForecasts2Json.json';
-
-    // console.log("url: ", url);
+    url = setJsonFileBaseUrl + 'php_data_api/public/json/exportNwsForecasts2Json.json';
+    console.log("url: ", url);
 
     try {
         const response = await fetch(url);
@@ -1809,9 +1815,9 @@ function filterDataByTsid(NwsOutput, cwms_ts_id) {
     return filteredData;
 }
 
-async function fetchAndLogNwsData(nwsForecastTsid, forecastTimeCell) {
+async function fetchAndLogNwsData(nwsForecastTsid, forecastTimeCell, setJsonFileBaseUrl) {
     try {
-        const NwsOutput = await fetchDataFromNwsForecastsOutput();
+        const NwsOutput = await fetchDataFromNwsForecastsOutput(setJsonFileBaseUrl);
         // console.log('NwsOutput:', NwsOutput);
 
         const filteredData = filterDataByTsid(NwsOutput, nwsForecastTsid);
@@ -1901,8 +1907,8 @@ async function fetchInBatches(urls) {
 
 async function fetchDataFromROutput(setJsonFileBaseUrl) {
     let url = null;
-    url = setJsonFileBaseUrl + 'web_apps/board/public/outputR.json';
-    // console.log("url: ", url);
+    url = setJsonFileBaseUrl + 'php_data_api/public/json/outputR.json';
+    console.log("url: ", url);
 
     try {
         const response = await fetch(url);
