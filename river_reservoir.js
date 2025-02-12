@@ -17,6 +17,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
     console.log("setBaseUrl: ", setBaseUrl);
 
+    let setJsonFileBaseUrl = "https://wm.mvs.ds.usace.army.mil/"
+    console.log("setJsonFileBaseUrl: ", setJsonFileBaseUrl);
+
     const lakeLocs = [
         "Lk Shelbyville-Kaskaskia",
         "Carlyle Lk-Kaskaskia",
@@ -49,8 +52,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 console.log('combinedDataRiver:', combinedDataRiver);
                 console.log('combinedDataReservoir:', combinedDataReservoir);
 
-                const tableRiver = createTableRiver(combinedDataRiver, type, day1, day2, day3, setBaseUrl);
-                const tableReservoir = createTableReservoir(combinedDataReservoir, type, day1, day2, day3, lakeLocs, setBaseUrl);
+                const tableRiver = createTableRiver(combinedDataRiver, type, day1, day2, day3, setBaseUrl, setJsonFileBaseUrl);
+                const tableReservoir = createTableReservoir(combinedDataReservoir, type, day1, day2, day3, lakeLocs, setBaseUrl, setJsonFileBaseUrl);
 
                 document.getElementById(`table_container_${setReportDiv}`).append(tableRiver, tableReservoir);
                 // document.getElementById(`table_container_${setReportDiv}`).append(tableRiver);
@@ -1181,7 +1184,7 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
     return table;
 }
 
-function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, nws_day2_date_title, nws_day3_date_title, lakeLocs, setBaseUrl) {
+function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, nws_day2_date_title, nws_day3_date_title, lakeLocs, setBaseUrl, setJsonFileBaseUrl) {
     // Create a table element
     const table = document.createElement('table');
     table.setAttribute('id', 'webreplake');
@@ -1383,7 +1386,7 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
             (() => {
                 const midnightControlledOutflowTd = document.createElement('td');
                 const midnightControlledOutflowValue = "--";
-                fetchAndLogMidnightFlowDataTd(location['location-id'], midnightControlledOutflowTd);
+                fetchAndLogMidnightFlowDataTd(location['location-id'], midnightControlledOutflowTd, setJsonFileBaseUrl);
                 midnightControlledOutflowTd.textContent = midnightControlledOutflowValue;
                 row.appendChild(midnightControlledOutflowTd);
             })();
@@ -1392,7 +1395,7 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
             (() => {
                 const eveningControlledOutflowTd = document.createElement('td');
                 const eveningControlledOutflowValue = "--";
-                fetchAndLogMidnightFlowDataTd(location['location-id'], eveningControlledOutflowTd);
+                fetchAndLogMidnightFlowDataTd(location['location-id'], eveningControlledOutflowTd, setJsonFileBaseUrl);
                 eveningControlledOutflowTd.textContent = eveningControlledOutflowValue;
                 row.appendChild(eveningControlledOutflowTd);
             })();
@@ -1401,7 +1404,7 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
             (() => {
                 const seasonalRuleCurveTd = document.createElement('td');
                 const seasonalRuleCurveValue = "--";
-                fetchAndLogSeasonalRuleCurveDataTd(location['location-id'], seasonalRuleCurveTd);
+                fetchAndLogSeasonalRuleCurveDataTd(location['location-id'], seasonalRuleCurveTd, setJsonFileBaseUrl);
                 seasonalRuleCurveTd.textContent = seasonalRuleCurveValue;
                 row.appendChild(seasonalRuleCurveTd);
             })();
@@ -1410,7 +1413,7 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
             (() => {
                 const crestPoolForecastTd = document.createElement('td');
                 const crestPoolForecastValue = "--";
-                fetchAndLogPoolForecastDataTd(location['location-id'], crestPoolForecastTd);
+                fetchAndLogPoolForecastDataTd(location['location-id'], crestPoolForecastTd, setJsonFileBaseUrl);
                 crestPoolForecastTd.textContent = crestPoolForecastValue;
                 row.appendChild(crestPoolForecastTd);
             })();
@@ -1419,7 +1422,7 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
             (() => {
                 const datePoolForecastTd = document.createElement('td');
                 const datePoolForecastValue = "--";
-                fetchAndLogPoolForecastDateDataTd(location['location-id'], datePoolForecastTd);
+                fetchAndLogPoolForecastDateDataTd(location['location-id'], datePoolForecastTd, setJsonFileBaseUrl);
                 datePoolForecastTd.textContent = datePoolForecastValue;
                 row.appendChild(datePoolForecastTd);
             })();
@@ -1896,10 +1899,9 @@ async function fetchInBatches(urls) {
 // ******* Hard Coded Lake Outflow and Crest ************
 // ******************************************************
 
-async function fetchDataFromROutput() {
+async function fetchDataFromROutput(setJsonFileBaseUrl) {
     let url = null;
-    url = 'https://wm.mvs.ds.usace.army.mil/web_apps/board/public/outputR.json';
-
+    url = setJsonFileBaseUrl + 'web_apps/board/public/outputR.json';
     // console.log("url: ", url);
 
     try {
@@ -1928,9 +1930,9 @@ function filterDataByLocationId(ROutput, location_id) {
     return filteredData;
 }
 
-async function fetchAndLogMidnightFlowDataTd(location_id, midnightCell) {
+async function fetchAndLogMidnightFlowDataTd(location_id, midnightCell, setJsonFileBaseUrl) {
     try {
-        const ROutput = await fetchDataFromROutput();
+        const ROutput = await fetchDataFromROutput(setJsonFileBaseUrl);
         // console.log('ROutput:', ROutput);
 
         const filteredData = filterDataByLocationId(ROutput, location_id);
@@ -1958,9 +1960,9 @@ async function fetchAndLogMidnightFlowDataTd(location_id, midnightCell) {
     }
 }
 
-async function fetchAndLogMidnightFlowDataTd(location_id, eveningCell) {
+async function fetchAndLogMidnightFlowDataTd(location_id, eveningCell, setJsonFileBaseUrl) {
     try {
-        const ROutput = await fetchDataFromROutput();
+        const ROutput = await fetchDataFromROutput(setJsonFileBaseUrl);
         // console.log('ROutput:', ROutput);
 
         const filteredData = filterDataByLocationId(ROutput, location_id);
@@ -1985,9 +1987,9 @@ async function fetchAndLogMidnightFlowDataTd(location_id, eveningCell) {
     }
 }
 
-async function fetchAndLogSeasonalRuleCurveDataTd(location_id, seasonalRuleCurveCell) {
+async function fetchAndLogSeasonalRuleCurveDataTd(location_id, seasonalRuleCurveCell, setJsonFileBaseUrl) {
     try {
-        const ROutput = await fetchDataFromROutput();
+        const ROutput = await fetchDataFromROutput(setJsonFileBaseUrl);
         // console.log('ROutput:', ROutput);
 
         const filteredData = filterDataByLocationId(ROutput, location_id);
@@ -2009,9 +2011,9 @@ async function fetchAndLogSeasonalRuleCurveDataTd(location_id, seasonalRuleCurve
     }
 }
 
-async function fetchAndLogPoolForecastDataTd(location_id, crestCell) {
+async function fetchAndLogPoolForecastDataTd(location_id, crestCell, setJsonFileBaseUrl) {
     try {
-        const ROutput = await fetchDataFromROutput();
+        const ROutput = await fetchDataFromROutput(setJsonFileBaseUrl);
         // console.log('ROutput:', ROutput);
 
         const filteredData = filterDataByLocationId(ROutput, location_id);
@@ -2030,9 +2032,9 @@ async function fetchAndLogPoolForecastDataTd(location_id, crestCell) {
     }
 }
 
-async function fetchAndLogPoolForecastDateDataTd(location_id, crestDateCell) {
+async function fetchAndLogPoolForecastDateDataTd(location_id, crestDateCell, setJsonFileBaseUrl) {
     try {
-        const ROutput = await fetchDataFromROutput();
+        const ROutput = await fetchDataFromROutput(setJsonFileBaseUrl);
         // console.log('ROutput:', ROutput);
 
         const filteredData = filterDataByLocationId(ROutput, location_id);
@@ -2202,10 +2204,6 @@ function fetchAndUpdateNwsForecastTd(tsidStage, nwsForecastTsid, flood_level, cu
     });
 }
 
-function fetchAndUpdateNWSForecastDate(stageCell, nwsForecastTsid) {
-    fetchAndLogNwsData(stageCell, nwsForecastTsid); // Fetch and update the data
-}
-
 function fetchAndUpdateCrestTd(stageTd, DeltaTd, tsidStage, flood_level, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl) {
     return new Promise((resolve, reject) => {
         if (tsidStage !== null) {
@@ -2277,177 +2275,6 @@ function fetchAndUpdateCrestTd(stageTd, DeltaTd, tsidStage, flood_level, current
             resolve({ stageTd: null, deltaTd: null });
         }
     });
-}
-
-function fetchAndUpdateFlow(flowCell, tsidFlow, label, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl) {
-    if (tsidFlow !== null) {
-        const urlFlow = `${setBaseUrl}timeseries?name=${tsidFlow}&begin=${currentDateTimeMinus30Hours.toISOString()}&end=${currentDateTime.toISOString()}&office=${office}`;
-
-        // console.log("urlFlow = ", urlFlow);
-        // Fetch the time series data from the API using the determined query string
-        fetch(urlFlow, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json;version=2'
-            }
-        })
-            .then(response => {
-                // Check if the response is ok
-                if (!response.ok) {
-                    // If not, throw an error
-                    throw new Error('Network response was not ok');
-                }
-                // If response is ok, parse it as JSON
-                return response.json();
-            })
-            .then(flow => {
-                // Once data is fetched, log the fetched data structure
-                // console.log("flow: ", flow);
-
-                // Convert timestamps in the JSON object
-                flow.values.forEach(entry => {
-                    entry[0] = formatNWSDate(entry[0]); // Update timestamp
-                });
-
-                // Output the updated JSON object
-                // // console.log(JSON.stringify(flow, null, 2));
-
-                // console.log("flowFormatted = ", flow);
-
-                // FLOW CLASS
-                if (label === "COE") {
-                    var myFlowLabelClass = "flow_coe";
-                } else if (label === "USGS") {
-                    var myFlowLabelClass = "flow_usgs";
-                } else if (label === "NWS") {
-                    var myFlowLabelClass = "flow_nws";
-                } else if (label === "MVR") {
-                    var myFlowLabelClass = "flow_coe_mvr";
-                } else if (label === "USGSRAW") {
-                    var myFlowLabelClass = "flow_usgsraw";
-                } else if (label === "SLOPEADJ") {
-                    var myFlowLabelClass = "flow_slopeadj";
-                } else {
-                    var myFlowLabelClass = "flow";
-                }
-                // console.log("myFlowLabelClass = ", myFlowLabelClass);
-
-                // Get the last non-null value from the stage data
-                const lastNonNullFlowValue = getLastNonNullValue(flow);
-                // Check if a non-null value was found
-                if (lastNonNullFlowValue !== null) {
-                    // Extract timestamp, value, and quality code from the last non-null value
-                    var timestampFlowLast = lastNonNullFlowValue.timestamp;
-                    var valueFlowLast = parseFloat(lastNonNullFlowValue.value).toFixed(0);
-                    var qualityCodeFlowLast = lastNonNullFlowValue.qualityCode;
-
-                    // Log the extracted valueLasts
-                    // console.log("timestampFlowLast:", timestampFlowLast);
-                    // console.log("valueFlowLast:", valueFlowLast);
-                    // console.log("qualityCodeFlowLast:", qualityCodeFlowLast);
-                } else {
-                    // If no non-null valueLast is found, log a message
-                    // console.log("No non-null valueLast found.");
-                }
-
-                const c_count = calculateCCount(tsidFlow);
-
-                const lastNonNull24HoursFlowValue = getLastNonNull24HoursValue(flow, c_count);
-                // console.log("lastNonNull24HoursFlowValue:", lastNonNull24HoursFlowValue);
-
-                // Check if a non-null value was found
-                if (lastNonNull24HoursFlowValue !== null) {
-                    // Extract timestamp, value, and quality code from the last non-null value
-                    var timestampFlow24HoursLast = lastNonNull24HoursFlowValue.timestamp;
-                    var valueFlow24HoursLast = parseFloat(lastNonNull24HoursFlowValue.value).toFixed(0);
-                    var qualityCodeFlow24HoursLast = lastNonNull24HoursFlowValue.qualityCode;
-
-                    // Log the extracted valueLasts
-                    // console.log("timestampFlow24HoursLast:", timestampFlow24HoursLast);
-                    // console.log("valueFlow24HoursLast:", valueFlow24HoursLast);
-                    // console.log("qualityCodeFlow24HoursLast:", qualityCodeFlow24HoursLast);
-                } else {
-                    // If no non-null valueLast is found, log a message
-                    // console.log("No non-null valueLast found.");
-                }
-
-                // Calculate the 24 hours change between first and last value
-                const delta24Flow = (valueFlowLast - valueFlow24HoursLast).toFixed(0);
-                // console.log("delta24Flow:", delta24Flow);
-
-
-                // Check if the value is greater than or equal to 1000
-                if (parseFloat(delta24Flow) >= 1000 || delta24Flow <= -1000) {
-                    // If greater than or equal to 1000, round to the nearest tenth and add commas at thousands place
-                    roundedDelta24Flow = (Math.round(parseFloat(delta24Flow) / 10) * 10).toLocaleString();
-                } else {
-                    // If less than 1000, simply add commas at thousands place
-                    roundedDelta24Flow = (parseFloat(delta24Flow)).toLocaleString();
-                }
-                // console.log("roundedDelta24Flow = ", roundedDelta24Flow); // Log the rounded and formatted value to the console
-
-                // Check if the value is greater than or equal to 1000
-                if (parseFloat(valueFlowLast) >= 1000) {
-                    // If greater than or equal to 1000, round to the nearest tenth and add commas at thousands place
-                    roundedValueFlowLast = (Math.round(parseFloat(valueFlowLast) / 10) * 10).toLocaleString();
-                } else {
-                    // If less than 1000, simply add commas at thousands place
-                    roundedValueFlowLast = (parseFloat(valueFlowLast)).toLocaleString();
-                }
-                // console.log("roundedValueFlowLast = ", roundedValueFlowLast); // Log the rounded and formatted value to the console
-
-
-                // Format the last valueLast's timestampFlowLast to a string
-                const formattedLastValueTimeStamp = formatTimestampToStringIOS(timestampFlowLast);
-                // console.log("formattedLastValueTimeStamp = ", formattedLastValueTimeStamp);
-
-
-                // Create a Date object from the timestampFlowLast
-                const timeStampDateObject = new Date(timestampFlowLast);
-                // console.log("timeStampDateObject = ", timeStampDateObject);
-
-
-                // Subtract 24 hours (24 * 60 * 60 * 1000 milliseconds) from the timestampFlowLast date
-                const timeStampDateObjectMinus24Hours = new Date(timestampFlowLast - (24 * 60 * 60 * 1000));
-                // console.log("timeStampDateObjectMinus24Hours = ", timeStampDateObjectMinus24Hours);
-
-
-                // DATATIME CLASS
-                var dateTimeClass = determineDateTimeClass(timeStampDateObject, currentDateTimeMinus2Hours);
-                // console.log("dateTimeClass:", dateTimeClass);
-
-
-                if (lastNonNullFlowValue === null) {
-                    innerHTMLFlow = "<span class='missing'>"
-                        + "-M-"
-                        + "</span>"
-                        + "<span class='temp_water'>"
-                        + "label"
-                        + "</span>";
-                } else {
-                    innerHTMLFlow = "<span class='last_max_value' title='" + flow.name + ", Value = " + roundedValueFlowLast + ", Date Time = " + timestampFlowLast + "'>"
-                        + "<a href='../chart?office=" + office + "&cwms_ts_id=" + flow.name + "&lookback=4&cda=internal' target='_blank'>"
-                        + roundedValueFlowLast
-                        + "</a>"
-                        + "</span>"
-                        + " "
-                        + flow.units
-                        + " (" + "<span title='" + flow.name + ", Value = " + roundedValueFlowLast + ", Date Time = " + timestampFlow24HoursLast + ", Delta = (" + valueFlowLast + " - " + valueFlow24HoursLast + ") = " + roundedDelta24Flow + "'>" + roundedDelta24Flow + "</span>" + ")"
-                        + "<br>"
-                        + "<span class='" + dateTimeClass + "'>"
-                        + formattedLastValueTimeStamp
-                        + "</span>"
-                        + "<span class='" + myFlowLabelClass + "'>"
-                        + label
-                        + "</span>";
-                }
-                return flowCell.innerHTML += innerHTMLFlow;
-            })
-            .catch(error => {
-                // Catch and log any errors that occur during fetching or processing
-                console.error("Error fetching or processing data:", error);
-            });
-    }
 }
 
 function fetchAndUpdatePrecipTd(precipCell, tsid, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl) {
@@ -2565,10 +2392,6 @@ function fetchAndUpdatePrecipTd(precipCell, tsid, currentDateTimeMinus2Hours, cu
                 const timeStampDateObjectMinus24Hours = new Date(timestampPrecipLast - (24 * 60 * 60 * 1000));
                 // console.log("timeStampDateObjectMinus24Hours = ", timeStampDateObjectMinus24Hours);
 
-                // DATATIME CLASS
-                var dateTimeClass = determineDateTimeClass(timeStampDateObject, currentDateTimeMinus2Hours);
-                // console.log("dateTimeClass:", dateTimeClass);
-
                 if (lastNonNullPrecipValue === null) {
                     innerHTMLPrecip = "<table id='precip'>"
                         + "<tr>"
@@ -2675,197 +2498,6 @@ function fetchAndUpdateYesterdayInflowTd(precipCell, tsid, currentDateTimeMinus2
             });
     } else {
         return precipCell.innerHTML = "";
-    }
-}
-
-function fetchAndUpdateWaterQuality(waterQualityCell, tsid, label, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, currentDateTimeMinus8Hours, setBaseUrl) {
-    if (tsid !== null) {
-        // Fetch the time series data from the API using the determined query string
-        const urlWaterQuality = `${setBaseUrl}timeseries?name=${tsid}&begin=${currentDateTimeMinus30Hours.toISOString()}&end=${currentDateTime.toISOString()}&office=${office}`;
-        // console.log("urlWaterQuality = ", urlWaterQuality);
-
-        fetch(urlWaterQuality, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json;version=2'
-            }
-        })
-            .then(response => {
-                // Check if the response is ok
-                if (!response.ok) {
-                    // If not, throw an error
-                    throw new Error('Network response was not ok');
-                }
-                // If response is ok, parse it as JSON
-                return response.json();
-            })
-            .then(waterQuality => {
-                // Once data is fetched, log the fetched data structure
-                // console.log("waterQuality:", waterQuality);
-
-                // Convert timestamps in the JSON object
-                waterQuality.values.forEach(entry => {
-                    entry[0] = formatNWSDate(entry[0]); // Update timestamp
-                });
-
-                // Output the updated JSON object
-                // // console.log(JSON.stringify(waterQuality, null, 2));
-
-                // console.log("lastNonNullWaterQualityValue = ", waterQuality);
-
-                // console.log("tsid = ", tsid);
-                // console.log("label = ", label);
-
-                // WATER QUALITY CLASS
-                var myWaterQualityClass = "";
-
-                // Ensure label is a string before calling includes()
-                if (typeof label === "string") {
-                    if (label.includes("AIR")) {
-                        myWaterQualityClass = "water_quality_temp_air";
-                    } else if (label.includes("WATER")) {
-                        myWaterQualityClass = "water_quality_temp_water";
-                    } else if (label.includes("DO")) {
-                        myWaterQualityClass = "water_quality_do";
-                    } else if (label.includes("DEPTH")) {
-                        myWaterQualityClass = "water_quality_depth";
-                    } else if (label.includes("COND")) {
-                        myWaterQualityClass = "water_quality_cond";
-                    } else if (label.includes("PH")) {
-                        myWaterQualityClass = "water_quality_ph";
-                    } else if (label.includes("TURB")) {
-                        myWaterQualityClass = "water_quality_turb";
-                    } else if (label.includes("SPEED")) {
-                        myWaterQualityClass = "water_quality_speed_wind";
-                    } else if (label.includes("PRESSURE")) {
-                        myWaterQualityClass = "water_quality_pressure";
-                    } else if (label.includes("DIR")) {
-                        myWaterQualityClass = "water_quality_dir_wind";
-                    } else if (label.includes("NITRATE")) {
-                        myWaterQualityClass = "water_quality_nitrate";
-                    } else if (label.includes("CHLOROPHYLL")) {
-                        myWaterQualityClass = "water_quality_chlorophyll";
-                    } else if (label.includes("PHYCOCYANIN")) {
-                        myWaterQualityClass = "water_quality_phycocyanin";
-                    }
-                } else {
-                    // Default class if label is null, undefined, or not a string
-                    myWaterQualityClass = "water_quality_do";
-                }
-                // console.log("myWaterQualityClass = ", myWaterQualityClass);
-
-
-                // Get the last non-null value from the stage data
-                const lastNonNullWaterQualityValue = getLastNonNullValue(waterQuality);
-                // console.log("lastNonNullWaterQualityValue = ", lastNonNullWaterQualityValue);
-                // console.log("lastNonNullWaterQualityValue = ", typeof(lastNonNullWaterQualityValue));
-
-                // Check if a non-null value was found
-                if (lastNonNullWaterQualityValue !== null) {
-                    // Extract timestamp, value, and quality code from the last non-null value
-                    var timestampWaterQualityLast = lastNonNullWaterQualityValue.timestamp;
-                    var valueWaterQualityLast = parseFloat(lastNonNullWaterQualityValue.value).toFixed(0);
-                    var qualityCodeWaterQualityLast = lastNonNullWaterQualityValue.qualityCode;
-
-                    // Log the extracted valueLasts
-                    // console.log("timestampWaterQualityLast:", timestampWaterQualityLast);
-                    // console.log("valueWaterQualityLast:", valueWaterQualityLast);
-                    // console.log("qualityCodeWaterQualityLast:", qualityCodeWaterQualityLast);
-                } else {
-                    // If no non-null valueLast is found, log a message
-                    // console.log("No non-null valueLast found.");
-                }
-
-
-                const c_count = calculateCCount(tsid);
-
-
-                const lastNonNull24HoursWaterQualityValue = getLastNonNull24HoursValue(waterQuality, c_count);
-                // console.log("lastNonNull24HoursWaterQualityValue:", lastNonNull24HoursWaterQualityValue);
-
-
-                // Check if a non-null value was found
-                if (lastNonNull24HoursWaterQualityValue !== null) {
-                    // Extract timestamp, value, and quality code from the last non-null value
-                    var timestampWaterQuality24HoursLast = lastNonNull24HoursWaterQualityValue.timestamp;
-                    var valueWaterQuality24HoursLast = parseFloat(lastNonNull24HoursWaterQualityValue.value).toFixed(0);
-                    var qualityCodeWaterQuality24HoursLast = lastNonNull24HoursWaterQualityValue.qualityCode;
-
-                    // Log the extracted valueLasts
-                    // console.log("timestampWaterQuality24HoursLast:", timestampWaterQuality24HoursLast);
-                    // console.log("valueWaterQuality24HoursLast:", valueWaterQuality24HoursLast);
-                    // console.log("qualityCodeWaterQuality24HoursLast:", qualityCodeWaterQuality24HoursLast);
-                } else {
-                    // If no non-null valueLast is found, log a message
-                    // console.log("No non-null valueLast found.");
-                }
-
-                // Calculate the 24 hours change between first and last value
-                const delta_24_water_quality = (valueWaterQualityLast - valueWaterQuality24HoursLast).toFixed(0);
-                // console.log("delta_24_water_quality:", delta_24_water_quality);
-
-                // Format the last valueLast's timestampFlowLast to a string
-                const formattedLastValueTimeStamp = formatTimestampToStringIOS(timestampWaterQualityLast);
-                // console.log("formattedLastValueTimeStamp = ", formattedLastValueTimeStamp);
-
-                // Create a Date object from the timestampFlowLast
-                const timeStampDateObject = new Date(timestampWaterQualityLast);
-                // console.log("timeStampDateObject = ", timeStampDateObject);
-
-                // Subtract 24 hours (24 * 60 * 60 * 1000 milliseconds) from the timestampFlowLast date
-                const timeStampDateObjectMinus24Hours = new Date(timestampWaterQualityLast - (24 * 60 * 60 * 1000));
-                // console.log("timeStampDateObjectMinus24Hours = ", timeStampDateObjectMinus24Hours);
-
-                // DATATIME CLASS
-                var dateTimeClass = determineDateTimeClassWaterQuality(timeStampDateObject, currentDateTimeMinus2Hours, currentDateTimeMinus8Hours, label);
-                // console.log("dateTimeClass:", dateTimeClass);
-
-                if (lastNonNullWaterQualityValue === null) {
-                    innerHTMLWaterQuality = "<span class='missing' title='" + waterQuality.name + "'>"
-                        + "-M-"
-                        + "</span>"
-                        + "<span class='" + myWaterQualityClass + "'>"
-                        + label
-                        + "</span>";
-                } else if (valueWaterQualityLast > 1000) {
-                    innerHTMLWaterQuality = "<span class='blinking-text' title='" + waterQuality.name + ", Value = " + valueWaterQualityLast + ", Date Time = " + timestampWaterQualityLast + "'>"
-                        + "<a href='../chart?office=" + office + "&cwms_ts_id=" + waterQuality.name + "&lookback=4&cda=internal' target='_blank'>"
-                        + valueWaterQualityLast
-                        + "</a>"
-                        + "</span>"
-                        + " "
-                        + waterQuality.units
-                        + " (" + "<span title='" + waterQuality.name + ", Value = " + valueWaterQuality24HoursLast + ", Date Time = " + timestampWaterQuality24HoursLast + ", Delta = (" + valueWaterQualityLast + " - " + valueWaterQuality24HoursLast + ") = " + delta_24_water_quality + "'>" + delta_24_water_quality + "</span>" + ")"
-                        + "<br>"
-                        + "<span class='" + dateTimeClass + "'>"
-                        + formattedLastValueTimeStamp
-                        + "</span>"
-                        + "<span class='" + myWaterQualityClass + "'>"
-                        + label
-                        + "</span>";
-                } else {
-                    innerHTMLWaterQuality = "<span class='last_max_value' title='" + waterQuality.name + ", Value = " + valueWaterQualityLast + ", Date Time = " + timestampWaterQualityLast + "'>"
-                        + "<a href='../chart?office=" + office + "&cwms_ts_id=" + waterQuality.name + "&lookback=4&cda=internal' target='_blank'>"
-                        + valueWaterQualityLast
-                        + "</a>"
-                        + "</span>"
-                        + " "
-                        + waterQuality.units
-                        + " (" + "<span title='" + waterQuality.name + ", Value = " + valueWaterQuality24HoursLast + ", Date Time = " + timestampWaterQuality24HoursLast + ", Delta = (" + valueWaterQualityLast + " - " + valueWaterQuality24HoursLast + ") = " + delta_24_water_quality + "'>" + delta_24_water_quality + "</span>" + ")"
-                        + "<br>"
-                        + "<span class='" + dateTimeClass + "'>"
-                        + formattedLastValueTimeStamp
-                        + "</span>"
-                        + "<span class='" + myWaterQualityClass + "'>"
-                        + label
-                        + "</span>";
-                }
-                return waterQualityCell.innerHTML += innerHTMLWaterQuality;
-            })
-            .catch(error => {
-                // Catch and log any errors that occur during fetching or processing
-                console.error("Error fetching or processing data:", error);
-            });
     }
 }
 
@@ -3212,41 +2844,4 @@ function determineStageClass(stage_value, flood_value) {
         myStageClass = "last_max_value";
     }
     return myStageClass;
-}
-
-function determineDateTimeClass(formattedDate, currentDateTimeMinus2Hours) {
-    var myDateTimeClass;
-    if (formattedDate >= currentDateTimeMinus2Hours) {
-        myDateTimeClass = "date_time_current";
-    } else {
-        // myDateTimeClass = "date_time_late";
-        myDateTimeClass = "blinking-text";
-    }
-    return myDateTimeClass;
-}
-
-function determineDateTimeClassWaterQuality(formattedDate, currentDateTimeMinus2Hours, currentDateTimeMinus8Hours, label) {
-    let myDateTimeClass;
-
-    // Handle undefined or non-string labels
-    if (!label || typeof label !== "string") {
-        console.warn("Warning: Invalid or undefined label:", label);
-        label = ""; // Assign an empty string to prevent `.includes()` errors
-    }
-
-    if (label.includes("LPMS")) {
-        if (formattedDate >= currentDateTimeMinus8Hours) {
-            myDateTimeClass = "date_time_current";
-        } else {
-            myDateTimeClass = "date_time_late";
-        }
-    } else {
-        if (formattedDate >= currentDateTimeMinus2Hours) {
-            myDateTimeClass = "date_time_current";
-        } else {
-            myDateTimeClass = "date_time_late";
-        }
-    }
-
-    return myDateTimeClass;
 }
