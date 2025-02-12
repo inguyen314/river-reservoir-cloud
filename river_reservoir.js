@@ -1380,49 +1380,49 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
             })();
 
             // 08 - Midnight - Controlled Outflow
-            // (() => {
-            //     const midnightControlledOutflowCell = document.createElement('td');
-            //     const midnightControlledOutflowValue = "--";
-            //     fetchAndLogMidnightFlowData(location['location-id'], midnightControlledOutflowCell);
-            //     midnightControlledOutflowCell.textContent = midnightControlledOutflowValue;
-            //     row.appendChild(midnightControlledOutflowCell);
-            // })();
+            (() => {
+                const midnightControlledOutflowTd = document.createElement('td');
+                const midnightControlledOutflowValue = "--";
+                fetchAndLogMidnightFlowDataTd(location['location-id'], midnightControlledOutflowTd);
+                midnightControlledOutflowTd.textContent = midnightControlledOutflowValue;
+                row.appendChild(midnightControlledOutflowTd);
+            })();
 
             // 09 - Evening - Controlled Outflow
-            // (() => {
-            //     const eveningControlledOutflowCell = document.createElement('td');
-            //     const eveningControlledOutflowValue = "--";
-            //     fetchAndLogEveningFlowData(location['location-id'], eveningControlledOutflowCell);
-            //     eveningControlledOutflowCell.textContent = eveningControlledOutflowValue;
-            //     row.appendChild(eveningControlledOutflowCell);
-            // })();
+            (() => {
+                const eveningControlledOutflowTd = document.createElement('td');
+                const eveningControlledOutflowValue = "--";
+                fetchAndLogMidnightFlowDataTd(location['location-id'], eveningControlledOutflowTd);
+                eveningControlledOutflowTd.textContent = eveningControlledOutflowValue;
+                row.appendChild(eveningControlledOutflowTd);
+            })();
 
             // 10 - Seasonal Rule Curve
-            // (() => {
-            //     const seasonalRuleCurveCell = document.createElement('td');
-            //     const seasonalRuleCurveValue = "--";
-            //     fetchAndLogSeasonalRuleCurveData(location['location-id'], seasonalRuleCurveCell);
-            //     seasonalRuleCurveCell.textContent = seasonalRuleCurveValue;
-            //     row.appendChild(seasonalRuleCurveCell);
-            // })();
+            (() => {
+                const seasonalRuleCurveTd = document.createElement('td');
+                const seasonalRuleCurveValue = "--";
+                fetchAndLogSeasonalRuleCurveDataTd(location['location-id'], seasonalRuleCurveTd);
+                seasonalRuleCurveTd.textContent = seasonalRuleCurveValue;
+                row.appendChild(seasonalRuleCurveTd);
+            })();
 
             // 11 - Crest - Pool Forecast
-            // (() => {
-            //     const crestPoolForecastCell = document.createElement('td');
-            //     const crestPoolForecastValue = "--";
-            //     fetchAndLogPoolForecastData(location['location-id'], crestPoolForecastCell);
-            //     crestPoolForecastCell.textContent = crestPoolForecastValue;
-            //     row.appendChild(crestPoolForecastCell);
-            // })();
+            (() => {
+                const crestPoolForecastTd = document.createElement('td');
+                const crestPoolForecastValue = "--";
+                fetchAndLogPoolForecastDataTd(location['location-id'], crestPoolForecastTd);
+                crestPoolForecastTd.textContent = crestPoolForecastValue;
+                row.appendChild(crestPoolForecastTd);
+            })();
 
-            // 12 - Date - Pool Forecast
-            // (() => {
-            //     const datePoolForecastCell = document.createElement('td');
-            //     const datePoolForecastValue = "--";
-            //     fetchAndLogPoolForecastDateData(location['location-id'], datePoolForecastCell);
-            //     datePoolForecastCell.textContent = datePoolForecastValue;
-            //     row.appendChild(datePoolForecastCell);
-            // })();
+            // 12 - Date - Pool Forecast Date
+            (() => {
+                const datePoolForecastTd = document.createElement('td');
+                const datePoolForecastValue = "--";
+                fetchAndLogPoolForecastDateDataTd(location['location-id'], datePoolForecastTd);
+                datePoolForecastTd.textContent = datePoolForecastValue;
+                row.appendChild(datePoolForecastTd);
+            })();
 
             // 13 - Record Stage
             (() => {
@@ -1928,7 +1928,7 @@ function filterDataByLocationId(ROutput, location_id) {
     return filteredData;
 }
 
-async function fetchAndLogMidnightFlowData(location_id, midnightCell) {
+async function fetchAndLogMidnightFlowDataTd(location_id, midnightCell) {
     try {
         const ROutput = await fetchDataFromROutput();
         // console.log('ROutput:', ROutput);
@@ -1958,7 +1958,7 @@ async function fetchAndLogMidnightFlowData(location_id, midnightCell) {
     }
 }
 
-async function fetchAndLogEveningFlowData(location_id, eveningCell) {
+async function fetchAndLogMidnightFlowDataTd(location_id, eveningCell) {
     try {
         const ROutput = await fetchDataFromROutput();
         // console.log('ROutput:', ROutput);
@@ -1985,7 +1985,7 @@ async function fetchAndLogEveningFlowData(location_id, eveningCell) {
     }
 }
 
-async function fetchAndLogSeasonalRuleCurveData(location_id, seasonalRuleCurveCell) {
+async function fetchAndLogSeasonalRuleCurveDataTd(location_id, seasonalRuleCurveCell) {
     try {
         const ROutput = await fetchDataFromROutput();
         // console.log('ROutput:', ROutput);
@@ -2009,7 +2009,7 @@ async function fetchAndLogSeasonalRuleCurveData(location_id, seasonalRuleCurveCe
     }
 }
 
-async function fetchAndLogPoolForecastData(location_id, crestCell) {
+async function fetchAndLogPoolForecastDataTd(location_id, crestCell) {
     try {
         const ROutput = await fetchDataFromROutput();
         // console.log('ROutput:', ROutput);
@@ -2030,7 +2030,7 @@ async function fetchAndLogPoolForecastData(location_id, crestCell) {
     }
 }
 
-async function fetchAndLogPoolForecastDateData(location_id, crestDateCell) {
+async function fetchAndLogPoolForecastDateDataTd(location_id, crestDateCell) {
     try {
         const ROutput = await fetchDataFromROutput();
         // console.log('ROutput:', ROutput);
