@@ -659,296 +659,6 @@ function getLastNonNullValueWithDelta24hrs(data, tsid) {
     return null;
 }
 
-function getMaxValue(data, tsid) {
-    let maxValue = -Infinity; // Start with the smallest possible value
-    let maxEntry = null; // Store the corresponding max entry (timestamp, value, quality code)
-
-    // Loop through the values array
-    for (let i = 0; i < data.values.length; i++) {
-        // Check if the value at index i is not null
-        if (data.values[i][1] !== null) {
-            // Update maxValue and maxEntry if the current value is greater
-            if (data.values[i][1] > maxValue) {
-                maxValue = data.values[i][1];
-                maxEntry = {
-                    tsid: tsid,
-                    timestamp: data.values[i][0],
-                    value: data.values[i][1],
-                    qualityCode: data.values[i][2]
-                };
-            }
-        }
-    }
-
-    // Return the max entry (or null if no valid values were found)
-    return maxEntry;
-}
-
-function getMinValue(data, tsid) {
-    let minValue = Infinity; // Start with the largest possible value
-    let minEntry = null; // Store the corresponding min entry (timestamp, value, quality code)
-
-    // Loop through the values array
-    for (let i = 0; i < data.values.length; i++) {
-        // Check if the value at index i is not null
-        if (data.values[i][1] !== null) {
-            // Update minValue and minEntry if the current value is smaller
-            if (data.values[i][1] < minValue) {
-                minValue = data.values[i][1];
-                minEntry = {
-                    tsid: tsid,
-                    timestamp: data.values[i][0],
-                    value: data.values[i][1],
-                    qualityCode: data.values[i][2]
-                };
-            }
-        }
-    }
-
-    // Return the min entry (or null if no valid values were found)
-    return minEntry;
-}
-
-function getCumValue(data, tsid) {
-    let value0 = null;  // Recent (0 hours)
-    let value6 = null;  // 6 hours earlier
-    let value12 = null; // 12 hours earlier
-    let value18 = null; // 18 hours earlier
-    let value24 = null; // 24 hours earlier
-    let value30 = null; // 30 hours earlier
-    let value36 = null; // 36 hours earlier
-    let value42 = null; // 42 hours earlier
-    let value48 = null; // 48 hours earlier
-    let value54 = null; // 54 hours earlier
-    let value60 = null; // 60 hours earlier
-    let value66 = null; // 66 hours earlier
-    let value72 = null; // 72 hours earlier
-
-    // Iterate over the values array in reverse
-    for (let i = data.values.length - 1; i >= 0; i--) {
-        const [timestamp, value, qualityCode] = data.values[i];
-
-        // Check if the value at index i is not null
-        if (value !== null) {
-            // Convert timestamp to Date object
-            const currentTimestamp = new Date(timestamp);
-            // console.log("currentTimestamp: ", currentTimestamp);
-
-            // If value0 hasn't been set, set it to the latest non-null value
-            if (!value0) {
-                value0 = { tsid, timestamp, value, qualityCode };
-            } else {
-                // Calculate target timestamps for each interval
-                const sixHoursEarlier = new Date(value0.timestamp);
-                sixHoursEarlier.setHours(sixHoursEarlier.getHours() - 6);
-
-                const twelveHoursEarlier = new Date(value0.timestamp);
-                twelveHoursEarlier.setHours(twelveHoursEarlier.getHours() - 12);
-
-                const eighteenHoursEarlier = new Date(value0.timestamp);
-                eighteenHoursEarlier.setHours(eighteenHoursEarlier.getHours() - 18);
-
-                const twentyFourHoursEarlier = new Date(value0.timestamp);
-                twentyFourHoursEarlier.setHours(twentyFourHoursEarlier.getHours() - 24);
-
-                const thirtyHoursEarlier = new Date(value0.timestamp);
-                thirtyHoursEarlier.setHours(thirtyHoursEarlier.getHours() - 30);
-
-                const thirtySixHoursEarlier = new Date(value0.timestamp);
-                thirtySixHoursEarlier.setHours(thirtySixHoursEarlier.getHours() - 36);
-
-                const fortyTwoHoursEarlier = new Date(value0.timestamp);
-                fortyTwoHoursEarlier.setHours(fortyTwoHoursEarlier.getHours() - 42);
-
-                const fortyEightHoursEarlier = new Date(value0.timestamp);
-                fortyEightHoursEarlier.setHours(fortyEightHoursEarlier.getHours() - 48);
-
-                const fiftyFourHoursEarlier = new Date(value0.timestamp);
-                fiftyFourHoursEarlier.setHours(fiftyFourHoursEarlier.getHours() - 54);
-
-                const sixtyHoursEarlier = new Date(value0.timestamp);
-                sixtyHoursEarlier.setHours(sixtyHoursEarlier.getHours() - 60);
-
-                const sixtySixHoursEarlier = new Date(value0.timestamp);
-                sixtySixHoursEarlier.setHours(sixtySixHoursEarlier.getHours() - 66);
-
-                const seventyTwoHoursEarlier = new Date(value0.timestamp);
-                seventyTwoHoursEarlier.setHours(seventyTwoHoursEarlier.getHours() - 72);
-
-                // Assign values if the timestamps match
-                if (!value6 && currentTimestamp.getTime() === sixHoursEarlier.getTime()) {
-                    value6 = { tsid, timestamp, value, qualityCode };
-                } else if (!value12 && currentTimestamp.getTime() === twelveHoursEarlier.getTime()) {
-                    value12 = { tsid, timestamp, value, qualityCode };
-                } else if (!value18 && currentTimestamp.getTime() === eighteenHoursEarlier.getTime()) {
-                    value18 = { tsid, timestamp, value, qualityCode };
-                } else if (!value24 && currentTimestamp.getTime() === twentyFourHoursEarlier.getTime()) {
-                    value24 = { tsid, timestamp, value, qualityCode };
-                } else if (!value30 && currentTimestamp.getTime() === thirtyHoursEarlier.getTime()) {
-                    value30 = { tsid, timestamp, value, qualityCode };
-                } else if (!value36 && currentTimestamp.getTime() === thirtySixHoursEarlier.getTime()) {
-                    value36 = { tsid, timestamp, value, qualityCode };
-                } else if (!value42 && currentTimestamp.getTime() === fortyTwoHoursEarlier.getTime()) {
-                    value42 = { tsid, timestamp, value, qualityCode };
-                } else if (!value48 && currentTimestamp.getTime() === fortyEightHoursEarlier.getTime()) {
-                    value48 = { tsid, timestamp, value, qualityCode };
-                } else if (!value54 && currentTimestamp.getTime() === fiftyFourHoursEarlier.getTime()) {
-                    value54 = { tsid, timestamp, value, qualityCode };
-                } else if (!value60 && currentTimestamp.getTime() === sixtyHoursEarlier.getTime()) {
-                    value60 = { tsid, timestamp, value, qualityCode };
-                } else if (!value66 && currentTimestamp.getTime() === sixtySixHoursEarlier.getTime()) {
-                    value66 = { tsid, timestamp, value, qualityCode };
-                } else if (!value72 && currentTimestamp.getTime() === seventyTwoHoursEarlier.getTime()) {
-                    value72 = { tsid, timestamp, value, qualityCode };
-                }
-
-                // Break loop if all values are found
-                if (
-                    value6 &&
-                    value12 &&
-                    value18 &&
-                    value24 &&
-                    value30 &&
-                    value36 &&
-                    value42 &&
-                    value48 &&
-                    value54 &&
-                    value60 &&
-                    value66 &&
-                    value72
-                ) {
-                    break;
-                }
-            }
-        }
-    }
-
-    // Calculate incremental values (valueX - valuePrevious)
-    // const incrementalValues = {
-    //     incremental6: value6 ? value0.value - value6.value : null,
-    //     incremental12: value12 ? value6.value - value12.value : null,
-    //     incremental18: value18 ? value12.value - value18.value : null,
-    //     incremental24: value24 ? value18.value - value24.value : null,
-    //     incremental30: value30 ? value24.value - value30.value : null,
-    //     incremental36: value36 ? value30.value - value36.value : null,
-    //     incremental42: value42 ? value36.value - value42.value : null,
-    //     incremental48: value48 ? value42.value - value48.value : null,
-    //     incremental54: value54 ? value48.value - value54.value : null,
-    //     incremental60: value60 ? value54.value - value60.value : null,
-    //     incremental66: value66 ? value60.value - value66.value : null,
-    //     incremental72: value72 ? value66.value - value72.value : null,
-    // };
-
-    // Calculate cumulative values (value0 - valueX)
-    const cumulativeValues = {
-        cumulative6: value0 && value6 ? value0.value - value6.value : null,
-        cumulative12: value0 && value12 ? value0.value - value12.value : null,
-        cumulative24: value0 && value24 ? value0.value - value24.value : null,
-        cumulative48: value0 && value48 ? value0.value - value48.value : null,
-        cumulative72: value0 && value72 ? value0.value - value72.value : null,
-    };
-
-    return {
-        value0,
-        value6,
-        value12,
-        value18,
-        value24,
-        value30,
-        value36,
-        value42,
-        value48,
-        value54,
-        value60,
-        value66,
-        value72,
-        // ...incrementalValues, // Spread operator to include incremental values in the return object
-        ...cumulativeValues // Spread operator to include cumulative values in the return object
-    };
-}
-
-function getIncValue(data, tsid) {
-    let value0 = null;  // Recent (0 hours)
-    let value6 = null;  // 6 hours earlier
-    let value12 = null; // 12 hours earlier
-    let value18 = null; // 18 hours earlier
-    let value24 = null; // 24 hours earlier
-    let value30 = null; // 30 hours earlier
-    let value36 = null; // 36 hours earlier
-    let value42 = null; // 42 hours earlier
-    let value48 = null; // 48 hours earlier
-    let value54 = null; // 54 hours earlier
-    let value60 = null; // 60 hours earlier
-    let value66 = null; // 66 hours earlier
-    let value72 = null; // 72 hours earlier
-
-    // Iterate over the values array in reverse
-    for (let i = data.values.length - 1; i >= 0; i--) {
-        const [timestamp, value, qualityCode] = data.values[i];
-
-        // Check if the value at index i is not null
-        if (value !== null) {
-            // Convert timestamp to Date object
-            const currentTimestamp = new Date(timestamp);
-
-            // If value0 hasn't been set, set it to the latest non-null value
-            if (!value0) {
-                value0 = { tsid, timestamp, value, qualityCode };
-            } else {
-                // Calculate target timestamps for each interval
-                const intervals = [6, 12, 18, 24, 30, 36, 42, 48, 54, 60, 66, 72];
-                const valuesMap = [value6, value12, value18, value24, value30, value36, value42, value48, value54, value60, value66, value72];
-
-                intervals.forEach((interval, idx) => {
-                    const targetTime = new Date(value0.timestamp);
-                    targetTime.setHours(targetTime.getHours() - interval);
-                    if (!valuesMap[idx] && currentTimestamp.getTime() === targetTime.getTime()) {
-                        valuesMap[idx] = { tsid, timestamp, value, qualityCode };
-                    }
-                });
-
-                // Break loop if all values are found
-                if (valuesMap.every(val => val !== null)) {
-                    break;
-                }
-            }
-        }
-    }
-
-    // Calculate incremental values (valueX - valuePrevious) if both values are not null
-    const incrementalValues = {
-        incremental6: value6 && value0 ? value0.value - value6.value : null,
-        incremental12: value12 && value6 ? value6.value - value12.value : null,
-        incremental18: value18 && value12 ? value12.value - value18.value : null,
-        incremental24: value24 && value18 ? value18.value - value24.value : null,
-        incremental30: value30 && value24 ? value24.value - value30.value : null,
-        incremental36: value36 && value30 ? value30.value - value36.value : null,
-        incremental42: value42 && value36 ? value36.value - value42.value : null,
-        incremental48: value48 && value42 ? value42.value - value48.value : null,
-        incremental54: value54 && value48 ? value48.value - value54.value : null,
-        incremental60: value60 && value54 ? value54.value - value60.value : null,
-        incremental66: value66 && value60 ? value60.value - value66.value : null,
-        incremental72: value72 && value66 ? value66.value - value72.value : null,
-    };
-
-    return {
-        value0,
-        value6,
-        value12,
-        value18,
-        value24,
-        value30,
-        value36,
-        value42,
-        value48,
-        value54,
-        value60,
-        value66,
-        value72,
-        ...incrementalValues
-    };
-}
-
 function getHourlyDataOnTopOfHour(data, tsid) {
     const hourlyData = [];
 
@@ -1024,92 +734,6 @@ function getNoonDataForDay3(data, tsid) {
     });
 
     return noonData;
-}
-
-function hasLastValue(data) {
-    let allLocationsValid = true; // Flag to track if all locations are valid
-
-    // Iterate through each key in the data object
-    for (const locationIndex in data) {
-        if (data.hasOwnProperty(locationIndex)) { // Ensure the key belongs to the object
-            const item = data[locationIndex];
-            // console.log(`Checking basin ${parseInt(locationIndex) + 1}:`, item); // Log the current item being checked
-
-            const assignedLocations = item['assigned-locations'];
-            // Check if assigned-locations is an object
-            if (typeof assignedLocations !== 'object' || assignedLocations === null) {
-                // console.log('No assigned-locations found in basin:', item);
-                allLocationsValid = false; // Mark as invalid since no assigned locations are found
-                continue; // Skip to the next basin
-            }
-
-            // Iterate through each location in assigned-locations
-            for (const locationName in assignedLocations) {
-                const location = assignedLocations[locationName];
-                // console.log(`Checking location: ${locationName}`, location); // Log the current location being checked
-
-                // Check if location['tsid-temp-water'] exists, if not, set tempWaterTsidArray to an empty array
-                const datmanTsidArray = (location['tsid-stage'] && location['tsid-stage']['assigned-time-series']) || [];
-                const datmanLastValueArray = location['stage-last-value'];
-                // console.log("datmanTsidArray: ", datmanTsidArray);
-                // console.log("datmanLastValueArray: ", datmanLastValueArray);
-
-                // Check if 'stage-last-value' exists and is an array
-                let hasValidValue = false;
-
-                if (Array.isArray(datmanTsidArray) && datmanTsidArray.length > 0) {
-                    // console.log('datmanTsidArray has data.');
-
-                    // Loop through the datmanLastValueArray and check for null or invalid entries
-                    for (let i = 0; i < datmanLastValueArray.length; i++) {
-                        const entry = datmanLastValueArray[i];
-                        // console.log("Checking entry: ", entry);
-
-                        // Step 1: If the entry is null, set hasValidValue to false
-                        if (entry === null) {
-                            // console.log(`Entry at index ${i} is null and not valid.`);
-                            hasValidValue = false;
-                            continue; // Skip to the next iteration, this is not valid
-                        }
-
-                        // Step 2: If the entry exists, check if the value is valid
-                        if (entry.value !== null && entry.value !== 'N/A' && entry.value !== undefined) {
-                            // console.log(`Valid entry found at index ${i}:`, entry);
-                            hasValidValue = true; // Set to true only if we have a valid entry
-                        } else {
-                            // console.log(`Entry at index ${i} has an invalid value:`, entry.value);
-                            hasValidValue = false; // Invalid value, so set it to false
-                        }
-                    }
-
-                    // console.log("hasValidValue: ", hasValidValue);
-
-                    // Log whether a valid entry was found
-                    if (hasValidValue) {
-                        // console.log("There are valid entries in the array.");
-                    } else {
-                        // console.log("There are invalid entries found in the array.");
-                    }
-                } else {
-                    // console.log(`datmanTsidArray is either empty or not an array for location ${locationName}.`);
-                }
-
-                // If no valid values found in the current location, mark as invalid
-                if (!hasValidValue) {
-                    allLocationsValid = false; // Set flag to false if any location is invalid
-                }
-            }
-        }
-    }
-
-    // Return true only if all locations are valid
-    if (allLocationsValid) {
-        console.log('All locations have valid entries.');
-        return true;
-    } else {
-        console.log('Some locations are missing valid entries.');
-        return false;
-    }
 }
 
 function createTablePrecip(combinedData, type) {
@@ -1701,7 +1325,7 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
                 row.appendChild(deltaTd);
             })();
 
-            // 04 - Consr Storage
+            // 04 and 05 - Consr and Flood Storage
             (() => {
                 const ConsrTd = document.createElement('td');
                 const FloodTd = document.createElement('td');
@@ -1729,58 +1353,18 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
                 row.appendChild(FloodTd);
             })();
 
-            // 05 - Flood Storage
-            // (() => {
-            //     const floodStorageCell = document.createElement('td');
-            //     let floodStorageValue = null;
-
-            //     const storageLevel = (location['storage-lake-last-value'] && Array.isArray(location['storage-lake-last-value']) && location['storage-lake-last-value'][0]?.['value'])
-            //         ? location['storage-lake-last-value'][0]['value']
-            //         : null;
-            //     // console.log("storageLevel: ", storageLevel);
-
-            //     const topOfFloodLevel = location['top-of-flood']?.['constant-value'] || null;
-            //     // console.log("topOfFloodLevel: ", topOfFloodLevel);
-
-            //     const bottomOfFloodLevel = location['bottom-of-flood']?.['constant-value'] || null;
-            //     // console.log("bottomOfFloodLevel: ", bottomOfFloodLevel);
-
-            //     if (storageLevel > 0.0 && topOfFloodLevel > 0.0 && bottomOfFloodLevel >= 0.0) {
-            //         if (storageLevel < bottomOfFloodLevel) {
-            //             floodStorageValue = "0.0%";
-            //         } else if (storageLevel > topOfFloodLevel) {
-            //             floodStorageValue = "100.0%";
-            //         } else {
-            //             const total = ((storageLevel) - (bottomOfFloodLevel)) / ((topOfFloodLevel) - (bottomOfFloodLevel)) * 100;
-            //             floodStorageValue = total.toFixed(1) + "%";
-            //         }
-            //     } else {
-            //         floodStorageValue = "%";
-            //     }
-
-            //     floodStorageCell.textContent = floodStorageValue;
-            //     row.appendChild(floodStorageCell);
-            // })();
-
             // 06 - Precip
-            // (() => {
-            //     const precipCell = document.createElement('td');
+            (() => {
+                const precipTd = document.createElement('td');
 
-            //     // Check if 'precip-lake-last-value' exists, is an array, and has at least one element
-            //     let precipValue = (location['precip-lake-last-value'] && Array.isArray(location['precip-lake-last-value']) && location['precip-lake-last-value'][0])
-            //         ? location['precip-lake-last-value'][0]['value']
-            //         : "N/A";  // Default to "N/A" if the value doesn't exist or is not an array
+                const precipLakeTsid = location?.['tsid-lake-precip']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
 
-            //     // Ensure the value is a number before calling toFixed
-            //     if (typeof precipValue === 'number') {
-            //         precipValue = precipValue.toFixed(2); // Format to 2 decimal places
-            //     } else {
-            //         precipValue = "--";
-            //     }
+                if (precipLakeTsid) {
+                    fetchAndUpdatePrecipTd(precipTd, precipLakeTsid, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl);
+                }
 
-            //     precipCell.textContent = precipValue;
-            //     row.appendChild(precipCell);
-            // })();
+                row.appendChild(precipTd);
+            })();
 
             // 07 - Yesterdays Inflow
             // (() => {
@@ -2873,7 +2457,7 @@ function fetchAndUpdateFlow(flowCell, tsidFlow, label, currentDateTimeMinus2Hour
     }
 }
 
-function fetchAndUpdatePrecip(precipCell, tsid, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl) {
+function fetchAndUpdatePrecipTd(precipCell, tsid, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl) {
     if (tsid !== null) {
         // Fetch the time series data from the API using the determined query string
         const urlPrecip = `${setBaseUrl}timeseries?name=${tsid}&begin=${currentDateTimeMinus30Hours.toISOString()}&end=${currentDateTime.toISOString()}&office=${office}`;
@@ -3090,25 +2674,11 @@ function fetchAndUpdatePrecip(precipCell, tsid, currentDateTimeMinus2Hours, curr
                         + "</tr>"
                         + "</table>";
                 } else {
-                    innerHTMLPrecip = "<table id='precip'>"
-                        + "<tr>"
-                        + "<td class='" + myClass6 + "' title='6 hr delta'>"
-                        + "<span title='" + precip.name + ", Value = " + valuePrecip6HoursLast + ", Date Time = " + timestampPrecip6HoursLast + ", Delta = (" + valuePrecipLast + " - " + valuePrecip6HoursLast + ") = " + precip_delta_6 + "'>" + precip_delta_6 + "</span>"
-                        + "</td>"
-                        + "<td class='" + myClass24 + "' title='24 hr delta'>"
-                        + "<span title='" + precip.name + ", Value = " + valuePrecip24HoursLast + ", Date Time = " + timestampPrecip24HoursLast + ", Delta = (" + valuePrecipLast + " - " + valuePrecip24HoursLast + ") = " + precip_delta_24 + "'>" + precip_delta_24 + "</span>"
-                        + "</td>"
-                        + "</tr>"
-                        + "</table>"
+                    innerHTMLPrecip = "</table>"
                         + "<span class='last_max_value' title='" + precip.name + ", Value = " + valuePrecipLast + ", Date Time = " + timestampPrecipLast + "'>"
-                        + "<a href='../chart?office=" + office + "&cwms_ts_id=" + precip.name + "&lookback=4&cda=internal' target='_blank'>"
+                        + "<a href='../chart?office=" + office + "&cwms_ts_id=" + precip.name + "&lookback=4' target='_blank'>"
                         + valuePrecipLast
                         + "</a>"
-                        + "</span>"
-                        + " "
-                        + precip.units
-                        + "<span class='" + dateTimeClass + "'>"
-                        + formattedLastValueTimeStamp
                         + "</span>";
                 }
                 return precipCell.innerHTML += innerHTMLPrecip;
