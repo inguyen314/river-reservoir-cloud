@@ -1367,24 +1367,17 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
             })();
 
             // 07 - Yesterdays Inflow
-            // (() => {
-            //     const yesterdaysInflowCell = document.createElement('td');
+            (() => {
+                const yesterdayInflowTd = document.createElement('td');
 
-            //     // Check if 'inflow-yesterday-lake-last-value' exists and is an array, then get the first element
-            //     let yesterdaysInflowValue = (location['inflow-yesterday-lake-last-value'] && Array.isArray(location['inflow-yesterday-lake-last-value']) && location['inflow-yesterday-lake-last-value'][0])
-            //         ? location['inflow-yesterday-lake-last-value'][0]['value']
-            //         : "N/A";  // Default to "N/A" if the value doesn't exist or is not an array
+                const yesterdayInflowTsid = location?.['tsid-lake-inflow-yesterday']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
 
-            //     // Ensure the value is a number before calling toFixed
-            //     if (typeof yesterdaysInflowValue === 'number') {
-            //         yesterdaysInflowValue = yesterdaysInflowValue.toFixed(0); // Format as an integer
-            //     } else {
-            //         yesterdaysInflowValue = "--";
-            //     }
+                if (yesterdayInflowTsid) {
+                    fetchAndUpdateYesterdayInflowTd(yesterdayInflowTd, yesterdayInflowTsid, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl);
+                }
 
-            //     yesterdaysInflowCell.textContent = yesterdaysInflowValue;
-            //     row.appendChild(yesterdaysInflowCell);
-            // })();
+                row.appendChild(yesterdayInflowTd);
+            })();
 
             // 08 - Midnight - Controlled Outflow
             // (() => {
@@ -2492,7 +2485,6 @@ function fetchAndUpdatePrecipTd(precipCell, tsid, currentDateTimeMinus2Hours, cu
 
                 // console.log("precipFormatted = ", precip);
 
-
                 // Get the last non-null value from the stage data
                 const lastNonNullPrecipValue = getLastNonNullValue(precip);
                 // console.log("lastNonNullPrecipValue:", lastNonNullPrecipValue);
@@ -2513,13 +2505,10 @@ function fetchAndUpdatePrecipTd(precipCell, tsid, currentDateTimeMinus2Hours, cu
                     // console.log("No non-null valueLast found.");
                 }
 
-
                 const c_count = calculateCCount(tsid);
-
 
                 const lastNonNull6HoursPrecipValue = getLastNonNull6HoursValue(precip, c_count);
                 // console.log("lastNonNull6HoursPrecipValue:", lastNonNull6HoursPrecipValue);
-
 
                 // Check if a non-null value was found
                 if (lastNonNull6HoursPrecipValue !== null) {
@@ -2537,10 +2526,8 @@ function fetchAndUpdatePrecipTd(precipCell, tsid, currentDateTimeMinus2Hours, cu
                     // console.log("No non-null valueLast found.");
                 }
 
-
                 const lastNonNull24HoursPrecipValue = getLastNonNull24HoursValue(precip, c_count);
                 // console.log("lastNonNull24HoursPrecipValue:", lastNonNull24HoursPrecipValue);
-
 
                 // Check if a non-null value was found
                 if (lastNonNull24HoursPrecipValue !== null) {
@@ -2558,16 +2545,13 @@ function fetchAndUpdatePrecipTd(precipCell, tsid, currentDateTimeMinus2Hours, cu
                     // console.log("No non-null valueLast found.");
                 }
 
-
                 // Calculate the 24 hours change between first and last value
                 const precip_delta_6 = (valuePrecipLast - valuePrecip6HoursLast).toFixed(2);
                 // console.log("precip_delta_6:", precip_delta_6);
 
-
                 // Calculate the 24 hours change between first and last value
                 const precip_delta_24 = (valuePrecipLast - valuePrecip24HoursLast).toFixed(2);
                 // console.log("precip_delta_24:", precip_delta_24);
-
 
                 // Format the last valueLast's timestampFlowLast to a string
                 const formattedLastValueTimeStamp = formatTimestampToStringIOS(timestampPrecipLast);
@@ -2581,83 +2565,6 @@ function fetchAndUpdatePrecipTd(precipCell, tsid, currentDateTimeMinus2Hours, cu
                 const timeStampDateObjectMinus24Hours = new Date(timestampPrecipLast - (24 * 60 * 60 * 1000));
                 // console.log("timeStampDateObjectMinus24Hours = ", timeStampDateObjectMinus24Hours);
 
-                // SET THE CLASS FOR PRECIP TO DISPLAY THE BACKGROUND COLOR
-                if (precip_delta_6 < 0) {
-                    // console.log("precip_delta_6 less than 0");
-                    var myClass6 = "precip_less_0";
-                    // console.log("myClass6 = ", tsid + " = " + myClass6);
-                } else if (precip_delta_6 === 0) {
-                    // console.log("precip_delta_6 equal to 0");
-                    var myClass6 = "precip_equal_0";
-                    // console.log("myClass6 = ", tsid + " = " + myClass6);
-                } else if (precip_delta_6 > 0.00 && precip_delta_6 <= 0.25) {
-                    // console.log("precip_delta_6 greater than 0 and less than or equal to 0.25");
-                    var myClass6 = "precip_greater_0";
-                    // console.log("myClass6 = ", tsid + " = " + myClass6);
-                } else if (precip_delta_6 > 0.25 && precip_delta_6 <= 0.50) {
-                    // console.log("precip_delta_6 greater than 0.25 and less than or equal to 0.50");
-                    var myClass6 = "precip_greater_25";
-                    // console.log("myClass6 = ", tsid + " = " + myClass6);
-                } else if (precip_delta_6 > 0.50 && precip_delta_6 <= 1.00) {
-                    // console.log("precip_delta_6 greater than 0.50 and less than or equal to 1.00");
-                    var myClass6 = "precip_greater_50";
-                    // console.log("myClass6 = ", tsid + " = " + myClass6);
-                } else if (precip_delta_6 > 1.00 && precip_delta_6 <= 2.00) {
-                    // console.log("precip_delta_6 greater than 1.00 and less than or equal to 2.00");
-                    var myClass6 = "precip_greater_100";
-                    // console.log("myClass6 = ", tsid + " = " + myClass6);
-                } else if (precip_delta_6 > 2.00) {
-                    // console.log("precip_delta_6 greater than 2.00");
-                    var myClass6 = "precip_greater_200";
-                    // console.log("myClass6 = ", tsid + " = " + myClass6);
-                } else if (precip_delta_6 === null) {
-                    // console.log("precip_delta_6 missing");
-                    var myClass6 = "precip_missing";
-                    // console.log("myClass6 = ", tsid + " = " + myClass6);
-                } else {
-                    // console.log("precip_delta_6 equal to else");
-                    var myClass6 = "blank";
-                    // console.log("myClass6 = ", tsid + " = " + myClass6);
-                }
-
-                if (precip_delta_24 < 0) {
-                    // console.log("precip_delta_24 less than 0");
-                    var myClass24 = "precip_less_0";
-                    // console.log("myClass24 =", tsid + " = " + myClass24);
-                } else if (precip_delta_24 === 0) {
-                    // console.log("precip_delta_24 equal to 0");
-                    var myClass24 = "precip_equal_0";
-                    // console.log("myClass24 =", tsid + " = " + myClass24);
-                } else if (precip_delta_24 > 0.00 && precip_delta_24 <= 0.25) {
-                    // console.log("precip_delta_24 greater than 0 and less than or equal to 0.25");
-                    var myClass24 = "precip_greater_0";
-                    // console.log("myClass24 =", tsid + " = " + myClass24);
-                } else if (precip_delta_24 > 0.25 && precip_delta_24 <= 0.50) {
-                    // console.log("precip_delta_24 greater than 0.25 and less than or equal to 0.50");
-                    var myClass24 = "precip_greater_25";
-                    // console.log("myClass24 =", tsid + " = " + myClass24);
-                } else if (precip_delta_24 > 0.50 && precip_delta_24 <= 1.00) {
-                    // console.log("precip_delta_24 greater than 0.50 and less than or equal to 1.00");
-                    var myClass24 = "precip_greater_50";
-                    // console.log("myClass24 =", tsid + " = " + myClass24);
-                } else if (precip_delta_24 > 1.00 && precip_delta_24 <= 2.00) {
-                    // console.log("precip_delta_24 greater than 1.00 and less than or equal to 2.00");
-                    var myClass24 = "precip_greater_100";
-                    // console.log("myClass24 =", tsid + " = " + myClass24);
-                } else if (precip_delta_24 > 2.00) {
-                    // console.log("precip_delta_24 greater than 2.00");
-                    var myClass24 = "precip_greater_200";
-                    // console.log("myClass24 =", tsid + " = " + myClass24);
-                } else if (precip_delta_24 === null) {
-                    // console.log("precip_delta_24 missing");
-                    var myClass24 = "precip_missing";
-                    // console.log("myClass24 =", tsid + " = " + myClass24);
-                } else {
-                    // console.log("precip_delta_24 equal to else");
-                    var myClass24 = "blank";
-                    // console.log("myClass24 =", tsid + " = " + myClass24);
-                }
-
                 // DATATIME CLASS
                 var dateTimeClass = determineDateTimeClass(timeStampDateObject, currentDateTimeMinus2Hours);
                 // console.log("dateTimeClass:", dateTimeClass);
@@ -2665,9 +2572,88 @@ function fetchAndUpdatePrecipTd(precipCell, tsid, currentDateTimeMinus2Hours, cu
                 if (lastNonNullPrecipValue === null) {
                     innerHTMLPrecip = "<table id='precip'>"
                         + "<tr>"
-                        + "<td class='precip_missing' title='6 hr delta'>"
+                        + "<td class='precip_missing' title='24 hr delta'>"
                         + "-M-"
                         + "</td>"
+                        + "</tr>"
+                        + "</table>";
+                } else {
+                    innerHTMLPrecip = "</table>"
+                        + "<span class='last_max_value' title='" + precip.name + ", Value = " + valuePrecipLast + ", Date Time = " + timestampPrecipLast + "'>"
+                        + "<a href='../chart?office=" + office + "&cwms_ts_id=" + precip.name + "&lookback=4' target='_blank'>"
+                        + valuePrecipLast
+                        + "</a>"
+                        + "</span>";
+                }
+                return precipCell.innerHTML += innerHTMLPrecip;
+            })
+            .catch(error => {
+                // Catch and log any errors that occur during fetching or processing
+                console.error("Error fetching or processing data:", error);
+            });
+    } else {
+        return precipCell.innerHTML = "";
+    }
+}
+
+function fetchAndUpdateYesterdayInflowTd(precipCell, tsid, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl) {
+    if (tsid !== null) {
+        // Fetch the time series data from the API using the determined query string
+        const urlPrecip = `${setBaseUrl}timeseries?name=${tsid}&begin=${currentDateTimeMinus30Hours.toISOString()}&end=${currentDateTime.toISOString()}&office=${office}`;
+        // console.log("urlPrecip = ", urlPrecip);
+
+        fetch(urlPrecip, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json;version=2'
+            }
+        })
+            .then(response => {
+                // Check if the response is ok
+                if (!response.ok) {
+                    // If not, throw an error
+                    throw new Error('Network response was not ok');
+                }
+                // If response is ok, parse it as JSON
+                return response.json();
+            })
+            .then(precip => {
+                // Once data is fetched, log the fetched data structure
+                // console.log("precip: ", precip);
+
+                // Convert timestamps in the JSON object
+                precip.values.forEach(entry => {
+                    entry[0] = formatNWSDate(entry[0]); // Update timestamp
+                });
+
+                // Output the updated JSON object
+                // // console.log(JSON.stringify(precip, null, 2));
+
+                // console.log("precipFormatted = ", precip);
+
+                // Get the last non-null value from the stage data
+                const lastNonNullPrecipValue = getLastNonNullValue(precip);
+                // console.log("lastNonNullPrecipValue:", lastNonNullPrecipValue);
+
+                // Check if a non-null value was found
+                if (lastNonNullPrecipValue !== null) {
+                    // Extract timestamp, value, and quality code from the last non-null value
+                    var timestampPrecipLast = lastNonNullPrecipValue.timestamp;
+                    var valuePrecipLast = parseFloat(lastNonNullPrecipValue.value).toFixed(0);
+                    var qualityCodePrecipLast = lastNonNullPrecipValue.qualityCode;
+
+                    // Log the extracted valueLasts
+                    // console.log("timestampPrecipLast:", timestampPrecipLast);
+                    // console.log("valuePrecipLast:", valuePrecipLast);
+                    // console.log("qualityCodePrecipLast:", qualityCodePrecipLast);
+                } else {
+                    // If no non-null valueLast is found, log a message
+                    // console.log("No non-null valueLast found.");
+                }
+
+                if (lastNonNullPrecipValue === null) {
+                    innerHTMLPrecip = "<table id='precip'>"
+                        + "<tr>"
                         + "<td class='precip_missing' title='24 hr delta'>"
                         + "-M-"
                         + "</td>"
