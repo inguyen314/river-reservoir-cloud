@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     if (cda === "internal") {
         setJsonFileBaseUrl = `https://wm.mvs.ds.usace.army.mil/`;
     } else if (cda === "internal-coop") {
-        setJsonFileBaseUrl = `https://wm.mvs.ds.usace.army.mil/`;
+        setJsonFileBaseUrl = `https://wm-mvscoop.mvk.ds.usace.army.mil/`;
     } else if (cda === "public") {
         setJsonFileBaseUrl = `https://www.mvs-wc.usace.army.mil/`;
     }
