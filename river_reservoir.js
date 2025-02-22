@@ -59,9 +59,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                 console.log('combinedDataRiver:', combinedDataRiver);
                 console.log('combinedDataReservoir:', combinedDataReservoir);
 
-                const tableRiver = createTableRiver(combinedDataRiver, type, day1, day2, day3, setBaseUrl, setJsonFileBaseUrl);
-                const tableReservoir = createTableReservoir(combinedDataReservoir, type, day1, day2, day3, lakeLocs, setBaseUrl, setJsonFileBaseUrl);
-
+                let tableRiver = null;
+                let tableReservoir = null;
+                if (type === "morning") {
+                    tableRiver = createTableRiver(combinedDataRiver, type, day1, day2, day3, setBaseUrl, setJsonFileBaseUrl);
+                } else {
+                    tableRiver = createTableRiver(combinedDataRiver, type, day1, day2, day3, setBaseUrl, setJsonFileBaseUrl);
+                    tableReservoir = createTableReservoir(combinedDataReservoir, type, day1, day2, day3, lakeLocs, setBaseUrl, setJsonFileBaseUrl);
+                }
                 document.getElementById(`table_container_${setReportDiv}`).append(tableRiver, tableReservoir);
                 // document.getElementById(`table_container_${setReportDiv}`).append(tableRiver);
 
@@ -918,74 +923,65 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
     // Add 3-rows title
     (() => {
         // TITLE ROW 1
-        // Insert the first header row (main headers) for the table
         const headerRow = table.insertRow(0);
 
-        // Define the main column headers
-        const columns = ["River Mile", "Gage Station", "Current Level", "24hr Delta",
+        // Define all columns
+        const allColumns = ["River Mile", "Gage Station", "Current Level", "24hr Delta",
             "National Weather Service River Forecast", "Flood Level",
             "Gage Zero", "Record Stage", "Record Date"];
 
-        // Create and append headers for each main column
+        // Define filtered columns if type is "morning"
+        const columns = (type === "morning") ? allColumns.slice(0, 4) : allColumns;
+
         columns.forEach((columnName) => {
             const th = document.createElement('th');
             th.textContent = columnName;
 
             // Set row spans or column spans based on header requirements
-            if (columnName === "River Mile" || columnName === "Gage Station" ||
-                columnName === "Current Level" || columnName === "24hr Delta" ||
-                columnName === "Flood Level" || columnName === "Gage Zero" ||
-                columnName === "Record Stage" || columnName === "Record Date") {
+            if (["River Mile", "Gage Station", "Current Level", "24hr Delta",
+                "Flood Level", "Gage Zero", "Record Stage", "Record Date"].includes(columnName)) {
                 th.rowSpan = 3;
             }
 
-            // Set colspan for the "National Weather Service River Forecast" column
             if (columnName === "National Weather Service River Forecast") {
-                th.colSpan = 6;  // Adjusted to span across the 3 "Next 3 days" columns and 3 additional sub-columns
+                th.colSpan = 6;
             }
 
-            // Apply styling for header cells
             th.style.backgroundColor = 'darkblue';
             th.style.color = 'white';
             headerRow.appendChild(th);
         });
 
-        // TITLE ROW 2
-        // Insert the second header row for sub-headers under "National Weather Service River Forecast"
-        const headerRow2 = table.insertRow(1);
+        // If not "morning", continue with additional header rows
+        if (type !== "morning") {
+            const headerRow2 = table.insertRow(1);
+            const columns2 = ["Next 3 days", "forecast time", "Crest", "Date"];
 
-        // Define sub-headers for the forecast columns
-        const columns2 = ["Next 3 days", "forecast time", "Crest", "Date"];
+            columns2.forEach((columnName) => {
+                const th = document.createElement('th');
+                th.textContent = columnName;
+                th.style.backgroundColor = 'darkblue';
+                th.style.color = 'white';
 
-        columns2.forEach((columnName) => {
-            const th = document.createElement('th');
-            th.textContent = columnName;
-            th.style.backgroundColor = 'darkblue';
-            th.style.color = 'white';
+                if (columnName === "Next 3 days") {
+                    th.colSpan = 3;
+                } else {
+                    th.rowSpan = 2;
+                }
+                headerRow2.appendChild(th);
+            });
 
-            // Set colspan for "Next 3 days" to include Day1, Day2, and Day3
-            if (columnName === "Next 3 days") {
-                th.colSpan = 3;
-            } else {
-                th.rowSpan = 2;
-            }
-            headerRow2.appendChild(th);
-        });
+            const headerRow3 = table.insertRow(2);
+            const dayColumns = ["Day1", "Day2", "Day3"];
 
-        // TITLE ROW 3
-        // Insert the third header row to show individual day headers under "Next 3 days"
-        const headerRow3 = table.insertRow(2);
-
-        // Define columns for the individual days under "Next 3 days"
-        const dayColumns = ["Day1", "Day2", "Day3"];
-
-        dayColumns.forEach((day) => {
-            const th = document.createElement('th');
-            th.textContent = day;
-            th.style.backgroundColor = 'darkblue';
-            th.style.color = 'white';
-            headerRow3.appendChild(th);
-        });
+            dayColumns.forEach((day) => {
+                const th = document.createElement('th');
+                th.textContent = day;
+                th.style.backgroundColor = 'darkblue';
+                th.style.color = 'white';
+                headerRow3.appendChild(th);
+            });
+        }
     })();
 
     // Loop through each basin in the combined data
@@ -1054,134 +1050,136 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                 row.appendChild(deltaTd);
             })();
 
-            // 05, 06 and 07 and 08 - Day1, Day2 and Day3 and Forecast Time
-            (() => {
-                const nwsDay1Td = document.createElement('td');
-                const nwsDay2Td = document.createElement('td');
-                const nwsDay3Td = document.createElement('td');
+            if (type !== "morning") {
+                // 05, 06 and 07 and 08 - Day1, Day2 and Day3 and Forecast Time
+                (() => {
+                    const nwsDay1Td = document.createElement('td');
+                    const nwsDay2Td = document.createElement('td');
+                    const nwsDay3Td = document.createElement('td');
 
-                const stageTsid = location?.['tsid-stage']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
-                const nwsForecastTsid = location?.['tsid-nws-forecast']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
-                const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
+                    const stageTsid = location?.['tsid-stage']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
+                    const nwsForecastTsid = location?.['tsid-nws-forecast']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
+                    const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
 
-                if (nwsForecastTsid) {
-                    fetchAndUpdateNwsForecastTd(stageTsid, nwsForecastTsid, floodValue, currentDateTime, currentDateTimePlus4Days, setBaseUrl)
-                        .then(({ nwsDay1Td: val1, nwsDay2Td: val2, nwsDay3Td: val3 }) => {
-                            nwsDay1Td.textContent = val1;
-                            nwsDay2Td.textContent = val2;
-                            nwsDay3Td.textContent = val3;
-                        })
-                        .catch(error => console.error("Failed to fetch NWS data:", error));
-                }
+                    if (nwsForecastTsid) {
+                        fetchAndUpdateNwsForecastTd(stageTsid, nwsForecastTsid, floodValue, currentDateTime, currentDateTimePlus4Days, setBaseUrl)
+                            .then(({ nwsDay1Td: val1, nwsDay2Td: val2, nwsDay3Td: val3 }) => {
+                                nwsDay1Td.textContent = val1;
+                                nwsDay2Td.textContent = val2;
+                                nwsDay3Td.textContent = val3;
+                            })
+                            .catch(error => console.error("Failed to fetch NWS data:", error));
+                    }
 
-                row.appendChild(nwsDay1Td);
-                row.appendChild(nwsDay2Td);
-                row.appendChild(nwsDay3Td);
-            })();
+                    row.appendChild(nwsDay1Td);
+                    row.appendChild(nwsDay2Td);
+                    row.appendChild(nwsDay3Td);
+                })();
 
-            // 08 - Nws Forecast Time PHP
-            (() => {
-                const nwsForecastTimeTd = document.createElement('td');
-                const nwsForecastTsid = location['tsid-nws-forecast']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
+                // 08 - Nws Forecast Time PHP
+                (() => {
+                    const nwsForecastTimeTd = document.createElement('td');
+                    const nwsForecastTsid = location['tsid-nws-forecast']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
 
-                if (nwsForecastTsid !== null) {
-                    fetchAndLogNwsData(nwsForecastTsid, nwsForecastTimeTd, setJsonFileBaseUrl);
-                } else {
-                    nwsForecastTimeTd.textContent = '';
-                }
+                    if (nwsForecastTsid !== null) {
+                        fetchAndLogNwsData(nwsForecastTsid, nwsForecastTimeTd, setJsonFileBaseUrl);
+                    } else {
+                        nwsForecastTimeTd.textContent = '';
+                    }
 
-                row.appendChild(nwsForecastTimeTd);
-            })();
+                    row.appendChild(nwsForecastTimeTd);
+                })();
 
-            // 09 and 10 - Crest Value and Date Time
-            (() => {
-                const crestTd = document.createElement('td');
-                const crestDateTd = document.createElement('td');
+                // 09 and 10 - Crest Value and Date Time
+                (() => {
+                    const crestTd = document.createElement('td');
+                    const crestDateTd = document.createElement('td');
 
-                const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
-                const crestTsid = location?.['tsid-nws-crest']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
+                    const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
+                    const crestTsid = location?.['tsid-nws-crest']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
 
-                if (crestTsid) {
-                    fetchAndUpdateCrestTd(crestTd, crestDateTd, crestTsid, floodValue, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl);
-                }
+                    if (crestTsid) {
+                        fetchAndUpdateCrestTd(crestTd, crestDateTd, crestTsid, floodValue, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl);
+                    }
 
-                row.appendChild(crestTd);
-                row.appendChild(crestDateTd);
-            })();
+                    row.appendChild(crestTd);
+                    row.appendChild(crestDateTd);
+                })();
 
-            // 11 - Flood Level
-            (() => {
-                const floodLevelCell = document.createElement('td');
+                // 11 - Flood Level
+                (() => {
+                    const floodLevelCell = document.createElement('td');
 
-                // Check if 'flood' exists and has 'constant-value'
-                const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
+                    // Check if 'flood' exists and has 'constant-value'
+                    const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
 
-                // Display the flood value if it's valid, otherwise set to 'N/A' or leave empty
-                if (floodValue != null && floodValue <= 900) {
-                    floodLevelCell.textContent = floodValue.toFixed(2);
-                } else {
-                    floodLevelCell.textContent = ''; // Leave it empty if floodValue > 900 or is null
-                }
+                    // Display the flood value if it's valid, otherwise set to 'N/A' or leave empty
+                    if (floodValue != null && floodValue <= 900) {
+                        floodLevelCell.textContent = floodValue.toFixed(2);
+                    } else {
+                        floodLevelCell.textContent = ''; // Leave it empty if floodValue > 900 or is null
+                    }
 
-                row.appendChild(floodLevelCell);
-            })();
+                    row.appendChild(floodLevelCell);
+                })();
 
-            // 12 - Gage Zero
-            (() => {
-                const gageZeroCell = document.createElement('td');
-                const gageZeroValue = location['metadata']?.['elevation'];
-                const datum = location['metadata']?.['vertical-datum'];
+                // 12 - Gage Zero
+                (() => {
+                    const gageZeroCell = document.createElement('td');
+                    const gageZeroValue = location['metadata']?.['elevation'];
+                    const datum = location['metadata']?.['vertical-datum'];
 
-                // Ensure gageZeroValue is a valid number before calling toFixed
-                if (typeof gageZeroValue === 'number' && !isNaN(gageZeroValue)) {
-                    gageZeroCell.textContent = (gageZeroValue > 900) ? '' : gageZeroValue.toFixed(2);
-                } else {
-                    gageZeroCell.textContent = 'N/A';  // Set to 'N/A' if gageZeroValue is invalid
-                }
+                    // Ensure gageZeroValue is a valid number before calling toFixed
+                    if (typeof gageZeroValue === 'number' && !isNaN(gageZeroValue)) {
+                        gageZeroCell.textContent = (gageZeroValue > 900) ? '' : gageZeroValue.toFixed(2);
+                    } else {
+                        gageZeroCell.textContent = 'N/A';  // Set to 'N/A' if gageZeroValue is invalid
+                    }
 
-                // Check if datum is "NGVD29" and set text color to purple
-                if (datum === "NGVD29") {
-                    gageZeroCell.style.color = 'purple';
-                }
+                    // Check if datum is "NGVD29" and set text color to purple
+                    if (datum === "NGVD29") {
+                        gageZeroCell.style.color = 'purple';
+                    }
 
-                row.appendChild(gageZeroCell);
-            })();
+                    row.appendChild(gageZeroCell);
+                })();
 
-            // 13 - Record Stage
-            (() => {
-                const recordStageCell = document.createElement('td');
-                const recordStage = location['record-stage'];
-                const recordStageValue = recordStage ? recordStage['constant-value'] : null;
+                // 13 - Record Stage
+                (() => {
+                    const recordStageCell = document.createElement('td');
+                    const recordStage = location['record-stage'];
+                    const recordStageValue = recordStage ? recordStage['constant-value'] : null;
 
-                // Check if recordStageValue is valid and within the required range
-                if (recordStageValue != null && recordStageValue <= 900) {
-                    recordStageCell.textContent = recordStageValue.toFixed(2);
-                } else {
-                    recordStageCell.textContent = '';  // Show 'N/A' if no valid recordStageValue
-                }
+                    // Check if recordStageValue is valid and within the required range
+                    if (recordStageValue != null && recordStageValue <= 900) {
+                        recordStageCell.textContent = recordStageValue.toFixed(2);
+                    } else {
+                        recordStageCell.textContent = '';  // Show 'N/A' if no valid recordStageValue
+                    }
 
-                row.appendChild(recordStageCell);
-            })();
+                    row.appendChild(recordStageCell);
+                })();
 
-            // 14 - Record Date
-            (() => {
-                const recordDateCell = document.createElement('td');
+                // 14 - Record Date
+                (() => {
+                    const recordDateCell = document.createElement('td');
 
-                // Retrieve the record stage date value, or use null if not available
-                const recordDateValue = location['river-mile-hard-coded'] && location['river-mile-hard-coded']['record_stage_date_hard_coded'];
+                    // Retrieve the record stage date value, or use null if not available
+                    const recordDateValue = location['river-mile-hard-coded'] && location['river-mile-hard-coded']['record_stage_date_hard_coded'];
 
-                // Set the text content of the cell, default to an empty string if no data
-                recordDateCell.textContent = recordDateValue != null ? recordDateValue : "";
+                    // Set the text content of the cell, default to an empty string if no data
+                    recordDateCell.textContent = recordDateValue != null ? recordDateValue : "";
 
-                // Set the title for the cell
-                recordDateCell.title = "Hard Coded with Json File";
+                    // Set the title for the cell
+                    recordDateCell.title = "Hard Coded with Json File";
 
-                // Set halo effect using text-shadow with orange color
-                recordDateCell.style.textShadow = '0 0 2px rgba(255, 165, 0, 0.7), 0 0 2px rgba(255, 140, 0, 0.5)';
+                    // Set halo effect using text-shadow with orange color
+                    recordDateCell.style.textShadow = '0 0 2px rgba(255, 165, 0, 0.7), 0 0 2px rgba(255, 140, 0, 0.5)';
 
-                // Append the cell to the row
-                row.appendChild(recordDateCell);
-            })();
+                    // Append the cell to the row
+                    row.appendChild(recordDateCell);
+                })();
+            }
 
             table.appendChild(row);
         });
@@ -1900,11 +1898,9 @@ async function fetchInBatches(urls) {
 
     return results;
 }
-
 // ******************************************************
 // ******* Hard Coded Lake Outflow and Crest ************
 // ******************************************************
-
 async function fetchDataFromROutput(setJsonFileBaseUrl) {
     let url = null;
     url = setJsonFileBaseUrl + 'php_data_api/public/json/outputR.json';
@@ -2088,7 +2084,6 @@ function updateLakeCrestDateHTML(filteredData, crestDateCell) {
         crestDateCell.innerHTML = `<div class="hard_coded_php" title="Uses PHP Json Output, No Cloud Option to Access Custom Schema Yet"></div>`;
     }
 }
-
 /******************************************************************************
  *                               FETCH CDA FUNCTIONS                          *
  ******************************************************************************/
@@ -2593,7 +2588,6 @@ function fetchAndUpdateStorageTd(stageTd, DeltaTd, tsidStorage, flood_level, cur
         }
     });
 }
-
 /******************************************************************************
  *                            SUPPORT CDA FUNCTIONS                           *
  ******************************************************************************/
@@ -2764,7 +2758,6 @@ function formatTimestampToStringIOS(timestamp) {
     // Format as "YYYY-MM-DD HH:mm"
     return dateObj.toISOString().replace("T", " ").slice(0, 16);
 }
-
 /******************************************************************************
  *                           GET DATA FUNCTIONS                               *
  ******************************************************************************/
