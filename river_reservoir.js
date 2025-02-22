@@ -1,6 +1,10 @@
 document.addEventListener('DOMContentLoaded', async function () {
-    // Display the loading_alarm_mvs indicator
-    const loadingIndicator = document.getElementById('loading_river_reservoir');
+    console.log("This is dev");
+
+    let setReportDiv = null;
+    setReportDiv = "river_reservoir";
+
+    const loadingIndicator = document.getElementById(`loading_${setReportDiv}`);
     loadingIndicator.style.display = 'block';
 
     let setBaseUrl = null;
@@ -13,8 +17,26 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
     console.log("setBaseUrl: ", setBaseUrl);
 
-    if (json === "true" && (basin === "Mississippi" || basin === "Kaskaskia")) {
-        fetch(`json/json.json`)
+    let setJsonFileBaseUrl = null;
+    if (cda === "internal") {
+        setJsonFileBaseUrl = `https://wm.mvs.ds.usace.army.mil/`;
+    } else if (cda === "internal-coop") {
+        setJsonFileBaseUrl = `https://wm-mvscoop.mvk.ds.usace.army.mil/`;
+    } else if (cda === "public") {
+        setJsonFileBaseUrl = `https://www.mvs-wc.usace.army.mil/`;
+    }
+    console.log("setJsonFileBaseUrl: ", setJsonFileBaseUrl);
+
+    const lakeLocs = [
+        "Lk Shelbyville-Kaskaskia",
+        "Carlyle Lk-Kaskaskia",
+        "Rend Lk-Big Muddy",
+        "Wappapello Lk-St Francis",
+        "Mark Twain Lk-Salt"
+    ];
+
+    if (json === "true") {
+        fetch(`json/gage_control.json`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -24,52 +46,103 @@ document.addEventListener('DOMContentLoaded', async function () {
             .then(combinedData => {
                 console.log('combinedData:', combinedData);
 
-                // Call the function to create and populate the table
-                createGageDataTable(combinedData, setBaseUrl);
+                const formatDate = (daysToAdd) => {
+                    const date = new Date();
+                    date.setDate(date.getDate() + daysToAdd);
+                    return ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
+                };
+
+                const [day1, day2, day3] = [1, 2, 3].map(days => formatDate(days));
+                const combinedDataRiver = structuredClone ? structuredClone(combinedData) : JSON.parse(JSON.stringify(combinedData));
+                const combinedDataReservoir = structuredClone ? structuredClone(combinedData) : JSON.parse(JSON.stringify(combinedData));
+
+                console.log('combinedDataRiver:', combinedDataRiver);
+                console.log('combinedDataReservoir:', combinedDataReservoir);
+
+                let tableRiver = null;
+                let tableReservoir = null;
+                if (type === "morning") {
+                    tableRiver = createTableRiver(combinedDataRiver, type, day1, day2, day3, setBaseUrl, setJsonFileBaseUrl);
+                } else {
+                    tableRiver = createTableRiver(combinedDataRiver, type, day1, day2, day3, setBaseUrl, setJsonFileBaseUrl);
+                    tableReservoir = createTableReservoir(combinedDataReservoir, type, day1, day2, day3, lakeLocs, setBaseUrl, setJsonFileBaseUrl);
+                }
+                document.getElementById(`table_container_${setReportDiv}`).append(tableRiver, tableReservoir);
+                // document.getElementById(`table_container_${setReportDiv}`).append(tableRiver);
+
                 loadingIndicator.style.display = 'none';
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
             });
     } else {
-        // Store location metadata and flood data
+        let setLocationCategory = null;
+        let setLocationGroupOwner = null;
+        let setTimeseriesGroup1 = null;
+        let setTimeseriesGroup2 = null;
+        let setTimeseriesGroup3 = null;
+        let setTimeseriesGroup4 = null;
+        let setTimeseriesGroup5 = null;
+        let setTimeseriesGroup6 = null;
+        let setLookBack = null;
+        let setLookForward = null;
+
+        setLocationCategory = "Basins";
+        setLocationGroupOwner = "River-Reservoir";
+        setTimeseriesGroup1 = "Stage";
+        setTimeseriesGroup2 = "Forecast-NWS";
+        setTimeseriesGroup3 = "Crest";
+        setTimeseriesGroup4 = "Precip-Lake";
+        setTimeseriesGroup5 = "Inflow-Yesterday-Lake";
+        setTimeseriesGroup6 = "Storage";
+        setLookBack = subtractDaysFromDate(new Date(), 2);
+        setLookForward = addDaysFromDate(new Date(), 14);
+
+        const categoryApiUrl = `${setBaseUrl}location/group?office=${office}&include-assigned=false&location-category-like=${setLocationCategory}`;
+
+        // Initialize Maps to hold datasets
         const metadataMap = new Map();
+        const recordStageMap = new Map();
+        const lwrpMap = new Map();
         const floodMap = new Map();
         const stageTsidMap = new Map();
-        const forecastNwsTsidMap = new Map();
-        const flowTsidMap = new Map();
-        const precipTsidMap = new Map();
-        const precipLakeTsidMap = new Map();
-        const ownerMap = new Map();
         const riverMileMap = new Map();
-        const crestTsidMap = new Map();
+        const riverMileHardCodedMap = new Map();
+        const forecastNwsTsidMap = new Map();
+        const crestNwsTsidMap = new Map();
+        const precipLakeTsidMap = new Map();
+        const inflowYesterdayLakeTsidMap = new Map();
+        const storageLakeTsidMap = new Map();
+        const topOfFloodMap = new Map();
+        const topOfConservationMap = new Map();
+        const bottomOfFloodMap = new Map();
+        const bottomOfConservationMap = new Map();
 
-        // Arrays to track promises for metadata and flood data fetches
+        // Fetch data functions with promise arrays for async processing
         const metadataPromises = [];
+        const recordStageTsidPromises = [];
+        const lwrpPromises = [];
         const floodPromises = [];
         const stageTsidPromises = [];
-        const forecastNwsTsidPromises = [];
-        const flowTsidPromises = [];
-        const precipTsidPromises = [];
-        const precipLakeTsidPromises = [];
-        const ownerPromises = [];
         const riverMilePromises = [];
+        const riverMileHardCodedPromises = [];
+        const forecastNwsTsidPromises = [];
         const crestTsidPromises = [];
+        const precipLakeTsidPromises = [];
+        const inflowYesterdayLakeTsidPromises = [];
+        const storageLakeTsidPromises = [];
+        const topOfFloodPromises = [];
+        const topOfConservationPromises = [];
+        const bottomOfFloodPromises = [];
+        const bottomOfConservationPromises = [];
         const apiPromises = [];
-        const combinedData = [];
 
-        if (cda === "internal" || cda === "public") {
-            apiUrl = `${setBaseUrl}location/group?office=${office}&include-assigned=false&location-category-like=Basins`;
-        }
+        let combinedData = [];
 
-        console.log("apiUrl: ", apiUrl);
-
-        // Fetch the initial data
-        fetch(apiUrl)
+        // Initial category fetch
+        fetch(categoryApiUrl)
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
+                if (!response.ok) throw new Error('Network response was not ok');
                 return response.json();
             })
             .then(data => {
@@ -78,248 +151,385 @@ document.addEventListener('DOMContentLoaded', async function () {
                     return;
                 }
 
-                const targetCategory = { "office-id": office, "id": "Basins" };
+                // Filter data where category is "Basins"
+                const targetCategory = { "office-id": office, "id": setLocationCategory };
                 const filteredArray = filterByLocationCategory(data, targetCategory);
-                console.log("filteredArray: ", filteredArray);
-
-                const basins = filteredArray.map(item => item.id);
+                let basins = filteredArray.map(item => item.id);
                 if (basins.length === 0) {
                     console.warn('No basins found for the given category.');
                     return;
                 }
 
-                console.log("basins: ", basins);
-
-                // Loop through each basin and fetch its data
+                // Loop through each basin and get all the assigned locations
                 basins.forEach(basin => {
-                    const basinApiUrl = `${setBaseUrl}location/group/${basin}?office=${office}&category-id=Basins`;
-                    console.log("basinApiUrl: ", basinApiUrl);
-
+                    const basinApiUrl = `${setBaseUrl}location/group/${basin}?office=${office}&category-id=${setLocationCategory}`;
                     apiPromises.push(
                         fetch(basinApiUrl)
                             .then(response => {
-                                if (!response.ok) {
-                                    throw new Error(`Network response was not ok for basin ${basin}: ${response.statusText}`);
-                                }
+                                if (!response.ok) throw new Error(`Network response was not ok for basin ${basin}`);
                                 return response.json();
                             })
-                            .then(data => {
-                                if (!data) {
-                                    console.log(`No data for basin: ${basin}`);
-                                    return;
-                                }
+                            .then(getBasin => {
+                                // console.log("getBasin: ", getBasin);
 
-                                console.log('data:', data);
+                                if (getBasin) {
+                                    // Fetch additional data needed for filtering
+                                    const additionalDataPromises = getBasin['assigned-locations'].map(location => {
+                                        return fetchAdditionalLocationGroupOwnerData(location[`location-id`], setBaseUrl, setLocationGroupOwner, office);
+                                    });
 
-                                if (Array.isArray(data['assigned-locations'])) {
-                                    // Filter and sort assigned locations
-                                    const filteredLocations = data['assigned-locations'].filter(location => location.attribute <= 900);
-                                    filteredLocations.sort((a, b) => a.attribute - b.attribute);
-                                    console.log('Filtered and sorted locations:', filteredLocations);
+                                    // console.log("additionalDataPromises: ", additionalDataPromises);
 
-                                    data['assigned-locations'] = filteredLocations;
-                                } else {
-                                    console.log(`No assigned-locations found.`);
-                                }
+                                    // Wait for all promises to resolve
+                                    Promise.all(additionalDataPromises)
+                                        .then(results => {
+                                            results = results[0];
+                                            // console.log("results: ", results);
 
-                                combinedData.push(data);
+                                            // Loop through getBasin['assigned-locations'] and compare with results
+                                            getBasin['assigned-locations'] = getBasin['assigned-locations'].filter(location => {
+                                                let matchedData;
+                                                // Check if 'assigned-locations' exists in the results object
+                                                if (results && results['assigned-locations']) {
+                                                    for (const loc of results['assigned-locations']) {
+                                                        // console.log('Comparing:', loc['location-id'], 'with', location['location-id']);
+                                                        if (loc['location-id'] === location['location-id']) {
+                                                            matchedData = results;
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                                // console.log("matchedData: ", matchedData);
 
-                                if (data['assigned-locations']) {
-                                    data['assigned-locations'].forEach(loc => {
-                                        const locId = loc['location-id'];
+                                                if (matchedData) {
+                                                    // If matchedData exists and contains a location with the same location-id, keep the location
+                                                    return true;
+                                                } else {
+                                                    // Log the location that has been removed
+                                                    console.log("Removed location: ", location);
+                                                    return false;  // Remove location if there is no match
+                                                }
+                                            });
 
-                                        // Fetch metadata
-                                        metadataPromises.push(
-                                            fetch(`${setBaseUrl}locations/${locId}?office=${office}`)
-                                                .then(response => response.ok ? response.json() : null)
-                                                .then(locData => {
-                                                    if (locData) metadataMap.set(locId, locData);
-                                                })
-                                                .catch(error => console.error(`Error fetching metadata for ${locId}:`, error))
-                                        );
+                                            // Filter locations with attribute <= 900
+                                            getBasin['assigned-locations'] = getBasin['assigned-locations'].filter(location => location.attribute <= 900);
 
-                                        // Fetch flood data
-                                        floodPromises.push(
-                                            fetch(`${setBaseUrl}levels/${locId}.Stage.Inst.0.Flood?office=${office}&effective-date=2024-01-01T08:00:00&unit=ft`)
-                                                .then(response => response.ok ? response.json() : null)
-                                                .then(floodData => {
-                                                    if (floodData) floodMap.set(locId, floodData);
-                                                })
-                                                .catch(error => console.error(`Error fetching flood data for ${locId}:`, error))
-                                        );
+                                            // Sort the locations by their attribute
+                                            getBasin['assigned-locations'].sort((a, b) => a.attribute - b.attribute);
 
-                                        // Fetch stage tsid data
-                                        stageTsidPromises.push(
-                                            fetch(`${setBaseUrl}timeseries/group/Stage?office=${office}&category-id=${locId}`)
-                                                .then(response => response.ok ? response.json() : null)
-                                                .then(stageTsidData => {
-                                                    if (stageTsidData) stageTsidMap.set(locId, stageTsidData);
-                                                })
-                                                .catch(error => console.error(`Error fetching stage TSID data for ${locId}:`, error))
-                                        );
+                                            // Push the updated basin data to combinedData
+                                            combinedData.push(getBasin);
+                                        })
+                                        .catch(error => {
+                                            console.error('Error in fetching additional data:', error);
+                                        });
 
-                                        // Forecast-NWS TSID data request
-                                        forecastNwsTsidPromises.push(
-                                            fetch(`${setBaseUrl}timeseries/group/Forecast-NWS?office=${office}&category-id=${locId}`)
-                                                .then(response => response.ok ? response.json() : null)
-                                                .then(forecastNwsTsidData => {
-                                                    if (forecastNwsTsidData) forecastNwsTsidMap.set(locId, forecastNwsTsidData);
-                                                })
-                                                .catch(error => console.error(`Error fetching Forecast-NWS TSID data for ${locId}:`, error))
-                                        );
-
-                                        // Fetch flow tsid data
-                                        flowTsidPromises.push(
-                                            fetch(`${setBaseUrl}timeseries/group/Flow?office=${office}&category-id=${locId}`)
-                                                .then(response => response.ok ? response.json() : null)
-                                                .then(flowTsidData => {
-                                                    if (flowTsidData) flowTsidMap.set(locId, flowTsidData);
-                                                })
-                                                .catch(error => console.error(`Error fetching flow TSID data for ${locId}:`, error))
-                                        );
-
-                                        // precip tsid data request
-                                        precipTsidPromises.push(
-                                            fetch(`${setBaseUrl}timeseries/group/Precip?office=${office}&category-id=${locId}`)
-                                                .then(response => response.ok ? response.json() : null)
-                                                .then(precipTsidData => {
-                                                    if (precipTsidData) precipTsidMap.set(locId, precipTsidData);
-                                                })
-                                                .catch(error => console.error(`Error fetching precip TSID data for ${locId}:`, error))
-                                        );
-
-                                        // precip lake tsid data request
-                                        precipLakeTsidPromises.push(
-                                            fetch(`${setBaseUrl}timeseries/group/Precip-Lake?office=${office}&category-id=${locId}`)
-                                                .then(response => response.ok ? response.json() : null)
-                                                .then(precipLakeTsidData => {
-                                                    if (precipLakeTsidData) precipLakeTsidMap.set(locId, precipLakeTsidData);
-                                                })
-                                                .catch(error => console.error(`Error fetching precip lake TSID data for ${locId}:`, error))
-                                        );
-
-                                        // owner data request
-                                        ownerPromises.push(
-                                            fetch(`${setBaseUrl}location/group/River-Reservoir?office=${office}&category-id=${office}`)
-                                                .then(response => response.ok ? response.json() : null)
-                                                .then(ownerData => {
-                                                    if (ownerData) ownerMap.set(loc['location-id'], ownerData);
-                                                })
-                                                .catch(error => console.error(`Error fetching Owner data for ${loc['location-id']}:`, error))
-                                        );
-
-                                        // river mile data request
-                                        riverMilePromises.push(
-                                            fetch(`${setBaseUrl}stream-locations?office-mask=MVS`)
-                                                .then(response => response.ok ? response.json() : null)
-                                                .then(riverMileData => {
-                                                    if (riverMileData) riverMileMap.set(loc['location-id'], riverMileData);
-                                                })
-                                                .catch(error => console.error(`Error fetching River Mile data for ${loc['location-id']}:`, error))
-                                        );
-
-                                        // Fetch crest tsid data
-                                        crestTsidPromises.push(
-                                            fetch(`${setBaseUrl}timeseries/group/Crest?office=${office}&category-id=${locId}`)
-                                                .then(response => response.ok ? response.json() : null)
-                                                .then(crestTsidData => {
-                                                    if (crestTsidData) crestTsidMap.set(locId, crestTsidData);
-                                                })
-                                                .catch(error => console.error(`Error fetching crest TSID data for ${locId}:`, error))
-                                        );
+                                    getBasin['assigned-locations'].forEach(loc => {
+                                        fetchAndStoreDataForLocation(loc);
                                     });
                                 }
                             })
-                            .catch(error => console.error(`Error fetching data for basin ${basin}:`, error))
+                            .catch(error => console.error(`Problem with the fetch operation for basin ${basin}:`, error))
                     );
                 });
 
-                // Wait for all API requests to complete
+                // Fetch data for each location's attributes
+                function fetchAndStoreDataForLocation(loc) {
+                    // Fetch location levels
+                    (() => {
+                        const metadataApiUrl = `${setBaseUrl}locations/${loc['location-id']}?office=${office}`;
+                        metadataPromises.push(fetch(metadataApiUrl)
+                            .then(response => response.ok ? response.json() : null)
+                            .then(data => data && metadataMap.set(loc['location-id'], data))
+                            .catch(error => console.error(`Error fetching metadata for ${loc['location-id']}:`, error))
+                        );
+
+                        const recordStageLevelId = `${loc['location-id']}.Stage.Inst.0.Record Stage`;
+                        const levelIdEffectiveDate = "2024-01-01T08:00:00";
+                        const recordStageApiUrl = `${setBaseUrl}levels/${recordStageLevelId}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ft`;
+                        recordStageTsidPromises.push(
+                            fetch(recordStageApiUrl)
+                                .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
+                                .then(recordStageData => {
+                                    // Set map to null if the data is null or undefined
+                                    recordStageMap.set(loc['location-id'], recordStageData != null ? recordStageData : null);
+                                })
+                                .catch(error => console.error(`Error fetching record stage for ${loc['location-id']}:`, error))
+                        );
+
+                        // For Rivers only
+                        if (!lakeLocs.includes(loc['location-id'])) {
+                            const riverMileApiUrl = `${setBaseUrl}stream-locations?office-mask=${office}&name-mask=${loc['location-id']}`;
+                            riverMilePromises.push(fetch(riverMileApiUrl)
+                                .then(response => response.ok ? response.json() : null)
+                                .then(data => data && riverMileMap.set(loc['location-id'], data))
+                                .catch(error => console.error(`Error fetching river mile for ${loc['location-id']}:`, error))
+                            );
+
+                            riverMileHardCodedPromises.push(
+                                fetch('json/gage_control_official.json')
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error(`Network response was not ok: ${response.statusText}`);
+                                        }
+                                        return response.json();
+                                    })
+                                    .then(riverMilesJson => {
+                                        for (const basin in riverMilesJson) {
+                                            const locations = riverMilesJson[basin];
+                                            for (const locId in locations) {
+                                                const ownerData = locations[locId];
+                                                const riverMile = ownerData.river_mile_hard_coded;
+                                                const outputData = {
+                                                    locationId: locId,
+                                                    basin: basin,
+                                                    riverMile: riverMile
+                                                };
+                                                riverMileHardCodedMap.set(locId, ownerData);
+                                            }
+                                        }
+                                    })
+                                    .catch(error => console.error('Problem with the fetch operation:', error))
+                            );
+
+                            const levelIdLwrp = `${loc['location-id']}.Stage.Inst.0.LWRP`;
+                            const lwrpApiUrl = `${setBaseUrl}levels/${levelIdLwrp}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ft`;
+                            lwrpPromises.push(
+                                fetch(lwrpApiUrl)
+                                    .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
+                                    .then(lwrpData => {
+                                        // Set map to null if the data is null or undefined
+                                        lwrpMap.set(loc['location-id'], lwrpData != null ? lwrpData : null);
+                                    })
+                                    .catch(error => console.error(`Error fetching lwrp level for ${loc['location-id']}:`, error))
+                            );
+
+                            const levelIdFlood = `${loc['location-id']}.Stage.Inst.0.Flood`;
+                            const floodApiUrl = `${setBaseUrl}levels/${levelIdFlood}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ft`;
+                            floodPromises.push(
+                                fetch(floodApiUrl)
+                                    .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
+                                    .then(floodData => {
+                                        // Set map to null if the data is null or undefined
+                                        floodMap.set(loc['location-id'], floodData != null ? floodData : null);
+                                    })
+                                    .catch(error => console.error(`Error fetching flood level for ${loc['location-id']}:`, error))
+                            );
+
+                        }
+
+                        // For Lakes only
+                        if (lakeLocs.includes(loc['location-id'])) {
+                            const levelIdTopOfFlood = `${loc['location-id'].split('-')[0]}.Stor.Inst.0.Top of Flood`;
+                            const topOfFloodApiUrl = `${setBaseUrl}levels/${levelIdTopOfFlood}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ac-ft`;
+                            topOfFloodPromises.push(
+                                fetch(topOfFloodApiUrl)
+                                    .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
+                                    .then(topOfFloodData => {
+                                        // Set map to null if the data is null or undefined
+                                        topOfFloodMap.set(loc['location-id'], topOfFloodData != null ? topOfFloodData : null);
+                                    })
+                                    .catch(error => console.error(`Error fetching top of flood level for ${loc['location-id']}:`, error))
+                            );
+
+                            const levelIdBottomOfFlood = `${loc['location-id'].split('-')[0]}.Stor.Inst.0.Bottom of Flood`;
+                            const bottomOfFloodApiUrl = `${setBaseUrl}levels/${levelIdBottomOfFlood}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ac-ft`;
+                            bottomOfFloodPromises.push(
+                                fetch(bottomOfFloodApiUrl)
+                                    .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
+                                    .then(bottomOfFloodData => {
+                                        // Set map to null if the data is null or undefined
+                                        bottomOfFloodMap.set(loc['location-id'], bottomOfFloodData != null ? bottomOfFloodData : null);
+                                    })
+                                    .catch(error => console.error(`Error fetching bottom of flood level for ${loc['location-id']}:`, error))
+                            );
+
+                            const levelIdTopOfConservation = `${loc['location-id'].split('-')[0]}.Stor.Inst.0.Top of Conservation`;
+                            const topOfConservationApiUrl = `${setBaseUrl}levels/${levelIdTopOfConservation}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ac-ft`;
+                            topOfConservationPromises.push(
+                                fetch(topOfConservationApiUrl)
+                                    .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
+                                    .then(topOfConservationData => {
+                                        // Set map to null if the data is null or undefined
+                                        topOfConservationMap.set(loc['location-id'], topOfConservationData != null ? topOfConservationData : null);
+                                    })
+                                    .catch(error => console.error(`Error fetching top of conservation level for ${loc['location-id']}:`, error))
+                            );
+
+                            const levelIdBottomOfConservation = `${loc['location-id'].split('-')[0]}.Stor.Inst.0.Bottom of Conservation`;
+                            const bottomOfConservationApiUrl = `${setBaseUrl}levels/${levelIdBottomOfConservation}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ac-ft`;
+                            bottomOfConservationPromises.push(
+                                fetch(bottomOfConservationApiUrl)
+                                    .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
+                                    .then(bottomOfConservationData => {
+                                        // Set map to null if the data is null or undefined
+                                        bottomOfConservationMap.set(loc['location-id'], bottomOfConservationData != null ? bottomOfConservationData : null);
+                                    })
+                                    .catch(error => console.error(`Error fetching bottom of conservation level for ${loc['location-id']}:`, error))
+                            );
+                        }
+                    })();
+
+                    // Fetch tsids
+                    (() => {
+                        const stageApiUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup1}?office=${office}&category-id=${loc['location-id']}`;
+                        stageTsidPromises.push(fetch(stageApiUrl)
+                            .then(response => response.ok ? response.json() : null)
+                            .then(data => data && stageTsidMap.set(loc['location-id'], data))
+                            .catch(error => console.error(`Error fetching stage TSID for ${loc['location-id']}:`, error))
+                        );
+
+                        // For Rivers only
+                        if (!lakeLocs.includes(loc['location-id'])) {
+                            const forecastNwsApiUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup2}?office=${office}&category-id=${loc['location-id']}`;
+                            forecastNwsTsidPromises.push(fetch(forecastNwsApiUrl)
+                                .then(response => response.ok ? response.json() : null)
+                                .then(data => data && forecastNwsTsidMap.set(loc['location-id'], data))
+                                .catch(error => console.error(`Error fetching forecast NWS TSID for ${loc['location-id']}:`, error))
+                            );
+
+                            const crestApiUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup3}?office=${office}&category-id=${loc['location-id']}`;
+                            crestTsidPromises.push(fetch(crestApiUrl)
+                                .then(response => response.ok ? response.json() : null)
+                                .then(data => data && crestNwsTsidMap.set(loc['location-id'], data))
+                                .catch(error => console.error(`Error fetching crest TSID for ${loc['location-id']}:`, error))
+                            );
+                        }
+
+                        // For Lakes only
+                        if (lakeLocs.includes(loc['location-id'])) {
+                            const precipLakeApiUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup4}?office=${office}&category-id=${loc['location-id']}`;
+                            precipLakeTsidPromises.push(
+                                fetch(precipLakeApiUrl)
+                                    .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
+                                    .then(data => data && precipLakeTsidMap.set(loc['location-id'], data))
+                                    .catch(error => console.error(`Error fetching precipLake TSID for ${loc['location-id']}:`, error))
+                            );
+
+                            const inflowYesterdayLakeApiUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup5}?office=${office}&category-id=${loc['location-id']}`;
+                            inflowYesterdayLakeTsidPromises.push(
+                                fetch(inflowYesterdayLakeApiUrl)
+                                    .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
+                                    .then(data => data && inflowYesterdayLakeTsidMap.set(loc['location-id'], data))
+                                    .catch(error => console.error(`Error fetching inflowYesterdayLake TSID for ${loc['location-id']}:`, error))
+                            );
+
+                            const storageLakeApiUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup6}?office=${office}&category-id=${loc['location-id']}`;
+                            storageLakeTsidPromises.push(
+                                fetch(storageLakeApiUrl)
+                                    .then(response => response.status === 404 ? null : response.ok ? response.json() : Promise.reject(`Network response was not ok: ${response.statusText}`))
+                                    .then(data => data && storageLakeTsidMap.set(loc['location-id'], data))
+                                    .catch(error => console.error(`Error fetching storageLake TSID for ${loc['location-id']}:`, error))
+                            );
+                        }
+                    })();
+                }
+
+                // Resolve all initial fetches before processing
                 Promise.all(apiPromises)
-                    .then(() => Promise.all(metadataPromises))
-                    .then(() => Promise.all(floodPromises))
-                    .then(() => Promise.all(stageTsidPromises))
-                    .then(() => Promise.all(forecastNwsTsidPromises))
-                    .then(() => Promise.all(flowTsidPromises))
-                    .then(() => Promise.all(precipTsidPromises))
-                    .then(() => Promise.all(precipLakeTsidPromises))
-                    .then(() => Promise.all(ownerPromises))
-                    .then(() => Promise.all(riverMilePromises))
-                    .then(() => Promise.all(crestTsidPromises))
+                    .then(() => Promise.all([
+                        ...metadataPromises,
+                        ...recordStageTsidPromises,
+                        ...lwrpPromises,
+                        ...floodPromises,
+                        ...topOfFloodPromises,
+                        ...topOfConservationPromises,
+                        ...bottomOfFloodPromises,
+                        ...bottomOfConservationPromises,
+                        ...riverMilePromises,
+                        ...riverMileHardCodedPromises,
+                        ...stageTsidPromises,
+                        ...forecastNwsTsidPromises,
+                        ...crestTsidPromises,
+                        ...precipLakeTsidPromises,
+                        ...inflowYesterdayLakeTsidPromises,
+                        ...storageLakeTsidPromises]))
                     .then(() => {
-                        // Append fetched metadata, flood, and TSID data to combinedData
+                        // Process data to add to each location and display combinedData
                         combinedData.forEach(basinData => {
                             if (basinData['assigned-locations']) {
                                 basinData['assigned-locations'].forEach(loc => {
-                                    // append data to main basin
-                                    (() => {
-                                        const metadataMapData = metadataMap.get(loc['location-id']);
-                                        if (metadataMapData) {
-                                            loc['metadata'] = metadataMapData;
-                                        }
-
-                                        const floodMapData = floodMap.get(loc['location-id']);
-                                        if (floodMapData) {
-                                            loc['flood'] = floodMapData;
-                                        }
-
-                                        const stageTsidMapData = stageTsidMap.get(loc['location-id']);
-                                        if (stageTsidMapData) {
-                                            loc['tsid-stage'] = stageTsidMapData;
-                                        }
-
-                                        const forecastNwsTsidMapData = forecastNwsTsidMap.get(loc['location-id']);
-                                        if (forecastNwsTsidMapData) {
-                                            loc['tsid-forecast-nws'] = forecastNwsTsidMapData;
-                                        }
-
-                                        const flowTsidMapData = flowTsidMap.get(loc['location-id']);
-                                        if (flowTsidMapData) {
-                                            loc['tsid-flow'] = flowTsidMapData;
-                                        }
-
-                                        const precipTsidMapData = precipTsidMap.get(loc['location-id']);
-                                        if (precipTsidMapData) {
-                                            loc['tsid-precip'] = precipTsidMapData;
-                                        }
-
-                                        const precipLakeTsidMapData = precipLakeTsidMap.get(loc['location-id']);
-                                        if (precipLakeTsidMapData) {
-                                            loc['tsid-precip-lake'] = precipLakeTsidMapData;
-                                        }
-
-                                        const ownerMapData = ownerMap.get(loc['location-id']);
-                                        if (ownerMapData) {
-                                            loc['owner'] = ownerMapData;
-                                        }
-
-                                        const riverMileMapData = riverMileMap.get(loc['location-id']);
-                                        if (riverMileMapData) {
-                                            loc['river-mile'] = riverMileMapData;
-                                        }
-
-                                        const crestTsidMapData = crestTsidMap.get(loc['location-id']);
-                                        if (crestTsidMapData) {
-                                            loc['crest'] = crestTsidMapData;
-                                        }
-                                    })();
+                                    loc['metadata'] = metadataMap.get(loc['location-id']);
+                                    loc['record-stage'] = recordStageMap.get(loc['location-id']);
+                                    loc['lwrp'] = lwrpMap.get(loc['location-id']);
+                                    loc['flood'] = floodMap.get(loc['location-id']);
+                                    loc['top-of-flood'] = topOfFloodMap.get(loc['location-id']);
+                                    loc['top-of-conservation'] = topOfConservationMap.get(loc['location-id']);
+                                    loc['bottom-of-flood'] = bottomOfFloodMap.get(loc['location-id']);
+                                    loc['bottom-of-conservation'] = bottomOfConservationMap.get(loc['location-id']);
+                                    loc['river-mile'] = riverMileMap.get(loc['location-id']);
+                                    loc['river-mile-hard-coded'] = riverMileHardCodedMap.get(loc['location-id']);
+                                    loc['tsid-stage'] = stageTsidMap.get(loc['location-id']);
+                                    loc['tsid-nws-forecast'] = forecastNwsTsidMap.get(loc['location-id']);
+                                    loc['tsid-nws-crest'] = crestNwsTsidMap.get(loc['location-id']);
+                                    loc['tsid-lake-precip'] = precipLakeTsidMap.get(loc['location-id']);
+                                    loc['tsid-lake-inflow-yesterday'] = inflowYesterdayLakeTsidMap.get(loc['location-id']);
+                                    loc['tsid-lake-storage'] = storageLakeTsidMap.get(loc['location-id']);
                                 });
                             }
                         });
 
-                        // Output the combined data
-                        console.log('Final combinedData:', combinedData);
+                        console.log('All combined data fetched successfully:', combinedData);
 
-                        // Call the function to create and populate the table
-                        // createGageDataTable(combinedData, setBaseUrl);
+                        // Filter data
+                        (() => {
+                            // Step 1: Remove locations where 'attribute' ends with '.1'
+                            combinedData.forEach(dataObj => {
+                                dataObj['assigned-locations'] = dataObj['assigned-locations'].filter(location => !location['attribute'].toString().endsWith('.1'));
+                            });
+                            console.log('Filtered locations with attribute ending in .1:', combinedData);
+
+                            // Step 3: Remove locations where 'tsid-stage' is null
+                            combinedData.forEach(dataGroup => {
+                                dataGroup['assigned-locations'] = dataGroup['assigned-locations'].filter(location => location['tsid-stage'] != null);
+                            });
+                            console.log('Filtered locations with null tsid-stage:', combinedData);
+
+                            // Step 4: Remove basins with no 'assigned-locations'
+                            combinedData = combinedData.filter(item => item['assigned-locations']?.length > 0);
+                            console.log('Filtered empty basins:', combinedData);
+
+                            // Step 5: Sort basins by predefined order
+                            const sortOrderBasin = ['Mississippi', 'Illinois', 'Cuivre', 'Missouri', 'Meramec', 'Ohio', 'Kaskaskia', 'Big Muddy', 'St Francis', 'Salt'];
+                            combinedData.sort((a, b) => {
+                                const indexA = sortOrderBasin.indexOf(a.id);
+                                const indexB = sortOrderBasin.indexOf(b.id);
+                                return (indexA === -1 ? 1 : indexA) - (indexB === -1 ? 1 : indexB);
+                            });
+                            console.log('Sorted basins:', combinedData);
+                        })();
+                    })
+                    .then(() => {
+                        console.log('All combinedData fetched and filtered successfully:', combinedData);
+
+                        const formatDate = (daysToAdd) => {
+                            const date = new Date();
+                            date.setDate(date.getDate() + daysToAdd);
+                            return ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
+                        };
+
+                        const [day1, day2, day3] = [1, 2, 3].map(days => formatDate(days));
+                        const combinedDataRiver = structuredClone ? structuredClone(combinedData) : JSON.parse(JSON.stringify(combinedData));
+                        const combinedDataReservoir = structuredClone ? structuredClone(combinedData) : JSON.parse(JSON.stringify(combinedData));
+
+                        console.log('combinedDataRiver:', combinedDataRiver);
+                        console.log('combinedDataReservoir:', combinedDataReservoir);
+
+                        const tableRiver = createTableRiver(combinedDataRiver, type, day1, day2, day3, setBaseUrl);
+                        const tableReservoir = createTableReservoir(combinedDataReservoir, type, day1, day2, day3, lakeLocs, setBaseUrl);
+
+                        document.getElementById(`table_container_${setReportDiv}`).append(tableRiver, tableReservoir);
+
                         loadingIndicator.style.display = 'none';
                     })
                     .catch(error => {
-                        console.error('Error processing fetch operations:', error);
+                        console.error('There was a problem with one or more fetch operations:', error);
+                        loadingIndicator.style.display = 'none';
                     });
             })
             .catch(error => {
-                console.error('Error with the initial fetch operation:', error);
+                console.error('There was a problem with the initial fetch operation:', error);
+                loadingIndicator.style.display = 'none';
             });
     }
 });
@@ -464,296 +674,6 @@ function getLastNonNullValueWithDelta24hrs(data, tsid) {
     return null;
 }
 
-function getMaxValue(data, tsid) {
-    let maxValue = -Infinity; // Start with the smallest possible value
-    let maxEntry = null; // Store the corresponding max entry (timestamp, value, quality code)
-
-    // Loop through the values array
-    for (let i = 0; i < data.values.length; i++) {
-        // Check if the value at index i is not null
-        if (data.values[i][1] !== null) {
-            // Update maxValue and maxEntry if the current value is greater
-            if (data.values[i][1] > maxValue) {
-                maxValue = data.values[i][1];
-                maxEntry = {
-                    tsid: tsid,
-                    timestamp: data.values[i][0],
-                    value: data.values[i][1],
-                    qualityCode: data.values[i][2]
-                };
-            }
-        }
-    }
-
-    // Return the max entry (or null if no valid values were found)
-    return maxEntry;
-}
-
-function getMinValue(data, tsid) {
-    let minValue = Infinity; // Start with the largest possible value
-    let minEntry = null; // Store the corresponding min entry (timestamp, value, quality code)
-
-    // Loop through the values array
-    for (let i = 0; i < data.values.length; i++) {
-        // Check if the value at index i is not null
-        if (data.values[i][1] !== null) {
-            // Update minValue and minEntry if the current value is smaller
-            if (data.values[i][1] < minValue) {
-                minValue = data.values[i][1];
-                minEntry = {
-                    tsid: tsid,
-                    timestamp: data.values[i][0],
-                    value: data.values[i][1],
-                    qualityCode: data.values[i][2]
-                };
-            }
-        }
-    }
-
-    // Return the min entry (or null if no valid values were found)
-    return minEntry;
-}
-
-function getCumValue(data, tsid) {
-    let value0 = null;  // Recent (0 hours)
-    let value6 = null;  // 6 hours earlier
-    let value12 = null; // 12 hours earlier
-    let value18 = null; // 18 hours earlier
-    let value24 = null; // 24 hours earlier
-    let value30 = null; // 30 hours earlier
-    let value36 = null; // 36 hours earlier
-    let value42 = null; // 42 hours earlier
-    let value48 = null; // 48 hours earlier
-    let value54 = null; // 54 hours earlier
-    let value60 = null; // 60 hours earlier
-    let value66 = null; // 66 hours earlier
-    let value72 = null; // 72 hours earlier
-
-    // Iterate over the values array in reverse
-    for (let i = data.values.length - 1; i >= 0; i--) {
-        const [timestamp, value, qualityCode] = data.values[i];
-
-        // Check if the value at index i is not null
-        if (value !== null) {
-            // Convert timestamp to Date object
-            const currentTimestamp = new Date(timestamp);
-            // console.log("currentTimestamp: ", currentTimestamp);
-
-            // If value0 hasn't been set, set it to the latest non-null value
-            if (!value0) {
-                value0 = { tsid, timestamp, value, qualityCode };
-            } else {
-                // Calculate target timestamps for each interval
-                const sixHoursEarlier = new Date(value0.timestamp);
-                sixHoursEarlier.setHours(sixHoursEarlier.getHours() - 6);
-
-                const twelveHoursEarlier = new Date(value0.timestamp);
-                twelveHoursEarlier.setHours(twelveHoursEarlier.getHours() - 12);
-
-                const eighteenHoursEarlier = new Date(value0.timestamp);
-                eighteenHoursEarlier.setHours(eighteenHoursEarlier.getHours() - 18);
-
-                const twentyFourHoursEarlier = new Date(value0.timestamp);
-                twentyFourHoursEarlier.setHours(twentyFourHoursEarlier.getHours() - 24);
-
-                const thirtyHoursEarlier = new Date(value0.timestamp);
-                thirtyHoursEarlier.setHours(thirtyHoursEarlier.getHours() - 30);
-
-                const thirtySixHoursEarlier = new Date(value0.timestamp);
-                thirtySixHoursEarlier.setHours(thirtySixHoursEarlier.getHours() - 36);
-
-                const fortyTwoHoursEarlier = new Date(value0.timestamp);
-                fortyTwoHoursEarlier.setHours(fortyTwoHoursEarlier.getHours() - 42);
-
-                const fortyEightHoursEarlier = new Date(value0.timestamp);
-                fortyEightHoursEarlier.setHours(fortyEightHoursEarlier.getHours() - 48);
-
-                const fiftyFourHoursEarlier = new Date(value0.timestamp);
-                fiftyFourHoursEarlier.setHours(fiftyFourHoursEarlier.getHours() - 54);
-
-                const sixtyHoursEarlier = new Date(value0.timestamp);
-                sixtyHoursEarlier.setHours(sixtyHoursEarlier.getHours() - 60);
-
-                const sixtySixHoursEarlier = new Date(value0.timestamp);
-                sixtySixHoursEarlier.setHours(sixtySixHoursEarlier.getHours() - 66);
-
-                const seventyTwoHoursEarlier = new Date(value0.timestamp);
-                seventyTwoHoursEarlier.setHours(seventyTwoHoursEarlier.getHours() - 72);
-
-                // Assign values if the timestamps match
-                if (!value6 && currentTimestamp.getTime() === sixHoursEarlier.getTime()) {
-                    value6 = { tsid, timestamp, value, qualityCode };
-                } else if (!value12 && currentTimestamp.getTime() === twelveHoursEarlier.getTime()) {
-                    value12 = { tsid, timestamp, value, qualityCode };
-                } else if (!value18 && currentTimestamp.getTime() === eighteenHoursEarlier.getTime()) {
-                    value18 = { tsid, timestamp, value, qualityCode };
-                } else if (!value24 && currentTimestamp.getTime() === twentyFourHoursEarlier.getTime()) {
-                    value24 = { tsid, timestamp, value, qualityCode };
-                } else if (!value30 && currentTimestamp.getTime() === thirtyHoursEarlier.getTime()) {
-                    value30 = { tsid, timestamp, value, qualityCode };
-                } else if (!value36 && currentTimestamp.getTime() === thirtySixHoursEarlier.getTime()) {
-                    value36 = { tsid, timestamp, value, qualityCode };
-                } else if (!value42 && currentTimestamp.getTime() === fortyTwoHoursEarlier.getTime()) {
-                    value42 = { tsid, timestamp, value, qualityCode };
-                } else if (!value48 && currentTimestamp.getTime() === fortyEightHoursEarlier.getTime()) {
-                    value48 = { tsid, timestamp, value, qualityCode };
-                } else if (!value54 && currentTimestamp.getTime() === fiftyFourHoursEarlier.getTime()) {
-                    value54 = { tsid, timestamp, value, qualityCode };
-                } else if (!value60 && currentTimestamp.getTime() === sixtyHoursEarlier.getTime()) {
-                    value60 = { tsid, timestamp, value, qualityCode };
-                } else if (!value66 && currentTimestamp.getTime() === sixtySixHoursEarlier.getTime()) {
-                    value66 = { tsid, timestamp, value, qualityCode };
-                } else if (!value72 && currentTimestamp.getTime() === seventyTwoHoursEarlier.getTime()) {
-                    value72 = { tsid, timestamp, value, qualityCode };
-                }
-
-                // Break loop if all values are found
-                if (
-                    value6 &&
-                    value12 &&
-                    value18 &&
-                    value24 &&
-                    value30 &&
-                    value36 &&
-                    value42 &&
-                    value48 &&
-                    value54 &&
-                    value60 &&
-                    value66 &&
-                    value72
-                ) {
-                    break;
-                }
-            }
-        }
-    }
-
-    // Calculate incremental values (valueX - valuePrevious)
-    // const incrementalValues = {
-    //     incremental6: value6 ? value0.value - value6.value : null,
-    //     incremental12: value12 ? value6.value - value12.value : null,
-    //     incremental18: value18 ? value12.value - value18.value : null,
-    //     incremental24: value24 ? value18.value - value24.value : null,
-    //     incremental30: value30 ? value24.value - value30.value : null,
-    //     incremental36: value36 ? value30.value - value36.value : null,
-    //     incremental42: value42 ? value36.value - value42.value : null,
-    //     incremental48: value48 ? value42.value - value48.value : null,
-    //     incremental54: value54 ? value48.value - value54.value : null,
-    //     incremental60: value60 ? value54.value - value60.value : null,
-    //     incremental66: value66 ? value60.value - value66.value : null,
-    //     incremental72: value72 ? value66.value - value72.value : null,
-    // };
-
-    // Calculate cumulative values (value0 - valueX)
-    const cumulativeValues = {
-        cumulative6: value0 && value6 ? value0.value - value6.value : null,
-        cumulative12: value0 && value12 ? value0.value - value12.value : null,
-        cumulative24: value0 && value24 ? value0.value - value24.value : null,
-        cumulative48: value0 && value48 ? value0.value - value48.value : null,
-        cumulative72: value0 && value72 ? value0.value - value72.value : null,
-    };
-
-    return {
-        value0,
-        value6,
-        value12,
-        value18,
-        value24,
-        value30,
-        value36,
-        value42,
-        value48,
-        value54,
-        value60,
-        value66,
-        value72,
-        // ...incrementalValues, // Spread operator to include incremental values in the return object
-        ...cumulativeValues // Spread operator to include cumulative values in the return object
-    };
-}
-
-function getIncValue(data, tsid) {
-    let value0 = null;  // Recent (0 hours)
-    let value6 = null;  // 6 hours earlier
-    let value12 = null; // 12 hours earlier
-    let value18 = null; // 18 hours earlier
-    let value24 = null; // 24 hours earlier
-    let value30 = null; // 30 hours earlier
-    let value36 = null; // 36 hours earlier
-    let value42 = null; // 42 hours earlier
-    let value48 = null; // 48 hours earlier
-    let value54 = null; // 54 hours earlier
-    let value60 = null; // 60 hours earlier
-    let value66 = null; // 66 hours earlier
-    let value72 = null; // 72 hours earlier
-
-    // Iterate over the values array in reverse
-    for (let i = data.values.length - 1; i >= 0; i--) {
-        const [timestamp, value, qualityCode] = data.values[i];
-
-        // Check if the value at index i is not null
-        if (value !== null) {
-            // Convert timestamp to Date object
-            const currentTimestamp = new Date(timestamp);
-
-            // If value0 hasn't been set, set it to the latest non-null value
-            if (!value0) {
-                value0 = { tsid, timestamp, value, qualityCode };
-            } else {
-                // Calculate target timestamps for each interval
-                const intervals = [6, 12, 18, 24, 30, 36, 42, 48, 54, 60, 66, 72];
-                const valuesMap = [value6, value12, value18, value24, value30, value36, value42, value48, value54, value60, value66, value72];
-
-                intervals.forEach((interval, idx) => {
-                    const targetTime = new Date(value0.timestamp);
-                    targetTime.setHours(targetTime.getHours() - interval);
-                    if (!valuesMap[idx] && currentTimestamp.getTime() === targetTime.getTime()) {
-                        valuesMap[idx] = { tsid, timestamp, value, qualityCode };
-                    }
-                });
-
-                // Break loop if all values are found
-                if (valuesMap.every(val => val !== null)) {
-                    break;
-                }
-            }
-        }
-    }
-
-    // Calculate incremental values (valueX - valuePrevious) if both values are not null
-    const incrementalValues = {
-        incremental6: value6 && value0 ? value0.value - value6.value : null,
-        incremental12: value12 && value6 ? value6.value - value12.value : null,
-        incremental18: value18 && value12 ? value12.value - value18.value : null,
-        incremental24: value24 && value18 ? value18.value - value24.value : null,
-        incremental30: value30 && value24 ? value24.value - value30.value : null,
-        incremental36: value36 && value30 ? value30.value - value36.value : null,
-        incremental42: value42 && value36 ? value36.value - value42.value : null,
-        incremental48: value48 && value42 ? value42.value - value48.value : null,
-        incremental54: value54 && value48 ? value48.value - value54.value : null,
-        incremental60: value60 && value54 ? value54.value - value60.value : null,
-        incremental66: value66 && value60 ? value60.value - value66.value : null,
-        incremental72: value72 && value66 ? value66.value - value72.value : null,
-    };
-
-    return {
-        value0,
-        value6,
-        value12,
-        value18,
-        value24,
-        value30,
-        value36,
-        value42,
-        value48,
-        value54,
-        value60,
-        value66,
-        value72,
-        ...incrementalValues
-    };
-}
-
 function getHourlyDataOnTopOfHour(data, tsid) {
     const hourlyData = [];
 
@@ -831,92 +751,6 @@ function getNoonDataForDay3(data, tsid) {
     return noonData;
 }
 
-function hasLastValue(data) {
-    let allLocationsValid = true; // Flag to track if all locations are valid
-
-    // Iterate through each key in the data object
-    for (const locationIndex in data) {
-        if (data.hasOwnProperty(locationIndex)) { // Ensure the key belongs to the object
-            const item = data[locationIndex];
-            // console.log(`Checking basin ${parseInt(locationIndex) + 1}:`, item); // Log the current item being checked
-
-            const assignedLocations = item['assigned-locations'];
-            // Check if assigned-locations is an object
-            if (typeof assignedLocations !== 'object' || assignedLocations === null) {
-                // console.log('No assigned-locations found in basin:', item);
-                allLocationsValid = false; // Mark as invalid since no assigned locations are found
-                continue; // Skip to the next basin
-            }
-
-            // Iterate through each location in assigned-locations
-            for (const locationName in assignedLocations) {
-                const location = assignedLocations[locationName];
-                // console.log(`Checking location: ${locationName}`, location); // Log the current location being checked
-
-                // Check if location['tsid-temp-water'] exists, if not, set tempWaterTsidArray to an empty array
-                const datmanTsidArray = (location['tsid-stage'] && location['tsid-stage']['assigned-time-series']) || [];
-                const datmanLastValueArray = location['stage-last-value'];
-                // console.log("datmanTsidArray: ", datmanTsidArray);
-                // console.log("datmanLastValueArray: ", datmanLastValueArray);
-
-                // Check if 'stage-last-value' exists and is an array
-                let hasValidValue = false;
-
-                if (Array.isArray(datmanTsidArray) && datmanTsidArray.length > 0) {
-                    // console.log('datmanTsidArray has data.');
-
-                    // Loop through the datmanLastValueArray and check for null or invalid entries
-                    for (let i = 0; i < datmanLastValueArray.length; i++) {
-                        const entry = datmanLastValueArray[i];
-                        // console.log("Checking entry: ", entry);
-
-                        // Step 1: If the entry is null, set hasValidValue to false
-                        if (entry === null) {
-                            // console.log(`Entry at index ${i} is null and not valid.`);
-                            hasValidValue = false;
-                            continue; // Skip to the next iteration, this is not valid
-                        }
-
-                        // Step 2: If the entry exists, check if the value is valid
-                        if (entry.value !== null && entry.value !== 'N/A' && entry.value !== undefined) {
-                            // console.log(`Valid entry found at index ${i}:`, entry);
-                            hasValidValue = true; // Set to true only if we have a valid entry
-                        } else {
-                            // console.log(`Entry at index ${i} has an invalid value:`, entry.value);
-                            hasValidValue = false; // Invalid value, so set it to false
-                        }
-                    }
-
-                    // console.log("hasValidValue: ", hasValidValue);
-
-                    // Log whether a valid entry was found
-                    if (hasValidValue) {
-                        // console.log("There are valid entries in the array.");
-                    } else {
-                        // console.log("There are invalid entries found in the array.");
-                    }
-                } else {
-                    // console.log(`datmanTsidArray is either empty or not an array for location ${locationName}.`);
-                }
-
-                // If no valid values found in the current location, mark as invalid
-                if (!hasValidValue) {
-                    allLocationsValid = false; // Set flag to false if any location is invalid
-                }
-            }
-        }
-    }
-
-    // Return true only if all locations are valid
-    if (allLocationsValid) {
-        console.log('All locations have valid entries.');
-        return true;
-    } else {
-        console.log('Some locations are missing valid entries.');
-        return false;
-    }
-}
-
 function createTablePrecip(combinedData, type) {
     const table = document.createElement('table');
     table.setAttribute('id', 'gage_data');
@@ -962,7 +796,7 @@ function createTablePrecip(combinedData, type) {
             // Location cell with link
             const value0 = location['stage-inc-value'][0]?.value0;
             const tsid = value0 ? value0.tsid : '';
-            const link = `https://wm.mvs.ds.usace.army.mil/district_templates/chart/index.html?office=MVS&cwms_ts_id=${tsid}&cda=internal&lookback=7`;
+            const link = `../chart/index.html?office=MVS&cwms_ts_id=${tsid}&lookback=7`;
             const locationCell = document.createElement('td');
             const linkElement = document.createElement('a');
             linkElement.href = link;
@@ -1056,191 +890,98 @@ function createTablePrecip(combinedData, type) {
     return table;
 }
 
-function createTableLdGateSummary(combinedData, type) {
-    // Create a new table element and set its ID
-    const table = document.createElement('table');
-    table.setAttribute('id', 'gage_data');
-
-    // Loop through each basin in the combined data
-    combinedData.forEach((basin) => {
-        // Loop through each assigned location in the basin
-        basin['assigned-locations'].forEach((location) => {
-            // console.log("location-id: ", location['location-id']);
-
-            // Create a row for the location ID spanning 6 columns
-            const locationRow = document.createElement('tr');
-            const locationCell = document.createElement('th');
-            locationCell.colSpan = 6; // Set colspan to 6 for location ID
-            locationCell.textContent = location['location-id'];
-            locationCell.style.height = '50px'; // Set the height of the locationCell
-            locationRow.appendChild(locationCell);
-            table.appendChild(locationRow); // Append the location row to the table
-
-            // Create a header row for the data columns
-            const headerRow = document.createElement('tr');
-            const columns = ["Date Time", "Pool", "Tail Water", "Hinge Point", "Tainter", "Roller"];
-            columns.forEach((columnName) => {
-                const th = document.createElement('th');
-                th.textContent = columnName; // Set the header text
-                th.style.height = '40px'; // Set the height of the header
-                th.style.backgroundColor = 'darkblue'; // Set background color
-                th.style.color = 'white'; // Set text color
-                headerRow.appendChild(th); // Append header cells to the header row
-            });
-            table.appendChild(headerRow); // Append the header row to the table
-
-            // Loop through stage-hourly-value and other values to add data rows
-            location['stage-hourly-value'][0].forEach((entry, index) => {
-                const row = document.createElement('tr'); // Create a new row for each entry
-
-                // Fetch the dateTime for the current entry
-                const dateTime = entry?.timestamp || "N/A";
-
-                // Check if the current timestamp matches any poolValue timestamp
-                const poolValueEntry = location['stage-hourly-value'][0].find(poolValue => poolValue.timestamp === dateTime);
-                const poolValue = poolValueEntry ? poolValueEntry.value.toFixed(2) : "--"; // Use "--" if no match
-
-                // Match timestamps and grab values for tailWaterValue, hingePointValue, tainterValue, and rollerValue
-                const tailWaterEntry = location['forecast-nws-hourly-value']?.[0]?.find(tailWater => tailWater.timestamp === dateTime);
-                const tailWaterValue = tailWaterEntry ? tailWaterEntry.value.toFixed(2) : "--"; // Use "--" if no match
-
-                const hingePointEntry = location['crest-hourly-value']?.[0]?.find(hingePoint => hingePoint.timestamp === dateTime);
-                const hingePointValue = hingePointEntry ? hingePointEntry.value.toFixed(2) : "--"; // Use "--" if no match
-
-                const tainterEntry = location['tainter-hourly-value']?.[0]?.find(tainter => tainter.timestamp === dateTime);
-                const tainterValue = tainterEntry ? tainterEntry.value.toFixed(2) : "--"; // Use "--" if no match
-
-                const rollerEntry = location['roller-hourly-value']?.[0]?.find(roller => roller.timestamp === dateTime);
-                const rollerValue = rollerEntry ? rollerEntry.value.toFixed(2) : "--"; // Use "--" if no match
-
-                // Create and append cells to the row for each value
-                [dateTime, poolValue, tailWaterValue, hingePointValue, tainterValue, rollerValue].forEach((value) => {
-                    const cell = document.createElement('td'); // Create a new cell for each value
-                    cell.textContent = value; // Set the cell text
-                    row.appendChild(cell); // Append the cell to the row
-                });
-
-                // Append the data row to the table
-                table.appendChild(row);
-            });
-
-            // Add a spacer row after each location's data rows for visual separation
-            const spacerRow = document.createElement('tr'); // Create a new row for spacing
-            const spacerCell = document.createElement('td'); // Create a cell for the spacer
-            spacerCell.colSpan = 6; // Set colspan to 6 for the spacer cell
-            spacerCell.style.height = '20px'; // Set height for the spacer
-            spacerRow.appendChild(spacerCell); // Append the spacer cell to the spacer row
-            table.appendChild(spacerRow); // Append the spacer row to the table
-        });
-    });
-
-    return table; // Return the completed table
-}
-
-function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2_date_title, nws_day3_date_title) {
+function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2_date_title, nws_day3_date_title, setBaseUrl, setJsonFileBaseUrl) {
     // Create a table element and set an ID for styling or selection purposes
     const table = document.createElement('table');
     table.setAttribute('id', 'webrep');
 
-    console.log("combinedDataRiver before: ", combinedDataRiver);
+    // Get current date and time
+    const currentDateTime = new Date();
+    // console.log('currentDateTime:', currentDateTime);
 
-    combinedDataRiver = combinedDataRiver.filter((basin) => {
-        // Ensure 'assigned-locations' exists before proceeding
-        if (!Array.isArray(basin['assigned-locations'])) {
-            return false; // Filter out basins without 'assigned-locations'
-        }
+    // Subtract two hours from current date and time
+    const currentDateTimeMinus2Hours = subtractHoursFromDate(currentDateTime, 2);
+    // console.log('currentDateTimeMinus2Hours :', currentDateTimeMinus2Hours);
 
-        // Filter 'assigned-locations' within each basin
-        basin['assigned-locations'] = basin['assigned-locations'].filter((location) => {
-            const currentLocationId = location['location-id'];
-            const locationList = location['owner']?.['assigned-locations'];
+    // Subtract two hours from current date and time
+    const currentDateTimeMinus8Hours = subtractHoursFromDate(currentDateTime, 8);
+    // console.log('currentDateTimeMinus8Hours :', currentDateTimeMinus8Hours);
 
-            // Check if currentLocationId exists in locationList with attribute === 1
-            const foundInLocationList = locationList?.some(
-                loc => loc['location-id'] === currentLocationId && loc['attribute'] === 1
-            );
+    // Subtract thirty hours from current date and time
+    const currentDateTimeMinus30Hours = subtractHoursFromDate(currentDateTime, 64);
+    // console.log('currentDateTimeMinus30Hours :', currentDateTimeMinus30Hours);
 
-            // Remove location if attribute is 1, keep it otherwise
-            return !foundInLocationList;
-        });
+    // Add thirty hours to current date and time
+    const currentDateTimePlus30Hours = plusHoursFromDate(currentDateTime, 30);
+    // console.log('currentDateTimePlus30Hours :', currentDateTimePlus30Hours);
 
-        // Return true if there are remaining assigned-locations, otherwise filter out the basin
-        return basin['assigned-locations'].length > 0;
-    });
-
-    console.log("combinedDataRiver after: ", combinedDataRiver);
+    // Add four days to current date and time
+    const currentDateTimePlus4Days = addDaysToDate(currentDateTime, 4);
+    // console.log('currentDateTimePlus4Days :', currentDateTimePlus4Days);
+    // console.log('currentDateTimePlus4Days :', typeof(currentDateTimePlus4Days));
 
     // Add 3-rows title
     (() => {
         // TITLE ROW 1
-        // Insert the first header row (main headers) for the table
         const headerRow = table.insertRow(0);
 
-        // Define the main column headers
-        const columns = ["River Mile", "Gage Station", "Current Level", "24hr Delta",
+        // Define all columns
+        const allColumns = ["River Mile", "Gage Station", "Current Level", "24hr Delta",
             "National Weather Service River Forecast", "Flood Level",
             "Gage Zero", "Record Stage", "Record Date"];
 
-        // Create and append headers for each main column
+        // Define filtered columns if type is "morning"
+        const columns = (type === "morning") ? allColumns.slice(0, 4) : allColumns;
+
         columns.forEach((columnName) => {
             const th = document.createElement('th');
             th.textContent = columnName;
 
             // Set row spans or column spans based on header requirements
-            if (columnName === "River Mile" || columnName === "Gage Station" ||
-                columnName === "Current Level" || columnName === "24hr Delta" ||
-                columnName === "Flood Level" || columnName === "Gage Zero" ||
-                columnName === "Record Stage" || columnName === "Record Date") {
+            if (["River Mile", "Gage Station", "Current Level", "24hr Delta",
+                "Flood Level", "Gage Zero", "Record Stage", "Record Date"].includes(columnName)) {
                 th.rowSpan = 3;
             }
 
-            // Set colspan for the "National Weather Service River Forecast" column
             if (columnName === "National Weather Service River Forecast") {
-                th.colSpan = 6;  // Adjusted to span across the 3 "Next 3 days" columns and 3 additional sub-columns
+                th.colSpan = 6;
             }
 
-            // Apply styling for header cells
             th.style.backgroundColor = 'darkblue';
             th.style.color = 'white';
             headerRow.appendChild(th);
         });
 
-        // TITLE ROW 2
-        // Insert the second header row for sub-headers under "National Weather Service River Forecast"
-        const headerRow2 = table.insertRow(1);
+        // If not "morning", continue with additional header rows
+        if (type !== "morning") {
+            const headerRow2 = table.insertRow(1);
+            const columns2 = ["Next 3 days", "forecast time", "Crest", "Date"];
 
-        // Define sub-headers for the forecast columns
-        const columns2 = ["Next 3 days", "forecast time", "Crest", "Date"];
+            columns2.forEach((columnName) => {
+                const th = document.createElement('th');
+                th.textContent = columnName;
+                th.style.backgroundColor = 'darkblue';
+                th.style.color = 'white';
 
-        columns2.forEach((columnName) => {
-            const th = document.createElement('th');
-            th.textContent = columnName;
-            th.style.backgroundColor = 'darkblue';
-            th.style.color = 'white';
+                if (columnName === "Next 3 days") {
+                    th.colSpan = 3;
+                } else {
+                    th.rowSpan = 2;
+                }
+                headerRow2.appendChild(th);
+            });
 
-            // Set colspan for "Next 3 days" to include Day1, Day2, and Day3
-            if (columnName === "Next 3 days") {
-                th.colSpan = 3;
-            } else {
-                th.rowSpan = 2;
-            }
-            headerRow2.appendChild(th);
-        });
+            const headerRow3 = table.insertRow(2);
+            const dayColumns = ["Day1", "Day2", "Day3"];
 
-        // TITLE ROW 3
-        // Insert the third header row to show individual day headers under "Next 3 days"
-        const headerRow3 = table.insertRow(2);
-
-        // Define columns for the individual days under "Next 3 days"
-        const dayColumns = ["Day1", "Day2", "Day3"];
-
-        dayColumns.forEach((day) => {
-            const th = document.createElement('th');
-            th.textContent = day;
-            th.style.backgroundColor = 'darkblue';
-            th.style.color = 'white';
-            headerRow3.appendChild(th);
-        });
+            dayColumns.forEach((day) => {
+                const th = document.createElement('th');
+                th.textContent = day;
+                th.style.backgroundColor = 'darkblue';
+                th.style.color = 'white';
+                headerRow3.appendChild(th);
+            });
+        }
     })();
 
     // Loop through each basin in the combined data
@@ -1250,8 +991,8 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
         basinCell.colSpan = 14;
         basinCell.textContent = basin[`id`];
         basinCell.style.height = '30px';
-        basinCell.style.textAlign = 'left'; // Align text to the left
-        basinCell.style.paddingLeft = '10px'; // Add left padding of 10px
+        basinCell.style.textAlign = 'left';
+        basinCell.style.paddingLeft = '10px';
         basinCell.style.backgroundColor = 'darkblue';
         basinRow.appendChild(basinCell);
         table.appendChild(basinRow);
@@ -1273,7 +1014,6 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
 
                 // use hard coded river mile
                 (() => {
-                    // Example usage
                     const locationId = location['location-id'];
                     const riverMileObject = location['river-mile'];
                     const riverMileValue = getStationForLocation(locationId, riverMileObject);
@@ -1294,268 +1034,152 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                 row.appendChild(locationCell);
             })();
 
-            // 03 - Current Level
+            // 03 and 04 - Stage and Delta
             (() => {
-                // Ensure 'stage-last-value' exists and has at least one entry
-                const stageLastValue = location['stage-last-value'] && location['stage-last-value'][0];
-                if (!stageLastValue || !stageLastValue['tsid']) {
-                    console.warn("Missing 'tsid' or 'stage-last-value' data for location:", location);
-                    return; // Exit early if data is missing
-                }
+                const stageTd = document.createElement('td');
+                const deltaTd = document.createElement('td');
 
-                // Create the link element for current level
-                const tsid = stageLastValue['tsid'];
-                const link = `https://wm.mvs.ds.usace.army.mil/apps/chart/index.html?&office=MVS&cwms_ts_id=${tsid}&cda=internal&lookback=4&lookforward=0`;
-                const currentLevelCell = document.createElement('td');
-                const linkElement = document.createElement('a');
-                linkElement.href = link;
-                linkElement.target = '_blank';
-
-                const currentLevel = stageLastValue['value'];
                 const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
-                const lwrpValue = location['lwrp'] ? location['lwrp']['constant-value'] : null;
-                const recordStage = location['record-stage'];
-                const recordStageValue = recordStage ? recordStage['constant-value'] : null;
+                const stageTsid = location?.['tsid-stage']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
 
-                // Set text content and styles based on flood and recordStage thresholds
-                if (currentLevel != null) {
-                    const formattedLevel = currentLevel.toFixed(2);
-                    linkElement.textContent = formattedLevel;
+                if (stageTsid) {
+                    fetchAndUpdateStageTd(stageTd, deltaTd, stageTsid, floodValue, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl);
+                }
 
-                    if (recordStageValue !== null && currentLevel >= recordStageValue) {
-                        linkElement.classList.add('record_breaking'); // Add "alert" class when currentLevel >= recordStageValue
+                row.appendChild(stageTd);
+                row.appendChild(deltaTd);
+            })();
+
+            if (type !== "morning") {
+                // 05, 06 and 07 and 08 - Day1, Day2 and Day3 and Forecast Time
+                (() => {
+                    const nwsDay1Td = document.createElement('td');
+                    const nwsDay2Td = document.createElement('td');
+                    const nwsDay3Td = document.createElement('td');
+
+                    const stageTsid = location?.['tsid-stage']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
+                    const nwsForecastTsid = location?.['tsid-nws-forecast']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
+                    const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
+
+                    if (nwsForecastTsid) {
+                        fetchAndUpdateNwsForecastTd(stageTsid, nwsForecastTsid, floodValue, currentDateTime, currentDateTimePlus4Days, setBaseUrl)
+                            .then(({ nwsDay1Td: val1, nwsDay2Td: val2, nwsDay3Td: val3 }) => {
+                                nwsDay1Td.textContent = val1;
+                                nwsDay2Td.textContent = val2;
+                                nwsDay3Td.textContent = val3;
+                            })
+                            .catch(error => console.error("Failed to fetch NWS data:", error));
                     }
 
-                    if (floodValue != null && currentLevel >= floodValue) {
-                        linkElement.style.color = 'red';  // Make text red if currentLevel exceeds floodValue
+                    row.appendChild(nwsDay1Td);
+                    row.appendChild(nwsDay2Td);
+                    row.appendChild(nwsDay3Td);
+                })();
+
+                // 08 - Nws Forecast Time PHP
+                (() => {
+                    const nwsForecastTimeTd = document.createElement('td');
+                    const nwsForecastTsid = location['tsid-nws-forecast']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
+
+                    if (nwsForecastTsid !== null) {
+                        fetchAndLogNwsData(nwsForecastTsid, nwsForecastTimeTd, setJsonFileBaseUrl);
+                    } else {
+                        nwsForecastTimeTd.textContent = '';
                     }
 
-                    if (lwrpValue != null && currentLevel <= lwrpValue && lwrpValue < 900) {
-                        linkElement.style.color = 'red';  // Make text red if currentLevel lower lwrpValue
-                    }
-                } else {
-                    linkElement.textContent = '';  // Display an empty string if currentLevel is null
-                }
+                    row.appendChild(nwsForecastTimeTd);
+                })();
 
-                currentLevelCell.appendChild(linkElement);
-                row.appendChild(currentLevelCell);
-            })();
+                // 09 and 10 - Crest Value and Date Time
+                (() => {
+                    const crestTd = document.createElement('td');
+                    const crestDateTd = document.createElement('td');
 
-            // 04 - 24hr Delta
-            (() => {
-                const deltaCell = document.createElement('td');
+                    const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
+                    const crestTsid = location?.['tsid-nws-crest']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
 
-                // Ensure 'stage-last-value' exists, is an array, and has at least one entry
-                const stageLastValue = location['stage-last-value'] && Array.isArray(location['stage-last-value']) && location['stage-last-value'][0];
-
-                // If stageLastValue is valid, get 'delta', otherwise default to null
-                const deltaValue = stageLastValue ? stageLastValue['delta'] : null;
-
-                // Display the delta value, or 'N/A' if delta is not available
-                deltaCell.textContent = deltaValue != null ? parseFloat(deltaValue).toFixed(2) : '--';
-                row.appendChild(deltaCell);
-            })();
-
-            // 05 - Day1
-            (() => {
-                // Create the cell for NWS Day 1 forecast value
-                const nwsDay1Cell = document.createElement('td');
-
-                // Safely retrieve and format the forecast value for Day 1
-                const day1Value = location?.['forecast-nws-day1-nws-value']?.[0]?.[0]?.value;
-                const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
-                const recordStageValue = location['record-stage'] ? location['record-stage']['constant-value'] : null;
-
-                // Set text content and styles based on flood and recordStage thresholds
-                if (day1Value != null) {
-                    const formattedDay1Value = day1Value.toFixed(2);
-                    nwsDay1Cell.textContent = formattedDay1Value;
-
-                    if (recordStageValue !== null && day1Value >= recordStageValue) {
-                        nwsDay1Cell.classList.add('record_breaking'); // Add "record_breaking" class if day1Value >= recordStageValue
+                    if (crestTsid) {
+                        fetchAndUpdateCrestTd(crestTd, crestDateTd, crestTsid, floodValue, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl);
                     }
 
-                    if (floodValue != null && day1Value >= floodValue) {
-                        nwsDay1Cell.style.color = 'red'; // Make text red if day1Value exceeds floodValue
+                    row.appendChild(crestTd);
+                    row.appendChild(crestDateTd);
+                })();
+
+                // 11 - Flood Level
+                (() => {
+                    const floodLevelCell = document.createElement('td');
+
+                    // Check if 'flood' exists and has 'constant-value'
+                    const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
+
+                    // Display the flood value if it's valid, otherwise set to 'N/A' or leave empty
+                    if (floodValue != null && floodValue <= 900) {
+                        floodLevelCell.textContent = floodValue.toFixed(2);
+                    } else {
+                        floodLevelCell.textContent = ''; // Leave it empty if floodValue > 900 or is null
                     }
-                } else {
-                    nwsDay1Cell.textContent = ''; // Display an empty string if day1Value is null
-                }
 
-                // Append the cell to the row
-                row.appendChild(nwsDay1Cell);
-            })();
+                    row.appendChild(floodLevelCell);
+                })();
 
-            // 06 - Day2
-            (() => {
-                // Create the cell for NWS Day 2 forecast value
-                const nwsDay2Cell = document.createElement('td');
+                // 12 - Gage Zero
+                (() => {
+                    const gageZeroCell = document.createElement('td');
+                    const gageZeroValue = location['metadata']?.['elevation'];
+                    const datum = location['metadata']?.['vertical-datum'];
 
-                // Safely retrieve and format the forecast value for Day 2
-                const day2Value = location?.['forecast-nws-day2-nws-value']?.[0]?.[0]?.value;
-                const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
-                const recordStageValue = location['record-stage'] ? location['record-stage']['constant-value'] : null;
-                const formattedDay2Value = day2Value != null ? day2Value.toFixed(2) : '';
-
-                // Set text content and styles based on flood and recordStage thresholds
-                nwsDay2Cell.textContent = formattedDay2Value;
-
-                if (day2Value != null) {
-                    if (recordStageValue !== null && day2Value >= recordStageValue) {
-                        nwsDay2Cell.classList.add('record_breaking'); // Add "record_breaking" class if day2Value >= recordStageValue
+                    // Ensure gageZeroValue is a valid number before calling toFixed
+                    if (typeof gageZeroValue === 'number' && !isNaN(gageZeroValue)) {
+                        gageZeroCell.textContent = (gageZeroValue > 900) ? '' : gageZeroValue.toFixed(2);
+                    } else {
+                        gageZeroCell.textContent = 'N/A';  // Set to 'N/A' if gageZeroValue is invalid
                     }
-                    if (floodValue != null && day2Value >= floodValue) {
-                        nwsDay2Cell.style.color = 'red'; // Make text red if day2Value exceeds floodValue
+
+                    // Check if datum is "NGVD29" and set text color to purple
+                    if (datum === "NGVD29") {
+                        gageZeroCell.style.color = 'purple';
                     }
-                }
 
-                // Append the cell to the row
-                row.appendChild(nwsDay2Cell);
-            })();
+                    row.appendChild(gageZeroCell);
+                })();
 
-            // 07 - Day3
-            (() => {
-                // Create the cell for NWS Day 3 forecast value
-                const nwsDay3Cell = document.createElement('td');
+                // 13 - Record Stage
+                (() => {
+                    const recordStageCell = document.createElement('td');
+                    const recordStage = location['record-stage'];
+                    const recordStageValue = recordStage ? recordStage['constant-value'] : null;
 
-                // Safely retrieve and format the forecast value for Day 3
-                const day3Value = location?.['forecast-nws-day3-nws-value']?.[0]?.[0]?.value;
-                const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
-                const recordStageValue = location['record-stage'] ? location['record-stage']['constant-value'] : null;
-                const formattedDay3Value = day3Value != null ? day3Value.toFixed(2) : '';
-
-                // Set text content and styles based on flood and recordStage thresholds
-                nwsDay3Cell.textContent = formattedDay3Value;
-
-                if (day3Value != null) {
-                    if (recordStageValue !== null && day3Value >= recordStageValue) {
-                        nwsDay3Cell.classList.add('record_breaking'); // Add "record_breaking" class if day3Value >= recordStageValue
+                    // Check if recordStageValue is valid and within the required range
+                    if (recordStageValue != null && recordStageValue <= 900) {
+                        recordStageCell.textContent = recordStageValue.toFixed(2);
+                    } else {
+                        recordStageCell.textContent = '';  // Show 'N/A' if no valid recordStageValue
                     }
-                    if (floodValue != null && day3Value >= floodValue) {
-                        nwsDay3Cell.style.color = 'red'; // Make text red if day3Value exceeds floodValue
-                    }
-                }
 
-                // Append the cell to the row
-                row.appendChild(nwsDay3Cell);
-            })();
+                    row.appendChild(recordStageCell);
+                })();
 
-            // 08 - Nws Forecast Time
-            (() => {
-                const nwsForecastTimeCell = document.createElement('td');
-                const tsid_stage_nws_3_day_forecast = location['tsid-forecast-nws']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
+                // 14 - Record Date
+                (() => {
+                    const recordDateCell = document.createElement('td');
 
-                if (tsid_stage_nws_3_day_forecast !== null) {
-                    fetchAndLogNwsData(tsid_stage_nws_3_day_forecast, nwsForecastTimeCell);
-                } else {
-                    nwsForecastTimeCell.textContent = '';
-                }
+                    // Retrieve the record stage date value, or use null if not available
+                    const recordDateValue = location['river-mile-hard-coded'] && location['river-mile-hard-coded']['record_stage_date_hard_coded'];
 
-                row.appendChild(nwsForecastTimeCell);
-            })();
+                    // Set the text content of the cell, default to an empty string if no data
+                    recordDateCell.textContent = recordDateValue != null ? recordDateValue : "";
 
-            // 09 - Crest Value
-            (() => {
-                const crestValueCell = document.createElement('td');
-                const crest = location['crest-last-value']?.[0]?.['value'] ?? null;
-                const crestValue = crest !== null ? Number(crest) : null;
+                    // Set the title for the cell
+                    recordDateCell.title = "Hard Coded with Json File";
 
-                if (crestValue !== null && !isNaN(crestValue)) {
-                    crestValueCell.textContent = crestValue.toFixed(2);
-                } else {
-                    crestValueCell.textContent = '';
-                }
+                    // Set halo effect using text-shadow with orange color
+                    recordDateCell.style.textShadow = '0 0 2px rgba(255, 165, 0, 0.7), 0 0 2px rgba(255, 140, 0, 0.5)';
 
-                row.appendChild(crestValueCell);
-            })();
-
-            // 10 - Crest Date
-            (() => {
-                const crestDateCell = document.createElement('td');
-                const crestDate = location['crest-last-value']?.[0]?.['timestamp'] ?? null;
-
-                if (crestDate !== null) {
-                    crestDateCell.textContent = crestDate.substring(0, 5);
-                } else {
-                    crestDateCell.textContent = '';
-                }
-
-                row.appendChild(crestDateCell);
-            })();
-
-            // 11 - Flood Level
-            (() => {
-                const floodLevelCell = document.createElement('td');
-
-                // Check if 'flood' exists and has 'constant-value'
-                const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
-
-                // Display the flood value if it's valid, otherwise set to 'N/A' or leave empty
-                if (floodValue != null && floodValue <= 900) {
-                    floodLevelCell.textContent = floodValue.toFixed(2);
-                } else {
-                    floodLevelCell.textContent = ''; // Leave it empty if floodValue > 900 or is null
-                }
-
-                row.appendChild(floodLevelCell);
-            })();
-
-            // 12 - Gage Zero
-            (() => {
-                const gageZeroCell = document.createElement('td');
-                const gageZeroValue = location['metadata']?.['elevation'];
-                const datum = location['metadata']?.['vertical-datum'];
-
-                // Ensure gageZeroValue is a valid number before calling toFixed
-                if (typeof gageZeroValue === 'number' && !isNaN(gageZeroValue)) {
-                    gageZeroCell.textContent = (gageZeroValue > 900) ? '' : gageZeroValue.toFixed(2);
-                } else {
-                    gageZeroCell.textContent = 'N/A';  // Set to 'N/A' if gageZeroValue is invalid
-                }
-
-                // Check if datum is "NGVD29" and set text color to purple
-                if (datum === "NGVD29") {
-                    gageZeroCell.style.color = 'purple';
-                }
-
-                row.appendChild(gageZeroCell);
-            })();
-
-            // 13 - Record Stage
-            (() => {
-                const recordStageCell = document.createElement('td');
-                const recordStage = location['record-stage'];
-                const recordStageValue = recordStage ? recordStage['constant-value'] : null;
-
-                // Check if recordStageValue is valid and within the required range
-                if (recordStageValue != null && recordStageValue <= 900) {
-                    recordStageCell.textContent = recordStageValue.toFixed(2);
-                } else {
-                    recordStageCell.textContent = '';  // Show 'N/A' if no valid recordStageValue
-                }
-
-                row.appendChild(recordStageCell);
-            })();
-
-            // 14 - Record Date
-            (() => {
-                const recordDateCell = document.createElement('td');
-
-                // Retrieve the record stage date value, or use null if not available
-                const recordDateValue = location['river-mile-hard-coded'] && location['river-mile-hard-coded']['record_stage_date_hard_coded'];
-
-                // Set the text content of the cell, default to an empty string if no data
-                recordDateCell.textContent = recordDateValue != null ? recordDateValue : "";
-
-                // Set the title for the cell
-                recordDateCell.title = "Hard Coded with Json File";
-
-                // Set halo effect using text-shadow with orange color
-                recordDateCell.style.textShadow = '0 0 2px rgba(255, 165, 0, 0.7), 0 0 2px rgba(255, 140, 0, 0.5)';
-
-                // Append the cell to the row
-                row.appendChild(recordDateCell);
-            })();
+                    // Append the cell to the row
+                    row.appendChild(recordDateCell);
+                })();
+            }
 
             table.appendChild(row);
         });
@@ -1565,42 +1189,51 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
     return table;
 }
 
-function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, nws_day2_date_title, nws_day3_date_title) {
+function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, nws_day2_date_title, nws_day3_date_title, lakeLocs, setBaseUrl, setJsonFileBaseUrl) {
     // Create a table element
     const table = document.createElement('table');
     table.setAttribute('id', 'webreplake');
 
+    console.log("lakeLocs: ", lakeLocs);
     console.log("combinedDataReservoir (before): ", combinedDataReservoir);
 
-    // Filter out locations with attribute === 1 in owner, and remove basins without assigned-locations
+    // Get current date and time
+    const currentDateTime = new Date();
+    // console.log('currentDateTime:', currentDateTime);
+
+    // Subtract two hours from current date and time
+    const currentDateTimeMinus2Hours = subtractHoursFromDate(currentDateTime, 2);
+    // console.log('currentDateTimeMinus2Hours :', currentDateTimeMinus2Hours);
+
+    // Subtract two hours from current date and time
+    const currentDateTimeMinus8Hours = subtractHoursFromDate(currentDateTime, 8);
+    // console.log('currentDateTimeMinus8Hours :', currentDateTimeMinus8Hours);
+
+    // Subtract thirty hours from current date and time
+    const currentDateTimeMinus30Hours = subtractHoursFromDate(currentDateTime, 64);
+    // console.log('currentDateTimeMinus30Hours :', currentDateTimeMinus30Hours);
+
+    // Add thirty hours to current date and time
+    const currentDateTimePlus30Hours = plusHoursFromDate(currentDateTime, 30);
+    // console.log('currentDateTimePlus30Hours :', currentDateTimePlus30Hours);
+
+    // Add four days to current date and time
+    const currentDateTimePlus4Days = addDaysToDate(currentDateTime, 4);
+    // console.log('currentDateTimePlus4Days :', currentDateTimePlus4Days);
+    // console.log('currentDateTimePlus4Days :', typeof(currentDateTimePlus4Days));
+
+    // Filter out locations not in lakeLocs, and remove basins without assigned-locations
     combinedDataReservoir = combinedDataReservoir.filter((basin) => {
         // Filter 'assigned-locations' within each basin
         basin['assigned-locations'] = basin['assigned-locations'].filter((location) => {
             const currentLocationId = location['location-id'];
 
-            // Check if 'owner' and 'assigned-locations' exist before accessing them
-            const locationList = location['owner'] && Array.isArray(location['owner']['assigned-locations'])
-                ? location['owner']['assigned-locations']
-                : [];
-
-            // Check if currentLocationId exists in locationList with attribute === 1
-            const foundInLocationList = locationList.some(
-                loc => loc['location-id'] === currentLocationId && loc['attribute'] === 1
-            );
-
-            if (!foundInLocationList) {
-                // console.log("Removing location with ID:", currentLocationId);
-            }
-            // Remove location if attribute is 1, keep it otherwise
-            return foundInLocationList;
+            // Keep location only if it is found in lakeLocs
+            return lakeLocs.includes(currentLocationId);
         });
 
-        // Return true if there are remaining assigned-locations, otherwise filter out the basin
-        const hasLocations = basin['assigned-locations'].length > 0;
-        if (!hasLocations) {
-            // console.log("Removing empty basin:", basin);
-        }
-        return hasLocations;
+        // Remove the basin if it has no assigned locations left
+        return basin['assigned-locations'].length > 0;
     });
 
     console.log("combinedDataReservoir (after): ", combinedDataReservoir);
@@ -1623,7 +1256,7 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
             if (["Storage Utilized", "Controlled Outflow", "Pool Forecast"].includes(columnName)) {
                 th.colSpan = 2;
             }
-            th.style.backgroundColor = 'darkblue'; // Set background color to dark blue
+            th.style.backgroundColor = 'darkblue';
             headerRow.appendChild(th);
         });
 
@@ -1638,34 +1271,34 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
             if (columnName === "Storage Utilized") {
                 const thStorageConsr = document.createElement('th');
                 thStorageConsr.textContent = "Consr";
-                thStorageConsr.style.backgroundColor = 'darkblue'; // Set background color to dark blue
+                thStorageConsr.style.backgroundColor = 'darkblue';
                 headerRowLake2.appendChild(thStorageConsr);
 
                 const thStorageFlood = document.createElement('th');
                 thStorageFlood.textContent = "Flood";
-                thStorageFlood.style.backgroundColor = 'darkblue'; // Set background color to dark blue
+                thStorageFlood.style.backgroundColor = 'darkblue';
                 headerRowLake2.appendChild(thStorageFlood);
             }
             if (columnName === "Controlled Outflow") {
                 const thMidnightOutflow = document.createElement('th');
                 thMidnightOutflow.textContent = "Midnight";
-                thMidnightOutflow.style.backgroundColor = 'darkblue'; // Set background color to dark blue
+                thMidnightOutflow.style.backgroundColor = 'darkblue';
                 headerRowLake2.appendChild(thMidnightOutflow);
 
                 const thEveningOutflow = document.createElement('th');
                 thEveningOutflow.textContent = "Evening";
-                thEveningOutflow.style.backgroundColor = 'darkblue'; // Set background color to dark blue
+                thEveningOutflow.style.backgroundColor = 'darkblue';
                 headerRowLake2.appendChild(thEveningOutflow);
             }
             if (columnName === "Pool Forecast") {
                 const thForecastCrest = document.createElement('th');
                 thForecastCrest.textContent = "Crest";
-                thForecastCrest.style.backgroundColor = 'darkblue'; // Set background color to dark blue
+                thForecastCrest.style.backgroundColor = 'darkblue';
                 headerRowLake2.appendChild(thForecastCrest);
 
                 const thForecastDate = document.createElement('th');
                 thForecastDate.textContent = "Date";
-                thForecastDate.style.backgroundColor = 'darkblue'; // Set background color to dark blue
+                thForecastDate.style.backgroundColor = 'darkblue';
                 headerRowLake2.appendChild(thForecastDate);
             }
         });
@@ -1678,81 +1311,32 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
 
             // 01 - Lake
             (() => {
-                const lakeCell = document.createElement('td');
+                const lakeTd = document.createElement('td');
                 const lakeValue = location['location-id'].split('-')[0];
-                lakeCell.textContent = lakeValue;
-                row.appendChild(lakeCell);
+                lakeTd.textContent = lakeValue;
+                row.appendChild(lakeTd);
             })();
 
             // 02 - Current Level
             (() => {
-                // Check if 'stage-last-value' exists, is an array, and has the necessary properties
-                const tsid = (location['stage-last-value'] && Array.isArray(location['stage-last-value']) && location['stage-last-value'][0]?.['tsid'])
-                    ? location['stage-last-value'][0]['tsid']
-                    : null;
+                const stageTd = document.createElement('td');
+                const deltaTd = document.createElement('td');
 
-                const link = tsid
-                    ? `https://wm.mvs.ds.usace.army.mil/apps/chart/index.html?&office=MVS&cwms_ts_id=${tsid}&cda=internal&lookback=4&lookforward=0`
-                    : '#'; // Use a placeholder if tsid is missing
+                const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
+                const stageTsid = location?.['tsid-stage']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
 
-                const currentLevelCell = document.createElement('td');
-                const linkElement = document.createElement('a');
-                linkElement.href = link;
-                linkElement.target = '_blank';
-
-                const currentLevel = (location['stage-last-value'] && Array.isArray(location['stage-last-value']) && location['stage-last-value'][0]?.['value'])
-                    ? location['stage-last-value'][0]['value']
-                    : null;
-
-                const floodValue = location['flood']?.['constant-value'] ?? null;
-                const recordStage = location['record-stage'];
-                const recordStageValue = recordStage ? recordStage['constant-value'] : null;
-
-                // Set text content and styles based on flood and recordStage thresholds
-                if (currentLevel != null) {
-                    const formattedLevel = currentLevel.toFixed(2);
-                    linkElement.textContent = formattedLevel;
-
-                    if (recordStageValue !== null && currentLevel >= recordStageValue) {
-                        linkElement.classList.add('record_breaking'); // Add "alert" class when currentLevel >= recordStageValue
-                    }
-
-                    if (floodValue != null && currentLevel >= floodValue) {
-                        linkElement.style.color = 'red';  // Make text red if currentLevel exceeds floodValue
-                    }
-
-                } else {
-                    linkElement.textContent = '';  // Display an empty string if currentLevel is null
+                if (stageTsid) {
+                    fetchAndUpdateStageTd(stageTd, deltaTd, stageTsid, floodValue, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl);
                 }
 
-                currentLevelCell.appendChild(linkElement);
-                row.appendChild(currentLevelCell);
+                row.appendChild(stageTd);
+                row.appendChild(deltaTd);
             })();
 
-            // 03 - 24hr Delta
+            // 04 and 05 - Consr and Flood Storage
             (() => {
-                const deltaCell = document.createElement('td');
-
-                // Check if 'stage-last-value' exists, is an array, and has at least one element with 'delta' property
-                let deltaValue = (location['stage-last-value'] && Array.isArray(location['stage-last-value']) && location['stage-last-value'][0]?.['delta'] !== undefined)
-                    ? location['stage-last-value'][0]['delta']
-                    : "N/A";  // Default to "N/A" if 'delta' is not available
-
-                // Format deltaValue to 2 decimal places if it's a number
-                deltaCell.textContent = typeof deltaValue === 'number' ? deltaValue.toFixed(2) : deltaValue;
-                row.appendChild(deltaCell);
-            })();
-
-            // 04 - Consr Storage
-            (() => {
-                const conservationStorageCell = document.createElement('td');
-
-                let conservationStorageValue = null;
-
-                const storageLevel = (location['storage-lake-last-value'] && Array.isArray(location['storage-lake-last-value']) && location['storage-lake-last-value'][0]?.['value'])
-                    ? location['storage-lake-last-value'][0]['value']
-                    : null;
-                // console.log("storageLevel: ", storageLevel);
+                const ConsrTd = document.createElement('td');
+                const FloodTd = document.createElement('td');
 
                 const topOfConservationLevel = location['top-of-conservation']?.['constant-value'] || null;
                 // console.log("topOfConservationLevel: ", topOfConservationLevel);
@@ -1760,174 +1344,119 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
                 const bottomOfConservationLevel = location['bottom-of-conservation']?.['constant-value'] || null;
                 // console.log("bottomOfConservationLevel: ", bottomOfConservationLevel);
 
-                if (storageLevel > 0.0 && topOfConservationLevel > 0.0 && bottomOfConservationLevel >= 0.0) {
-                    if (storageLevel < bottomOfConservationLevel) {
-                        conservationStorageValue = "0.00%";
-                    } else if (storageLevel > topOfConservationLevel) {
-                        conservationStorageValue = "100.00%";
-                    } else {
-                        const total = (storageLevel - bottomOfConservationLevel) / (topOfConservationLevel - bottomOfConservationLevel) * 100;
-                        conservationStorageValue = total.toFixed(2) + "%";
-                    }
-                } else {
-                    conservationStorageValue = "%";
-                }
-
-                conservationStorageCell.innerHTML = conservationStorageValue;
-                row.appendChild(conservationStorageCell);
-            })();
-
-            // 05 - Flood Storage
-            (() => {
-                const floodStorageCell = document.createElement('td');
-                let floodStorageValue = null;
-
-                const storageLevel = (location['storage-lake-last-value'] && Array.isArray(location['storage-lake-last-value']) && location['storage-lake-last-value'][0]?.['value'])
-                    ? location['storage-lake-last-value'][0]['value']
-                    : null;
-                // console.log("storageLevel: ", storageLevel);
-
                 const topOfFloodLevel = location['top-of-flood']?.['constant-value'] || null;
                 // console.log("topOfFloodLevel: ", topOfFloodLevel);
 
                 const bottomOfFloodLevel = location['bottom-of-flood']?.['constant-value'] || null;
                 // console.log("bottomOfFloodLevel: ", bottomOfFloodLevel);
 
-                if (storageLevel > 0.0 && topOfFloodLevel > 0.0 && bottomOfFloodLevel >= 0.0) {
-                    if (storageLevel < bottomOfFloodLevel) {
-                        floodStorageValue = "0.0%";
-                    } else if (storageLevel > topOfFloodLevel) {
-                        floodStorageValue = "100.0%";
-                    } else {
-                        const total = ((storageLevel) - (bottomOfFloodLevel)) / ((topOfFloodLevel) - (bottomOfFloodLevel)) * 100;
-                        floodStorageValue = total.toFixed(1) + "%";
-                    }
-                } else {
-                    floodStorageValue = "%";
+                const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
+                const storageTsid = location?.['tsid-lake-storage']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
+
+                if (storageTsid) {
+                    fetchAndUpdateStorageTd(ConsrTd, FloodTd, storageTsid, floodValue, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl, topOfConservationLevel, bottomOfConservationLevel, topOfFloodLevel, bottomOfFloodLevel);
                 }
 
-                floodStorageCell.textContent = floodStorageValue;
-                row.appendChild(floodStorageCell);
+                row.appendChild(ConsrTd);
+                row.appendChild(FloodTd);
             })();
 
             // 06 - Precip
             (() => {
-                const precipCell = document.createElement('td');
+                const precipTd = document.createElement('td');
 
-                // Check if 'precip-lake-last-value' exists, is an array, and has at least one element
-                let precipValue = (location['precip-lake-last-value'] && Array.isArray(location['precip-lake-last-value']) && location['precip-lake-last-value'][0])
-                    ? location['precip-lake-last-value'][0]['value']
-                    : "N/A";  // Default to "N/A" if the value doesn't exist or is not an array
+                const precipLakeTsid = location?.['tsid-lake-precip']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
 
-                // Ensure the value is a number before calling toFixed
-                if (typeof precipValue === 'number') {
-                    precipValue = precipValue.toFixed(2); // Format to 2 decimal places
-                } else {
-                    precipValue = "--";
+                if (precipLakeTsid) {
+                    fetchAndUpdatePrecipTd(precipTd, precipLakeTsid, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl);
                 }
 
-                precipCell.textContent = precipValue;
-                row.appendChild(precipCell);
+                row.appendChild(precipTd);
             })();
 
             // 07 - Yesterdays Inflow
             (() => {
-                const yesterdaysInflowCell = document.createElement('td');
+                const yesterdayInflowTd = document.createElement('td');
 
-                // Check if 'inflow-yesterday-lake-last-value' exists and is an array, then get the first element
-                let yesterdaysInflowValue = (location['inflow-yesterday-lake-last-value'] && Array.isArray(location['inflow-yesterday-lake-last-value']) && location['inflow-yesterday-lake-last-value'][0])
-                    ? location['inflow-yesterday-lake-last-value'][0]['value']
-                    : "N/A";  // Default to "N/A" if the value doesn't exist or is not an array
+                const yesterdayInflowTsid = location?.['tsid-lake-inflow-yesterday']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
 
-                // Ensure the value is a number before calling toFixed
-                if (typeof yesterdaysInflowValue === 'number') {
-                    yesterdaysInflowValue = yesterdaysInflowValue.toFixed(0); // Format as an integer
-                } else {
-                    yesterdaysInflowValue = "--";
+                if (yesterdayInflowTsid) {
+                    fetchAndUpdateYesterdayInflowTd(yesterdayInflowTd, yesterdayInflowTsid, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl);
                 }
 
-                yesterdaysInflowCell.textContent = yesterdaysInflowValue;
-                row.appendChild(yesterdaysInflowCell);
+                row.appendChild(yesterdayInflowTd);
             })();
 
             // 08 - Midnight - Controlled Outflow
             (() => {
-                const midnightControlledOutflowCell = document.createElement('td');
+                const midnightControlledOutflowTd = document.createElement('td');
                 const midnightControlledOutflowValue = "--";
-                fetchAndLogMidnightFlowData(location['location-id'], midnightControlledOutflowCell);
-                midnightControlledOutflowCell.textContent = midnightControlledOutflowValue;
-                row.appendChild(midnightControlledOutflowCell);
+                fetchAndLogMidnightFlowDataTd(location['location-id'], midnightControlledOutflowTd, setJsonFileBaseUrl);
+                midnightControlledOutflowTd.textContent = midnightControlledOutflowValue;
+                row.appendChild(midnightControlledOutflowTd);
             })();
 
             // 09 - Evening - Controlled Outflow
             (() => {
-                const eveningControlledOutflowCell = document.createElement('td');
+                const eveningControlledOutflowTd = document.createElement('td');
                 const eveningControlledOutflowValue = "--";
-                fetchAndLogEveningFlowData(location['location-id'], eveningControlledOutflowCell);
-                eveningControlledOutflowCell.textContent = eveningControlledOutflowValue;
-                row.appendChild(eveningControlledOutflowCell);
+                fetchAndLogMidnightFlowDataTd(location['location-id'], eveningControlledOutflowTd, setJsonFileBaseUrl);
+                eveningControlledOutflowTd.textContent = eveningControlledOutflowValue;
+                row.appendChild(eveningControlledOutflowTd);
             })();
 
             // 10 - Seasonal Rule Curve
             (() => {
-                const seasonalRuleCurveCell = document.createElement('td');
+                const seasonalRuleCurveTd = document.createElement('td');
                 const seasonalRuleCurveValue = "--";
-                fetchAndLogSeasonalRuleCurveData(location['location-id'], seasonalRuleCurveCell);
-                seasonalRuleCurveCell.textContent = seasonalRuleCurveValue;
-                row.appendChild(seasonalRuleCurveCell);
+                fetchAndLogSeasonalRuleCurveDataTd(location['location-id'], seasonalRuleCurveTd, setJsonFileBaseUrl);
+                seasonalRuleCurveTd.textContent = seasonalRuleCurveValue;
+                row.appendChild(seasonalRuleCurveTd);
             })();
 
             // 11 - Crest - Pool Forecast
             (() => {
-                const crestPoolForecastCell = document.createElement('td');
+                const crestPoolForecastTd = document.createElement('td');
                 const crestPoolForecastValue = "--";
-                fetchAndLogPoolForecastData(location['location-id'], crestPoolForecastCell);
-                crestPoolForecastCell.textContent = crestPoolForecastValue;
-                row.appendChild(crestPoolForecastCell);
+                fetchAndLogPoolForecastDataTd(location['location-id'], crestPoolForecastTd, setJsonFileBaseUrl);
+                crestPoolForecastTd.textContent = crestPoolForecastValue;
+                row.appendChild(crestPoolForecastTd);
             })();
 
-            // 12 - Date - Pool Forecast
+            // 12 - Date - Pool Forecast Date
             (() => {
-                const datePoolForecastCell = document.createElement('td');
+                const datePoolForecastTd = document.createElement('td');
                 const datePoolForecastValue = "--";
-                fetchAndLogPoolForecastDateData(location['location-id'], datePoolForecastCell);
-                datePoolForecastCell.textContent = datePoolForecastValue;
-                row.appendChild(datePoolForecastCell);
+                fetchAndLogPoolForecastDateDataTd(location['location-id'], datePoolForecastTd, setJsonFileBaseUrl);
+                datePoolForecastTd.textContent = datePoolForecastValue;
+                row.appendChild(datePoolForecastTd);
             })();
 
             // 13 - Record Stage
             (() => {
-                const recordStageCell = document.createElement('td');
+                const recordStageTd = document.createElement('td');
                 const recordStage = location['record-stage'];
                 const recordStageValue = recordStage ? recordStage['constant-value'] : null;
 
                 // Check if recordStageValue is valid and within the required range
-                recordStageCell.textContent = recordStageValue != null && recordStageValue <= 900
+                recordStageTd.textContent = recordStageValue != null && recordStageValue <= 900
                     ? recordStageValue.toFixed(2)
                     : '';
 
-                row.appendChild(recordStageCell);
+                row.appendChild(recordStageTd);
             })();
 
             // 14 - Record Date
             (() => {
-                const recordDateCell = document.createElement('td');
-
-                // const recordStage = location['record-stage'];
-                // const recordStageDate = recordStage ? recordStage['level-date'] : null;
-                // Check if recordStageDate is valid and within the required range
-                // recordDateCell.textContent = recordStageDate != null
-                //     ? recordStageDate
-                //     : '';
-
+                const recordDateTd = document.createElement('td');
                 const recordDateValue = location['river-mile-hard-coded'] && location['river-mile-hard-coded']['record_stage_date_hard_coded'];
-                recordDateCell.textContent = recordDateValue != null ? recordDateValue : "";
+                recordDateTd.textContent = recordDateValue != null ? recordDateValue : "";
                 // Set the title for the cell
-                recordDateCell.title = "Hard Coded with Json File";
+                recordDateTd.title = "Hard Coded with Json File";
                 // Set halo effect using text-shadow with orange color
-                recordDateCell.style.textShadow = '0 0 2px rgba(255, 165, 0, 0.7), 0 0 2px rgba(255, 140, 0, 0.5)';
+                recordDateTd.style.textShadow = '0 0 2px rgba(255, 165, 0, 0.7), 0 0 2px rgba(255, 140, 0, 0.5)';
 
-                row.appendChild(recordDateCell);
+                row.appendChild(recordDateTd);
             })();
 
             table.appendChild(row);
@@ -2058,7 +1587,7 @@ function createTableMorning(combinedDataRiver, type, nws_day1_date_title, nws_da
                 // Create the link element for current level
                 const tsid = stageLastValue['tsid'];
                 const link = `https://wm.mvs.ds.usace.army.mil/apps/chart/index.html?&office=MVS&cwms_ts_id=${tsid}&cda=internal&lookback=4&lookforward=0`;
-                const currentLevelCell = document.createElement('td');
+                const currentLevelTd = document.createElement('td');
                 const linkElement = document.createElement('a');
                 linkElement.href = link;
                 linkElement.target = '_blank';
@@ -2089,8 +1618,8 @@ function createTableMorning(combinedDataRiver, type, nws_day1_date_title, nws_da
                     linkElement.textContent = '';  // Display an empty string if currentLevel is null
                 }
 
-                currentLevelCell.appendChild(linkElement);
-                row.appendChild(currentLevelCell);
+                currentLevelTd.appendChild(linkElement);
+                row.appendChild(currentLevelTd);
             })();
 
             // 04 - 24hr Delta
@@ -2258,11 +1787,10 @@ function fetchAdditionalLocationGroupOwnerData(locationId, setBaseUrl, setLocati
 // ******* Hard Coded Nws Forecast Time *****************
 // ******************************************************
 
-async function fetchDataFromNwsForecastsOutput() {
+async function fetchDataFromNwsForecastsOutput(setJsonFileBaseUrl) {
     let url = null;
-    url = 'https://wm.mvs.ds.usace.army.mil//php_data_api/public/json/exportNwsForecasts2Json.json';
-
-    // console.log("url: ", url);
+    url = setJsonFileBaseUrl + 'php_data_api/public/json/exportNwsForecasts2Json.json';
+    console.log("url: ", url);
 
     try {
         const response = await fetch(url);
@@ -2285,13 +1813,13 @@ function filterDataByTsid(NwsOutput, cwms_ts_id) {
     return filteredData;
 }
 
-async function fetchAndLogNwsData(tsid_stage_nws_3_day_forecast, forecastTimeCell) {
+async function fetchAndLogNwsData(nwsForecastTsid, forecastTimeCell, setJsonFileBaseUrl) {
     try {
-        const NwsOutput = await fetchDataFromNwsForecastsOutput();
+        const NwsOutput = await fetchDataFromNwsForecastsOutput(setJsonFileBaseUrl);
         // console.log('NwsOutput:', NwsOutput);
 
-        const filteredData = filterDataByTsid(NwsOutput, tsid_stage_nws_3_day_forecast);
-        // console.log("Filtered NwsOutput Data for", tsid_stage_nws_3_day_forecast + ":", filteredData);
+        const filteredData = filterDataByTsid(NwsOutput, nwsForecastTsid);
+        // console.log("Filtered NwsOutput Data for", nwsForecastTsid + ":", filteredData);
 
         // Update the HTML element with filtered data
         updateNwsForecastTimeHTML(filteredData, forecastTimeCell);
@@ -2370,16 +1898,13 @@ async function fetchInBatches(urls) {
 
     return results;
 }
-
 // ******************************************************
 // ******* Hard Coded Lake Outflow and Crest ************
 // ******************************************************
-
-async function fetchDataFromROutput() {
+async function fetchDataFromROutput(setJsonFileBaseUrl) {
     let url = null;
-    url = 'https://wm.mvs.ds.usace.army.mil/web_apps/board/public/outputR.json';
-
-    // console.log("url: ", url);
+    url = setJsonFileBaseUrl + 'php_data_api/public/json/outputR.json';
+    console.log("url: ", url);
 
     try {
         const response = await fetch(url);
@@ -2407,9 +1932,9 @@ function filterDataByLocationId(ROutput, location_id) {
     return filteredData;
 }
 
-async function fetchAndLogMidnightFlowData(location_id, midnightCell) {
+async function fetchAndLogMidnightFlowDataTd(location_id, midnightCell, setJsonFileBaseUrl) {
     try {
-        const ROutput = await fetchDataFromROutput();
+        const ROutput = await fetchDataFromROutput(setJsonFileBaseUrl);
         // console.log('ROutput:', ROutput);
 
         const filteredData = filterDataByLocationId(ROutput, location_id);
@@ -2437,9 +1962,9 @@ async function fetchAndLogMidnightFlowData(location_id, midnightCell) {
     }
 }
 
-async function fetchAndLogEveningFlowData(location_id, eveningCell) {
+async function fetchAndLogMidnightFlowDataTd(location_id, eveningCell, setJsonFileBaseUrl) {
     try {
-        const ROutput = await fetchDataFromROutput();
+        const ROutput = await fetchDataFromROutput(setJsonFileBaseUrl);
         // console.log('ROutput:', ROutput);
 
         const filteredData = filterDataByLocationId(ROutput, location_id);
@@ -2464,9 +1989,9 @@ async function fetchAndLogEveningFlowData(location_id, eveningCell) {
     }
 }
 
-async function fetchAndLogSeasonalRuleCurveData(location_id, seasonalRuleCurveCell) {
+async function fetchAndLogSeasonalRuleCurveDataTd(location_id, seasonalRuleCurveCell, setJsonFileBaseUrl) {
     try {
-        const ROutput = await fetchDataFromROutput();
+        const ROutput = await fetchDataFromROutput(setJsonFileBaseUrl);
         // console.log('ROutput:', ROutput);
 
         const filteredData = filterDataByLocationId(ROutput, location_id);
@@ -2488,9 +2013,9 @@ async function fetchAndLogSeasonalRuleCurveData(location_id, seasonalRuleCurveCe
     }
 }
 
-async function fetchAndLogPoolForecastData(location_id, crestCell) {
+async function fetchAndLogPoolForecastDataTd(location_id, crestCell, setJsonFileBaseUrl) {
     try {
-        const ROutput = await fetchDataFromROutput();
+        const ROutput = await fetchDataFromROutput(setJsonFileBaseUrl);
         // console.log('ROutput:', ROutput);
 
         const filteredData = filterDataByLocationId(ROutput, location_id);
@@ -2509,9 +2034,9 @@ async function fetchAndLogPoolForecastData(location_id, crestCell) {
     }
 }
 
-async function fetchAndLogPoolForecastDateData(location_id, crestDateCell) {
+async function fetchAndLogPoolForecastDateDataTd(location_id, crestDateCell, setJsonFileBaseUrl) {
     try {
-        const ROutput = await fetchDataFromROutput();
+        const ROutput = await fetchDataFromROutput(setJsonFileBaseUrl);
         // console.log('ROutput:', ROutput);
 
         const filteredData = filterDataByLocationId(ROutput, location_id);
@@ -2558,4 +2083,764 @@ function updateLakeCrestDateHTML(filteredData, crestDateCell) {
     } else {
         crestDateCell.innerHTML = `<div class="hard_coded_php" title="Uses PHP Json Output, No Cloud Option to Access Custom Schema Yet"></div>`;
     }
+}
+/******************************************************************************
+ *                               FETCH CDA FUNCTIONS                          *
+ ******************************************************************************/
+function fetchAndUpdateStageTd(stageTd, DeltaTd, tsidStage, flood_level, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl) {
+    return new Promise((resolve, reject) => {
+        if (tsidStage !== null) {
+            const urlStage = `${setBaseUrl}timeseries?name=${tsidStage}&begin=${currentDateTimeMinus30Hours.toISOString()}&end=${currentDateTime.toISOString()}&office=${office}`;
+
+            // console.log("urlStage = ", urlStage);
+            fetch(urlStage, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json;version=2'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(stage => {
+                    stage.values.forEach(entry => {
+                        entry[0] = formatNWSDate(entry[0]);
+                    });
+
+                    const lastNonNullValue = getLastNonNullValue(stage);
+                    let valueLast = null;
+                    let timestampLast = null;
+
+                    if (lastNonNullValue !== null) {
+                        timestampLast = lastNonNullValue.timestamp;
+                        valueLast = parseFloat(lastNonNullValue.value).toFixed(2);
+                    }
+
+                    const c_count = calculateCCount(tsidStage);
+                    const lastNonNull24HoursValue = getLastNonNull24HoursValue(stage, c_count);
+                    let value24HoursLast = null;
+                    let timestamp24HoursLast = null;
+
+                    if (lastNonNull24HoursValue !== null) {
+                        timestamp24HoursLast = lastNonNull24HoursValue.timestamp;
+                        value24HoursLast = parseFloat(lastNonNull24HoursValue.value).toFixed(2);
+                    }
+
+                    const delta_24 = (valueLast !== null && value24HoursLast !== null)
+                        ? (valueLast - value24HoursLast).toFixed(2)
+                        : null;
+
+                    let innerHTMLStage;
+                    if (valueLast === null) {
+                        innerHTMLStage = "<span class='missing'>-M-</span>";
+                    } else {
+                        const floodClass = determineStageClass(valueLast, flood_level);
+                        innerHTMLStage = `<span class='${floodClass}' title='${stage.name}, Value = ${valueLast}, Date Time = ${timestampLast}'>
+                                            <a href='../chart?office=${office}&cwms_ts_id=${stage.name}&lookback=4' target='_blank'>
+                                                ${valueLast}
+                                            </a>
+                                         </span>`;
+                    }
+
+                    stageTd.innerHTML = innerHTMLStage;
+                    DeltaTd.innerHTML = delta_24 !== null ? delta_24 : "-";
+
+                    resolve({ stageTd: valueLast, deltaTd: delta_24 });
+                })
+                .catch(error => {
+                    console.error("Error fetching or processing data:", error);
+                    reject(error);
+                });
+        } else {
+            resolve({ stageTd: null, deltaTd: null });
+        }
+    });
+}
+
+function fetchAndUpdateNwsForecastTd(tsidStage, nwsForecastTsid, flood_level, currentDateTime, currentDateTimePlus4Days, setBaseUrl) {
+    return new Promise((resolve, reject) => {
+        const { currentDateTimeMidNightISO, currentDateTimePlus4DaysMidNightISO } = generateDateTimeMidNightStringsISO(currentDateTime, currentDateTimePlus4Days);
+
+        if (tsidStage !== null && tsidStage.slice(-2) !== "29" && nwsForecastTsid !== null) {
+            const urlNWS = `${setBaseUrl}timeseries?name=${nwsForecastTsid}&begin=${currentDateTimeMidNightISO}&end=${currentDateTimePlus4DaysMidNightISO}&office=${office}`;
+
+            fetch(urlNWS, {
+                method: 'GET',
+                headers: { 'Accept': 'application/json;version=2' }
+            })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(nws3Days => {
+                    nws3Days.values.forEach(entry => {
+                        entry[0] = formatNWSDate(entry[0]);
+                    });
+
+                    const valuesWithTimeNoon = extractValuesWithTimeNoon(nws3Days.values);
+
+                    const getFormattedValue = (arr, index) => {
+                        const rawValue = arr?.[index]?.[1];
+                        return rawValue !== null && rawValue !== undefined && !isNaN(parseFloat(rawValue))
+                            ? parseFloat(rawValue).toFixed(2)
+                            : "-";
+                    };
+
+                    const firstMiddleValue = getFormattedValue(valuesWithTimeNoon, 1);
+                    const secondMiddleValue = getFormattedValue(valuesWithTimeNoon, 2);
+                    const thirdMiddleValue = getFormattedValue(valuesWithTimeNoon, 3);
+
+                    resolve({ nwsDay1Td: firstMiddleValue, nwsDay2Td: secondMiddleValue, nwsDay3Td: thirdMiddleValue });
+                })
+                .catch(error => {
+                    console.error("Error fetching or processing data:", error);
+                    reject(error);
+                });
+        } else {
+            resolve({ nwsDay1Td: "", nwsDay2Td: "", nwsDay3Td: "" });
+        }
+    });
+}
+
+function fetchAndUpdateCrestTd(stageTd, DeltaTd, tsidStage, flood_level, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl) {
+    return new Promise((resolve, reject) => {
+        if (tsidStage !== null) {
+            const urlStage = `${setBaseUrl}timeseries?name=${tsidStage}&begin=${currentDateTimeMinus30Hours.toISOString()}&end=${currentDateTime.toISOString()}&office=${office}`;
+
+            // console.log("urlStage = ", urlStage);
+            fetch(urlStage, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json;version=2'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(stage => {
+                    stage.values.forEach(entry => {
+                        entry[0] = formatNWSDate(entry[0]);
+                    });
+
+                    const lastNonNullValue = getLastNonNullValue(stage);
+                    let valueLast = null;
+                    let timestampLast = null;
+
+                    if (lastNonNullValue !== null) {
+                        timestampLast = lastNonNullValue.timestamp;
+                        valueLast = parseFloat(lastNonNullValue.value).toFixed(2);
+                    }
+
+                    const c_count = calculateCCount(tsidStage);
+                    const lastNonNull24HoursValue = getLastNonNull24HoursValue(stage, c_count);
+                    let value24HoursLast = null;
+                    let timestamp24HoursLast = null;
+
+                    if (lastNonNull24HoursValue !== null) {
+                        timestamp24HoursLast = lastNonNull24HoursValue.timestamp;
+                        value24HoursLast = parseFloat(lastNonNull24HoursValue.value).toFixed(2);
+                    }
+
+                    const delta_24 = (valueLast !== null && value24HoursLast !== null)
+                        ? (valueLast - value24HoursLast).toFixed(2)
+                        : null;
+
+                    let innerHTMLStage;
+                    if (valueLast === null) {
+                        innerHTMLStage = "<span class='missing'></span>";
+                    } else {
+                        const floodClass = determineStageClass(valueLast, flood_level);
+                        innerHTMLStage = `<span class='${floodClass}' title='${stage.name}, Value = ${valueLast}, Date Time = ${timestampLast}'>
+                                            <a href='../chart?office=${office}&cwms_ts_id=${stage.name}&lookback=4' target='_blank'>
+                                                ${valueLast}
+                                            </a>
+                                         </span>`;
+                    }
+
+                    stageTd.innerHTML = innerHTMLStage;
+                    DeltaTd.innerHTML = delta_24 !== null ? delta_24 : "";
+
+                    resolve({ stageTd: valueLast, deltaTd: delta_24 });
+                })
+                .catch(error => {
+                    console.error("Error fetching or processing data:", error);
+                    reject(error);
+                });
+        } else {
+            resolve({ stageTd: null, deltaTd: null });
+        }
+    });
+}
+
+function fetchAndUpdatePrecipTd(precipCell, tsid, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl) {
+    if (tsid !== null) {
+        // Fetch the time series data from the API using the determined query string
+        const urlPrecip = `${setBaseUrl}timeseries?name=${tsid}&begin=${currentDateTimeMinus30Hours.toISOString()}&end=${currentDateTime.toISOString()}&office=${office}`;
+        // console.log("urlPrecip = ", urlPrecip);
+
+        fetch(urlPrecip, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json;version=2'
+            }
+        })
+            .then(response => {
+                // Check if the response is ok
+                if (!response.ok) {
+                    // If not, throw an error
+                    throw new Error('Network response was not ok');
+                }
+                // If response is ok, parse it as JSON
+                return response.json();
+            })
+            .then(precip => {
+                // Once data is fetched, log the fetched data structure
+                // console.log("precip: ", precip);
+
+                // Convert timestamps in the JSON object
+                precip.values.forEach(entry => {
+                    entry[0] = formatNWSDate(entry[0]); // Update timestamp
+                });
+
+                // Output the updated JSON object
+                // // console.log(JSON.stringify(precip, null, 2));
+
+                // console.log("precipFormatted = ", precip);
+
+                // Get the last non-null value from the stage data
+                const lastNonNullPrecipValue = getLastNonNullValue(precip);
+                // console.log("lastNonNullPrecipValue:", lastNonNullPrecipValue);
+
+                // Check if a non-null value was found
+                if (lastNonNullPrecipValue !== null) {
+                    // Extract timestamp, value, and quality code from the last non-null value
+                    var timestampPrecipLast = lastNonNullPrecipValue.timestamp;
+                    var valuePrecipLast = parseFloat(lastNonNullPrecipValue.value).toFixed(2);
+                    var qualityCodePrecipLast = lastNonNullPrecipValue.qualityCode;
+
+                    // Log the extracted valueLasts
+                    // console.log("timestampPrecipLast:", timestampPrecipLast);
+                    // console.log("valuePrecipLast:", valuePrecipLast);
+                    // console.log("qualityCodePrecipLast:", qualityCodePrecipLast);
+                } else {
+                    // If no non-null valueLast is found, log a message
+                    // console.log("No non-null valueLast found.");
+                }
+
+                const c_count = calculateCCount(tsid);
+
+                const lastNonNull6HoursPrecipValue = getLastNonNull6HoursValue(precip, c_count);
+                // console.log("lastNonNull6HoursPrecipValue:", lastNonNull6HoursPrecipValue);
+
+                // Check if a non-null value was found
+                if (lastNonNull6HoursPrecipValue !== null) {
+                    // Extract timestamp, value, and quality code from the last non-null value
+                    var timestampPrecip6HoursLast = lastNonNull6HoursPrecipValue.timestamp;
+                    var valuePrecip6HoursLast = parseFloat(lastNonNull6HoursPrecipValue.value).toFixed(2);
+                    var qualityCodePrecip6HoursLast = lastNonNull6HoursPrecipValue.qualityCode;
+
+                    // Log the extracted valueLasts
+                    // console.log("timestampPrecip6HoursLast:", timestampPrecip6HoursLast);
+                    // console.log("valuePrecip6HoursLast:", valuePrecip6HoursLast);
+                    // console.log("qualityCodePrecip6HoursLast:", qualityCodePrecip6HoursLast);
+                } else {
+                    // If no non-null valueLast is found, log a message
+                    // console.log("No non-null valueLast found.");
+                }
+
+                const lastNonNull24HoursPrecipValue = getLastNonNull24HoursValue(precip, c_count);
+                // console.log("lastNonNull24HoursPrecipValue:", lastNonNull24HoursPrecipValue);
+
+                // Check if a non-null value was found
+                if (lastNonNull24HoursPrecipValue !== null) {
+                    // Extract timestamp, value, and quality code from the last non-null value
+                    var timestampPrecip24HoursLast = lastNonNull24HoursPrecipValue.timestamp;
+                    var valuePrecip24HoursLast = parseFloat(lastNonNull24HoursPrecipValue.value).toFixed(2);
+                    var qualityCodePrecip24HoursLast = lastNonNull24HoursPrecipValue.qualityCode;
+
+                    // Log the extracted valueLasts
+                    // console.log("timestampPrecip24HoursLast:", timestampPrecip24HoursLast);
+                    // console.log("valuePrecip24HoursLast:", valuePrecip24HoursLast);
+                    // console.log("qualityCodePrecip24HoursLast:", qualityCodePrecip24HoursLast);
+                } else {
+                    // If no non-null valueLast is found, log a message
+                    // console.log("No non-null valueLast found.");
+                }
+
+                // Calculate the 24 hours change between first and last value
+                const precip_delta_6 = (valuePrecipLast - valuePrecip6HoursLast).toFixed(2);
+                // console.log("precip_delta_6:", precip_delta_6);
+
+                // Calculate the 24 hours change between first and last value
+                const precip_delta_24 = (valuePrecipLast - valuePrecip24HoursLast).toFixed(2);
+                // console.log("precip_delta_24:", precip_delta_24);
+
+                // Format the last valueLast's timestampFlowLast to a string
+                const formattedLastValueTimeStamp = formatTimestampToStringIOS(timestampPrecipLast);
+                // console.log("formattedLastValueTimeStamp = ", formattedLastValueTimeStamp);
+
+                // Create a Date object from the timestampFlowLast
+                const timeStampDateObject = new Date(timestampPrecipLast);
+                // console.log("timeStampDateObject = ", timeStampDateObject);
+
+                // Subtract 24 hours (24 * 60 * 60 * 1000 milliseconds) from the timestampFlowLast date
+                const timeStampDateObjectMinus24Hours = new Date(timestampPrecipLast - (24 * 60 * 60 * 1000));
+                // console.log("timeStampDateObjectMinus24Hours = ", timeStampDateObjectMinus24Hours);
+
+                if (lastNonNullPrecipValue === null) {
+                    innerHTMLPrecip = "<table id='precip'>"
+                        + "<tr>"
+                        + "<td class='precip_missing' title='24 hr delta'>"
+                        + "-M-"
+                        + "</td>"
+                        + "</tr>"
+                        + "</table>";
+                } else {
+                    innerHTMLPrecip = "</table>"
+                        + "<span class='last_max_value' title='" + precip.name + ", Value = " + valuePrecipLast + ", Date Time = " + timestampPrecipLast + "'>"
+                        + "<a href='../chart?office=" + office + "&cwms_ts_id=" + precip.name + "&lookback=4' target='_blank'>"
+                        + valuePrecipLast
+                        + "</a>"
+                        + "</span>";
+                }
+                return precipCell.innerHTML += innerHTMLPrecip;
+            })
+            .catch(error => {
+                // Catch and log any errors that occur during fetching or processing
+                console.error("Error fetching or processing data:", error);
+            });
+    } else {
+        return precipCell.innerHTML = "";
+    }
+}
+
+function fetchAndUpdateYesterdayInflowTd(precipCell, tsid, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl) {
+    if (tsid !== null) {
+        // Fetch the time series data from the API using the determined query string
+        const urlPrecip = `${setBaseUrl}timeseries?name=${tsid}&begin=${currentDateTimeMinus30Hours.toISOString()}&end=${currentDateTime.toISOString()}&office=${office}`;
+        // console.log("urlPrecip = ", urlPrecip);
+
+        fetch(urlPrecip, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json;version=2'
+            }
+        })
+            .then(response => {
+                // Check if the response is ok
+                if (!response.ok) {
+                    // If not, throw an error
+                    throw new Error('Network response was not ok');
+                }
+                // If response is ok, parse it as JSON
+                return response.json();
+            })
+            .then(precip => {
+                // Once data is fetched, log the fetched data structure
+                // console.log("precip: ", precip);
+
+                // Convert timestamps in the JSON object
+                precip.values.forEach(entry => {
+                    entry[0] = formatNWSDate(entry[0]); // Update timestamp
+                });
+
+                // Output the updated JSON object
+                // // console.log(JSON.stringify(precip, null, 2));
+
+                // console.log("precipFormatted = ", precip);
+
+                // Get the last non-null value from the stage data
+                const lastNonNullPrecipValue = getLastNonNullValue(precip);
+                // console.log("lastNonNullPrecipValue:", lastNonNullPrecipValue);
+
+                // Check if a non-null value was found
+                if (lastNonNullPrecipValue !== null) {
+                    // Extract timestamp, value, and quality code from the last non-null value
+                    var timestampPrecipLast = lastNonNullPrecipValue.timestamp;
+                    var valuePrecipLast = parseFloat(lastNonNullPrecipValue.value).toFixed(0);
+                    var qualityCodePrecipLast = lastNonNullPrecipValue.qualityCode;
+
+                    // Log the extracted valueLasts
+                    // console.log("timestampPrecipLast:", timestampPrecipLast);
+                    // console.log("valuePrecipLast:", valuePrecipLast);
+                    // console.log("qualityCodePrecipLast:", qualityCodePrecipLast);
+                } else {
+                    // If no non-null valueLast is found, log a message
+                    // console.log("No non-null valueLast found.");
+                }
+
+                if (lastNonNullPrecipValue === null) {
+                    innerHTMLPrecip = "<table id='precip'>"
+                        + "<tr>"
+                        + "<td class='precip_missing' title='24 hr delta'>"
+                        + "-M-"
+                        + "</td>"
+                        + "</tr>"
+                        + "</table>";
+                } else {
+                    innerHTMLPrecip = "</table>"
+                        + "<span class='last_max_value' title='" + precip.name + ", Value = " + valuePrecipLast + ", Date Time = " + timestampPrecipLast + "'>"
+                        + "<a href='../chart?office=" + office + "&cwms_ts_id=" + precip.name + "&lookback=4' target='_blank'>"
+                        + valuePrecipLast
+                        + "</a>"
+                        + "</span>";
+                }
+                return precipCell.innerHTML += innerHTMLPrecip;
+            })
+            .catch(error => {
+                // Catch and log any errors that occur during fetching or processing
+                console.error("Error fetching or processing data:", error);
+            });
+    } else {
+        return precipCell.innerHTML = "";
+    }
+}
+
+function fetchAndUpdateStorageTd(stageTd, DeltaTd, tsidStorage, flood_level, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl, topOfConservationLevel, bottomOfConservationLevel, topOfFloodLevel, bottomOfFloodLevel) {
+    return new Promise((resolve, reject) => {
+        if (tsidStorage !== null) {
+            const urlStorage = `${setBaseUrl}timeseries?name=${tsidStorage}&begin=${currentDateTimeMinus30Hours.toISOString()}&end=${currentDateTime.toISOString()}&office=${office}`;
+
+            // console.log("urlStorage = ", urlStorage);
+            fetch(urlStorage, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json;version=2'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(stage => {
+                    stage.values.forEach(entry => {
+                        entry[0] = formatNWSDate(entry[0]);
+                    });
+
+                    const lastNonNullValue = getLastNonNullValue(stage);
+                    let valueLast = null;
+                    let timestampLast = null;
+
+                    if (lastNonNullValue !== null) {
+                        timestampLast = lastNonNullValue.timestamp;
+                        valueLast = parseFloat(lastNonNullValue.value).toFixed(2);
+                    }
+
+                    const c_count = calculateCCount(tsidStorage);
+                    const lastNonNull24HoursValue = getLastNonNull24HoursValue(stage, c_count);
+                    let value24HoursLast = null;
+                    let timestamp24HoursLast = null;
+
+                    if (lastNonNull24HoursValue !== null) {
+                        timestamp24HoursLast = lastNonNull24HoursValue.timestamp;
+                        value24HoursLast = parseFloat(lastNonNull24HoursValue.value).toFixed(2);
+                    }
+
+                    const delta_24 = (valueLast !== null && value24HoursLast !== null)
+                        ? (valueLast - value24HoursLast).toFixed(2)
+                        : null;
+
+                    if (valueLast > 0.0 && topOfConservationLevel > 0.0 && bottomOfConservationLevel >= 0.0) {
+                        if (valueLast < bottomOfConservationLevel) {
+                            conservationStorageValue = "0.00%";
+                        } else if (valueLast > topOfConservationLevel) {
+                            conservationStorageValue = "100.00%";
+                        } else {
+                            const total = (valueLast - bottomOfConservationLevel) / (topOfConservationLevel - bottomOfConservationLevel) * 100;
+                            conservationStorageValue = total.toFixed(2) + "%";
+                        }
+                    } else {
+                        conservationStorageValue = "%";
+                    }
+
+                    if (valueLast > 0.0 && topOfFloodLevel > 0.0 && bottomOfFloodLevel >= 0.0) {
+                        if (valueLast < bottomOfFloodLevel) {
+                            floodStorageValue = "0.00%";
+                        } else if (valueLast > topOfFloodLevel) {
+                            floodStorageValue = "100.00%";
+                        } else {
+                            const total = ((valueLast) - (bottomOfFloodLevel)) / ((topOfFloodLevel) - (bottomOfFloodLevel)) * 100;
+                            floodStorageValue = total.toFixed(2) + "%";
+                        }
+                    } else {
+                        floodStorageValue = "%";
+                    }
+
+                    stageTd.innerHTML = conservationStorageValue !== null ? conservationStorageValue : "-";
+                    DeltaTd.innerHTML = floodStorageValue !== null ? floodStorageValue : "-";
+
+                    resolve({ stageTd: conservationStorageValue, deltaTd: floodStorageValue });
+                })
+                .catch(error => {
+                    console.error("Error fetching or processing data:", error);
+                    reject(error);
+                });
+        } else {
+            resolve({ stageTd: null, deltaTd: null });
+        }
+    });
+}
+/******************************************************************************
+ *                            SUPPORT CDA FUNCTIONS                           *
+ ******************************************************************************/
+function filterByLocationCategory(array, category) {
+    return array.filter(item =>
+        item['location-category'] &&
+        item['location-category']['office-id'] === category['office-id'] &&
+        item['location-category']['id'] === category['id']
+    );
+}
+
+function subtractHoursFromDate(date, hoursToSubtract) {
+    return new Date(date.getTime() - (hoursToSubtract * 60 * 60 * 1000));
+}
+
+function plusHoursFromDate(date, hoursToSubtract) {
+    return new Date(date.getTime() + (hoursToSubtract * 60 * 60 * 1000));
+}
+
+function addDaysToDate(date, days) {
+    return new Date(date.getTime() + (days * 24 * 60 * 60 * 1000));
+}
+
+function formatTimestampToString(timestampLast) {
+    const date = new Date(timestampLast);
+    const formattedDate = `${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}-${date.getFullYear()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+    return formattedDate;
+}
+
+function formatNWSDate(timestamp) {
+    const date = new Date(timestamp);
+    const mm = String(date.getMonth() + 1).padStart(2, '0'); // Month
+    const dd = String(date.getDate()).padStart(2, '0'); // Day
+    const yyyy = date.getFullYear(); // Year
+    const hh = String(date.getHours()).padStart(2, '0'); // Hours
+    const min = String(date.getMinutes()).padStart(2, '0'); // Minutes
+    return `${mm}-${dd}-${yyyy} ${hh}:${min}`;
+}
+
+function extractValuesWithTimeNoon(values) {
+    return values.filter(entry => {
+        const timestamp = new Date(entry[0]);
+        const hours = timestamp.getHours();
+        const minutes = timestamp.getMinutes();
+        return (hours === 7 || hours === 6) && minutes === 0; // Check if time is 13:00
+    });
+}
+
+function calculateCCount(tsid) {
+    // Split the string at the period
+    const splitString = tsid.split('.');
+
+    // Access the fifth element
+    const forthElement = splitString[3];
+    // console.log("forthElement = ", forthElement);
+
+    // Initialize c_count variable
+    let c_count;
+
+    // Set c_count based on the value of firstTwoCharacters
+    switch (forthElement) {
+        case "15Minutes":
+            c_count = 96;
+            break;
+        case "10Minutes":
+            c_count = 144;
+            break;
+        case "30Minutes":
+            c_count = 48;
+            break;
+        case "1Hour":
+            c_count = 24;
+            break;
+        case "6Hours":
+            c_count = 4;
+            break;
+        case "~2Hours":
+            c_count = 12;
+            break;
+        case "5Minutes":
+            c_count = 288;
+            break;
+        case "~1Day":
+            c_count = 1;
+            break;
+        default:
+            // Default value if forthElement doesn't match any case
+            c_count = 0;
+    }
+
+    return c_count;
+}
+
+function generateDateTimeMidNightStringsISO(currentDateTime, currentDateTimePlus4Days) {
+    // Convert current date and time to ISO string
+    const currentDateTimeISO = currentDateTime.toISOString();
+    // Extract the first 10 characters from the ISO string
+    const first10CharactersDateTimeISO = currentDateTimeISO.substring(0, 10);
+
+    // Get midnight in the Central Time zone
+    const midnightCentral = new Date(currentDateTime.toLocaleDateString('en-US', { timeZone: 'America/Chicago' }));
+    midnightCentral.setHours(0, 0, 0, 0); // Set time to midnight
+
+    // Convert midnight to ISO string
+    const midnightCentralISO = midnightCentral.toISOString();
+
+    // Append midnight central time to the first 10 characters of currentDateTimeISO
+    const currentDateTimeMidNightISO = first10CharactersDateTimeISO + midnightCentralISO.substring(10);
+
+    // Convert currentDateTimePlus4Days to ISO string
+    const currentDateTimePlus4DaysISO = currentDateTimePlus4Days.toISOString();
+    // Extract the first 10 characters from the ISO string of currentDateTimePlus4Days
+    const first10CharactersDateTimePlus4DaysISO = currentDateTimePlus4DaysISO.substring(0, 10);
+
+    // Append midnight central time to the first 10 characters of currentDateTimePlus4DaysISO
+    const currentDateTimePlus4DaysMidNightISO = first10CharactersDateTimePlus4DaysISO + midnightCentralISO.substring(10);
+
+    return {
+        currentDateTimeMidNightISO,
+        currentDateTimePlus4DaysMidNightISO
+    };
+}
+
+function getStationForLocation(locationId, riverMileObject) {
+    // console.log("riverMileObject BEFORE function call:", JSON.stringify(riverMileObject, null, 2));
+    // console.log("Type of riverMileObject:", typeof riverMileObject);
+    // console.log("Is riverMileObject an array?", Array.isArray(riverMileObject));
+
+    if (!Array.isArray(riverMileObject)) {
+        // console.error("riverMileObject is not an array or is undefined/null", riverMileObject);
+        return null;
+    }
+
+    for (const entry of riverMileObject) {
+        // console.log("Processing entry:", JSON.stringify(entry, null, 2)); // Log full entry
+
+        if (!entry || !entry["stream-location-node"]) {
+            // console.warn("Skipping entry due to missing stream-location-node", entry);
+            continue;
+        }
+
+        const name = entry["stream-location-node"]?.id?.name;
+        // console.log("Location ID in entry:", name);
+
+        if (name === locationId) {
+            // console.log("Match found! Returning station:", entry["stream-location-node"]?.["stream-node"]?.station);
+            return entry["stream-location-node"]?.["stream-node"]?.station || null;
+        }
+    }
+
+    // console.log("No match found for locationId:", locationId);
+    return null;
+}
+
+function formatTimestampToStringIOS(timestamp) {
+    if (!timestamp) return "Invalid date";
+
+    // Split the timestamp into date and time parts
+    const [datePart, timePart] = timestamp.split(" ");
+    const [day, month, year] = datePart.split("-").map(Number);
+    const [hours, minutes] = timePart.split(":").map(Number);
+
+    // Create a new Date object (Month is 0-based in JS)
+    const dateObj = new Date(Date.UTC(year, month - 1, day, hours, minutes));
+
+    if (isNaN(dateObj.getTime())) return "Invalid date";
+
+    // Format as "YYYY-MM-DD HH:mm"
+    return dateObj.toISOString().replace("T", " ").slice(0, 16);
+}
+/******************************************************************************
+ *                           GET DATA FUNCTIONS                               *
+ ******************************************************************************/
+function getLastNonNullValue(data) {
+    // Iterate over the values array in reverse
+    for (let i = data.values.length - 1; i >= 0; i--) {
+        // Check if the value at index i is not null
+        if (data.values[i][1] !== null) {
+            // Return the non-null value as separate variables
+            return {
+                timestamp: data.values[i][0],
+                value: data.values[i][1],
+                qualityCode: data.values[i][2]
+            };
+        }
+    }
+    // If no non-null value is found, return null
+    return null;
+}
+
+function getLastNonNull24HoursValue(data, c_count) {
+    let nonNullCount = 0;
+    for (let i = data.values.length - 1; i >= 0; i--) {
+        if (data.values[i][1] !== null) {
+            nonNullCount++;
+            if (nonNullCount > c_count) {
+                return {
+                    timestamp: data.values[i][0],
+                    value: data.values[i][1],
+                    qualityCode: data.values[i][2]
+                };
+            }
+        }
+    }
+    return null;
+}
+
+function getLastNonNull6HoursValue(data, c_count) {
+    let nonNullCount = 0;
+    for (let i = data.values.length - 1; i >= 0; i--) {
+        if (data.values[i][1] !== null) {
+            nonNullCount++;
+            if (nonNullCount > (c_count / 4)) {
+                return {
+                    timestamp: data.values[i][0],
+                    value: data.values[i][1],
+                    qualityCode: data.values[i][2]
+                };
+            }
+        }
+    }
+    return null;
+}
+
+function getFirstNonNullValue(data) {
+    // Iterate over the values array
+    for (let i = 0; i < data.values.length; i++) {
+        // Check if the value at index i is not null
+        if (data.values[i][1] !== null) {
+            // Return the non-null value as separate variables
+            return {
+                timestamp: data.values[i][0],
+                value: data.values[i][1],
+                qualityCode: data.values[i][2]
+            };
+        }
+    }
+    // If no non-null value is found, return null
+    return null;
+}
+
+/******************************************************************************
+ *                            CLASSES CDA FUNCTIONS                           *
+ ******************************************************************************/
+function determineStageClass(stage_value, flood_value) {
+    // console.log("determineStageClass = ", stage_value + typeof (stage_value) + " " + flood_value + typeof (flood_value));
+    var myStageClass;
+    if (parseFloat(stage_value) >= parseFloat(flood_value)) {
+        // console.log("determineStageClass = ", stage_value + " >= " + flood_value);
+        myStageClass = "last_max_value_flood";
+    } else {
+        // console.log("Stage Below Flood Level");
+        myStageClass = "last_max_value";
+    }
+    return myStageClass;
 }
