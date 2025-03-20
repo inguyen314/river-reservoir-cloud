@@ -790,7 +790,8 @@ function createTablePrecip(combinedData, type) {
             riverMileCell.title = "Hard Coded with Json File";
 
             // Set halo effect using text-shadow with orange color
-            riverMileCell.style.textShadow = '0 0 2px rgba(255, 165, 0, 0.7), 0 0 2px rgba(255, 140, 0, 0.5)';
+            // riverMileCell.style.textShadow = '0 0 2px rgba(255, 165, 0, 0.7), 0 0 2px rgba(255, 140, 0, 0.5)';
+            riverMileCell.className = 'hard_coded';
             row.appendChild(riverMileCell);
 
             // Location cell with link
@@ -1174,7 +1175,8 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                     recordDateCell.title = "Hard Coded with Json File";
 
                     // Set halo effect using text-shadow with orange color
-                    recordDateCell.style.textShadow = '0 0 2px rgba(255, 165, 0, 0.7), 0 0 2px rgba(255, 140, 0, 0.5)';
+                    // recordDateCell.style.textShadow = '0 0 2px rgba(255, 165, 0, 0.7), 0 0 2px rgba(255, 140, 0, 0.5)';
+                    recordDateCell.className = 'hard_coded';
 
                     // Append the cell to the row
                     row.appendChild(recordDateCell);
@@ -1454,7 +1456,8 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
                 // Set the title for the cell
                 recordDateTd.title = "Hard Coded with Json File";
                 // Set halo effect using text-shadow with orange color
-                recordDateTd.style.textShadow = '0 0 2px rgba(255, 165, 0, 0.7), 0 0 2px rgba(255, 140, 0, 0.5)';
+                // recordDateTd.style.textShadow = '0 0 2px rgba(255, 165, 0, 0.7), 0 0 2px rgba(255, 140, 0, 0.5)';
+                recordDateTd.className = 'hard_coded';
 
                 row.appendChild(recordDateTd);
             })();
