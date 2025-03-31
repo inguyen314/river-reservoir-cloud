@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         setLookBack = subtractDaysFromDate(new Date(), 2);
         setLookForward = addDaysFromDate(new Date(), 14);
 
-        const categoryApiUrl = `${setBaseUrl}location/group?office=${office}&include-assigned=false&location-category-like=${setLocationCategory}`;
+        const categoryApiUrl = setBaseUrl + `location/group?office=${office}&group-office-id=${office}&category-office-id=${office}&category-id=${setLocationCategory}`;
 
         // Initialize Maps to hold datasets
         const metadataMap = new Map();
