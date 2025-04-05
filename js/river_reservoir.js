@@ -13,7 +13,8 @@ document.addEventListener('DOMContentLoaded', async function () {
     } else if (cda === "internal-coop") {
         setBaseUrl = `https://wm-${office.toLowerCase()}coop.mvk.ds.usace.army.mil:8243/${office.toLowerCase()}-data/`;
     } else if (cda === "public") {
-        setBaseUrl = `https://cwms-data.usace.army.mil/cwms-data/`;
+        // setBaseUrl = `https://cwms-data.usace.army.mil/cwms-data/`;
+        setBaseUrl = `https://cwms.sec.usace.army.mil/cwms-data/`;
     }
     console.log("setBaseUrl: ", setBaseUrl);
 
@@ -53,8 +54,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                 };
 
                 const [day1, day2, day3] = [1, 2, 3].map(days => formatDate(days));
-                const combinedDataRiver = structuredClone ? structuredClone(combinedData) : JSON.parse(JSON.stringify(combinedData));
-                const combinedDataReservoir = structuredClone ? structuredClone(combinedData) : JSON.parse(JSON.stringify(combinedData));
+                // const combinedDataRiver = structuredClone ? structuredClone(combinedData) : JSON.parse(JSON.stringify(combinedData));
+                // const combinedDataReservoir = structuredClone ? structuredClone(combinedData) : JSON.parse(JSON.stringify(combinedData));
+                const combinedDataRiver = JSON.parse(JSON.stringify(combinedData));
+                const combinedDataReservoir = JSON.parse(JSON.stringify(combinedData));
+
 
                 console.log('combinedDataRiver:', combinedDataRiver);
                 console.log('combinedDataReservoir:', combinedDataReservoir);
@@ -751,146 +755,6 @@ function getNoonDataForDay3(data, tsid) {
     return noonData;
 }
 
-function createTablePrecip(combinedData, type) {
-    const table = document.createElement('table');
-    table.setAttribute('id', 'gage_data');
-
-    const headerRow = document.createElement('tr');
-    let columns;
-
-    // Set columns based on type
-    if (type === "inc") {
-        columns = ["River Mile", "Location", "06 hr.", "12 hr.", "18 hr.", "24 hr.", "30 hr.", "36 hr.", "42 hr.", "48 hr.", "54 hr.", "60 hr.", "66 hr.", "72 hr.", "Zero hr."];
-    } else if (type === "cum") {
-        columns = ["River Mile", "Location", "06 hr.", "12 hr.", "24 hr.", "48 hr.", "72 hr.", "Zero hr."];
-    }
-
-    // Create header cells
-    columns.forEach((columnName) => {
-        const th = document.createElement('th');
-        th.textContent = columnName;
-        th.style.height = '50px';
-        th.style.backgroundColor = 'darkblue';
-        th.style.color = 'white'; // Added for better visibility
-        headerRow.appendChild(th);
-    });
-    table.appendChild(headerRow);
-
-    // Populate table rows with data
-    combinedData.forEach((basin) => {
-        basin['assigned-locations'].forEach((location) => {
-            const row = document.createElement('tr');
-
-            const riverMileCell = document.createElement('td');
-            const riverMileValue = location['river-mile-hard-coded'] && location['river-mile-hard-coded']['river_mile_hard_coded'];
-            riverMileCell.textContent = riverMileValue != null ? parseFloat(riverMileValue).toFixed(1) : "N/A";
-
-
-            // Set the title for the cell
-            riverMileCell.title = "Hard Coded with Json File";
-
-            // Set halo effect using text-shadow with orange color
-            // riverMileCell.style.textShadow = '0 0 2px rgba(255, 165, 0, 0.7), 0 0 2px rgba(255, 140, 0, 0.5)';
-            riverMileCell.className = 'hard_coded';
-            row.appendChild(riverMileCell);
-
-            // Location cell with link
-            const value0 = location['stage-inc-value'][0]?.value0;
-            const tsid = value0 ? value0.tsid : '';
-            const link = `../chart/index.html?office=MVS&cwms_ts_id=${tsid}&lookback=7`;
-            const locationCell = document.createElement('td');
-            const linkElement = document.createElement('a');
-            linkElement.href = link;
-            linkElement.target = '_blank';
-            linkElement.textContent = location['location-id'];
-            locationCell.appendChild(linkElement);
-            row.appendChild(locationCell);
-
-            let dataValues;
-            if (type === "inc") {
-                dataValues = location['stage-inc-value'][0];
-
-                // Handle incremental values
-                const valueKeys = ["incremental6", "incremental12", "incremental18", "incremental24", "incremental30", "incremental36", "incremental42", "incremental48", "incremental54", "incremental60", "incremental66", "incremental72"];
-                valueKeys.forEach((timeKey) => {
-                    const cell = document.createElement('td');
-                    const value = dataValues[timeKey];
-                    const numericValue = (value !== undefined && value !== null) ? Number(value) : NaN; // Convert to number
-
-                    // Set cell text
-                    cell.textContent = !isNaN(numericValue) ? numericValue.toFixed(2) : 'N/A';
-
-                    // Set background color based on value conditions
-                    if (!isNaN(numericValue)) {
-                        if (numericValue > 2.00 || numericValue < 0.00) {
-                            cell.style.backgroundColor = 'red';
-                        } else if (numericValue === 0.00) {
-                            cell.style.backgroundColor = 'white';
-                        } else if (numericValue > 0.00 && numericValue <= 0.25) {
-                            cell.style.backgroundColor = 'limegreen';
-                        } else if (numericValue > 0.25 && numericValue <= 0.50) {
-                            cell.style.backgroundColor = 'sandybrown';
-                        } else if (numericValue > 0.50 && numericValue <= 1.00) {
-                            cell.style.backgroundColor = 'gold';
-                        } else if (numericValue > 1.00 && numericValue <= 2.00) {
-                            cell.style.backgroundColor = 'orange';
-                        } else {
-                            cell.style.backgroundColor = 'purple';
-                        }
-                    }
-
-                    row.appendChild(cell);
-                });
-
-                // Zero hour cell
-                const zeroHourCell = document.createElement('td');
-                zeroHourCell.textContent = dataValues.value0 ? dataValues.value0.timestamp : 'N/A';
-                row.appendChild(zeroHourCell);
-
-            } else if (type === "cum") {
-                dataValues = location['stage-cum-value'][0];
-                ["cumulative6", "cumulative12", "cumulative24", "cumulative48", "cumulative72"].forEach((timeKey) => {
-                    const cell = document.createElement('td');
-                    const value = dataValues[timeKey];
-                    const numericValue = (value !== undefined && value !== null) ? Number(value) : NaN; // Convert to number
-                    cell.textContent = !isNaN(numericValue) ? numericValue.toFixed(2) : 'N/A';
-
-                    // Set background color based on value conditions
-                    if (!isNaN(numericValue)) {
-                        if (numericValue > 2.00 || numericValue < 0.00) {
-                            cell.style.backgroundColor = 'red';
-                        } else if (numericValue === 0.00) {
-                            cell.style.backgroundColor = 'white';
-                        } else if (numericValue > 0.00 && numericValue <= 0.25) {
-                            cell.style.backgroundColor = 'limegreen';
-                        } else if (numericValue > 0.25 && numericValue <= 0.50) {
-                            cell.style.backgroundColor = 'sandybrown';
-                        } else if (numericValue > 0.50 && numericValue <= 1.00) {
-                            cell.style.backgroundColor = 'gold';
-                        } else if (numericValue > 1.00 && numericValue <= 2.00) {
-                            cell.style.backgroundColor = 'orange';
-                        } else {
-                            cell.style.backgroundColor = 'purple';
-                        }
-                    }
-
-                    row.appendChild(cell);
-                });
-
-                // Zero hour cell
-                const zeroHourCell = document.createElement('td');
-                zeroHourCell.textContent = dataValues.value0 ? dataValues.value0.timestamp : 'N/A';
-                row.appendChild(zeroHourCell);
-            }
-
-            // Append row to table
-            table.appendChild(row);
-        });
-    });
-
-    return table;
-}
-
 function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2_date_title, nws_day3_date_title, setBaseUrl, setJsonFileBaseUrl) {
     // Create a table element and set an ID for styling or selection purposes
     const table = document.createElement('table');
@@ -920,6 +784,8 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
     const currentDateTimePlus4Days = addDaysToDate(currentDateTime, 4);
     // console.log('currentDateTimePlus4Days :', currentDateTimePlus4Days);
     // console.log('currentDateTimePlus4Days :', typeof(currentDateTimePlus4Days));
+
+    const currentDateTimePlus14Days = addDaysToDate(currentDateTime, 14);
 
     // Add 3-rows title
     (() => {
@@ -956,8 +822,13 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
         // If not "morning", continue with additional header rows
         if (type !== "morning") {
             const headerRow2 = table.insertRow(1);
-            const columns2 = ["Next 3 days", "forecast time", "Crest", "Date"];
 
+            let columns2 = null;
+            if (isMobile === true) {
+                columns2 = ["Next 3 days", "Forecast Date", "Crest", "Date"];
+            } else {
+                columns2 = ["Next 3 days", "Forecast Date Time", "Crest", "Date"];
+            }
             columns2.forEach((columnName) => {
                 const th = document.createElement('th');
                 th.textContent = columnName;
@@ -1019,7 +890,7 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                     const riverMileObject = location['river-mile'];
                     const riverMileValue = getStationForLocation(locationId, riverMileObject);
                     // console.log(`Station for location ${locationId}: ${riverMileValue}`);
-                    riverMileCell.textContent = riverMileValue != null ? parseFloat(riverMileValue).toFixed(1) : "N/A";
+                    riverMileCell.textContent = riverMileValue != null ? parseFloat(riverMileValue).toFixed(1) : "--";
                 })();
 
 
@@ -1030,8 +901,8 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
             (() => {
                 // Location cell without link
                 const locationCell = document.createElement('td');
-                // locationCell.textContent = location['location-id'];
-                locationCell.textContent = location['location-id'].split('-')[0];
+                locationCell.textContent = location['metadata'][`public-name`];
+                locationCell.style.whiteSpace = 'nowrap';  // This will prevent the line break
                 row.appendChild(locationCell);
             })();
 
@@ -1063,11 +934,23 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                     const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
 
                     if (nwsForecastTsid) {
-                        fetchAndUpdateNwsForecastTd(stageTsid, nwsForecastTsid, floodValue, currentDateTime, currentDateTimePlus4Days, setBaseUrl)
+                        fetchAndUpdateNwsForecastTd(
+                            stageTsid,
+                            nwsForecastTsid,
+                            floodValue,
+                            currentDateTime,
+                            currentDateTimePlus4Days,
+                            setBaseUrl
+                        )
                             .then(({ nwsDay1Td: val1, nwsDay2Td: val2, nwsDay3Td: val3 }) => {
-                                nwsDay1Td.textContent = val1;
-                                nwsDay2Td.textContent = val2;
-                                nwsDay3Td.textContent = val3;
+                                const parseValue = (value) => {
+                                    const parsed = parseFloat(value);
+                                    return !isNaN(parsed) ? parsed.toFixed(2) : "-";
+                                };
+
+                                nwsDay1Td.textContent = parseValue(val1);
+                                nwsDay2Td.textContent = parseValue(val2);
+                                nwsDay3Td.textContent = parseValue(val3);
                             })
                             .catch(error => console.error("Failed to fetch NWS data:", error));
                     }
@@ -1083,7 +966,7 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                     const nwsForecastTsid = location['tsid-nws-forecast']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
 
                     if (nwsForecastTsid !== null) {
-                        fetchAndLogNwsData(nwsForecastTsid, nwsForecastTimeTd, setJsonFileBaseUrl);
+                        fetchAndLogNwsData(nwsForecastTsid, nwsForecastTimeTd, setJsonFileBaseUrl, isMobile);
                     } else {
                         nwsForecastTimeTd.textContent = '';
                     }
@@ -1100,7 +983,7 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                     const crestTsid = location?.['tsid-nws-crest']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
 
                     if (crestTsid) {
-                        fetchAndUpdateCrestTd(crestTd, crestDateTd, crestTsid, floodValue, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl);
+                        fetchAndUpdateCrestTd(crestTd, crestDateTd, crestTsid, floodValue, currentDateTimeMinus2Hours, currentDateTimePlus14Days, currentDateTimeMinus30Hours, setBaseUrl);
                     }
 
                     row.appendChild(crestTd);
@@ -1126,22 +1009,30 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
 
                 // 12 - Gage Zero
                 (() => {
+                    // Create a new table cell for gage zero elevation
                     const gageZeroCell = document.createElement('td');
+
+                    // Get the gage zero elevation value and vertical datum from location metadata
                     const gageZeroValue = location['metadata']?.['elevation'];
                     const datum = location['metadata']?.['vertical-datum'];
 
-                    // Ensure gageZeroValue is a valid number before calling toFixed
+                    // Ensure gageZeroValue is a valid number before formatting
                     if (typeof gageZeroValue === 'number' && !isNaN(gageZeroValue)) {
+                        // Only display the value if it's not unusually high (e.g., a placeholder or error code)
                         gageZeroCell.textContent = (gageZeroValue > 900) ? '' : gageZeroValue.toFixed(2);
+                        gageZeroCell.title = 'Datum: NAVD88'; // Add a tooltip to indicate the datum
                     } else {
-                        gageZeroCell.textContent = 'N/A';  // Set to 'N/A' if gageZeroValue is invalid
+                        // Set to 'N/A' if gageZeroValue is missing or invalid
+                        gageZeroCell.textContent = 'N/A';
                     }
 
-                    // Check if datum is "NGVD29" and set text color to purple
+                    // Highlight the cell and show a tooltip if the vertical datum is NGVD29
                     if (datum === "NGVD29") {
-                        gageZeroCell.style.color = 'purple';
+                        gageZeroCell.style.color = 'brown';        // Change text color to purple
+                        gageZeroCell.title = 'Datum: NGVD29';       // Add a tooltip to indicate the datum
                     }
 
+                    // Append the cell to the current row
                     row.appendChild(gageZeroCell);
                 })();
 
@@ -1166,16 +1057,19 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                     const recordDateCell = document.createElement('td');
 
                     // Retrieve the record stage date value, or use null if not available
-                    const recordDateValue = location['river-mile-hard-coded'] && location['river-mile-hard-coded']['record_stage_date_hard_coded'];
+                    const recordDateValue = (location['river-mile-hard-coded'] && location['river-mile-hard-coded']['record_stage_date_hard_coded']);
+                    // console.log("recordDateValue: ", typeof (recordDateValue));
 
-                    // Set the text content of the cell, default to an empty string if no data
-                    recordDateCell.textContent = recordDateValue != null ? recordDateValue : "";
+                    // Replace all dashes with non-breaking hyphens
+                    const formattedRecordDateValue = recordDateValue != null ? recordDateValue.replace(/-/g, '&#8209;') : "";
+
+                    // Set the HTML content of the cell, default to an empty string if no data
+                    recordDateCell.innerHTML = formattedRecordDateValue;
 
                     // Set the title for the cell
                     recordDateCell.title = "Hard Coded with Json File";
 
                     // Set halo effect using text-shadow with orange color
-                    // recordDateCell.style.textShadow = '0 0 2px rgba(255, 165, 0, 0.7), 0 0 2px rgba(255, 140, 0, 0.5)';
                     recordDateCell.className = 'hard_coded';
 
                     // Append the cell to the row
@@ -1314,8 +1208,9 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
             // 01 - Lake
             (() => {
                 const lakeTd = document.createElement('td');
-                const lakeValue = location['location-id'].split('-')[0];
+                const lakeValue = location['metadata'][`public-name`];
                 lakeTd.textContent = lakeValue;
+                lakeTd.style.whiteSpace = 'nowrap';  // This will prevent the line break
                 row.appendChild(lakeTd);
             })();
 
@@ -1402,7 +1297,7 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
             (() => {
                 const eveningControlledOutflowTd = document.createElement('td');
                 const eveningControlledOutflowValue = "--";
-                fetchAndLogMidnightFlowDataTd(location['location-id'], eveningControlledOutflowTd, setJsonFileBaseUrl);
+                fetchAndLogEveningFlowDataTd(location['location-id'], eveningControlledOutflowTd, setJsonFileBaseUrl);
                 eveningControlledOutflowTd.textContent = eveningControlledOutflowValue;
                 row.appendChild(eveningControlledOutflowTd);
             })();
@@ -1436,15 +1331,21 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
 
             // 13 - Record Stage
             (() => {
+                // Create a new table cell for the record stage value
                 const recordStageTd = document.createElement('td');
-                const recordStage = location['record-stage'];
-                const recordStageValue = recordStage ? recordStage['constant-value'] : null;
 
-                // Check if recordStageValue is valid and within the required range
+                // Prevent the cell content from wrapping to a new line
+                recordStageTd.style.whiteSpace = 'nowrap';
+
+                // Extract the 'constant-value' from the 'record-stage' object, if it exists
+                const recordStageValue = location['record-stage']?.['constant-value'];
+
+                // Set the cell text content if the value is valid and less than or equal to 900
                 recordStageTd.textContent = recordStageValue != null && recordStageValue <= 900
                     ? recordStageValue.toFixed(2)
                     : '';
 
+                // Append the cell to the current row
                 row.appendChild(recordStageTd);
             })();
 
@@ -1452,7 +1353,10 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
             (() => {
                 const recordDateTd = document.createElement('td');
                 const recordDateValue = location['river-mile-hard-coded'] && location['river-mile-hard-coded']['record_stage_date_hard_coded'];
-                recordDateTd.textContent = recordDateValue != null ? recordDateValue : "";
+
+                const formattedRecordDateValue = recordDateValue != null ? recordDateValue.replace(/-/g, '&#8209;') : "";
+
+                recordDateTd.innerHTML = formattedRecordDateValue;
                 // Set the title for the cell
                 recordDateTd.title = "Hard Coded with Json File";
                 // Set halo effect using text-shadow with orange color
@@ -1468,276 +1372,6 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
 
     // Return the constructed table element
     return table;
-}
-
-function createTableMorning(combinedDataRiver, type, nws_day1_date_title, nws_day2_date_title, nws_day3_date_title) {
-    // Create a table element and set an ID for styling or selection purposes
-    const table = document.createElement('table');
-    table.setAttribute('id', 'webrep');
-
-    combinedDataRiver = combinedDataRiver.filter((basin) => {
-        // Ensure 'assigned-locations' exists before proceeding
-        if (!Array.isArray(basin['assigned-locations'])) {
-            return false; // Filter out basins without 'assigned-locations'
-        }
-
-        // Filter 'assigned-locations' within each basin
-        basin['assigned-locations'] = basin['assigned-locations'].filter((location) => {
-            const currentLocationId = location['location-id'];
-            const locationList = location['owner']?.['assigned-locations'];
-
-            // Check if currentLocationId exists in locationList with attribute === 1
-            const foundInLocationList = locationList?.some(
-                loc => loc['location-id'] === currentLocationId && loc['attribute'] === 1
-            );
-
-            // Remove location if attribute is 1, keep it otherwise
-            return !foundInLocationList;
-        });
-
-        // Return true if there are remaining assigned-locations, otherwise filter out the basin
-        return basin['assigned-locations'].length > 0;
-    });
-
-    // Add 3-rows title
-    (() => {
-        // TITLE ROW 1
-        // Insert the first header row (main headers) for the table
-        const headerRow = table.insertRow(0);
-
-        // Define the main column headers
-        const columns = ["River Mile", "Gage Station", "Current Level", "24hr Delta"];
-
-        // Create and append headers for each main column
-        columns.forEach((columnName) => {
-            const th = document.createElement('th');
-            th.textContent = columnName;
-
-            // Set row spans or column spans based on header requirements
-            if (columnName === "River Mile" || columnName === "Gage Station" ||
-                columnName === "Current Level" || columnName === "24hr Delta" ||
-                columnName === "Flood Level" || columnName === "Gage Zero" ||
-                columnName === "Record Stage" || columnName === "Record Date") {
-                th.rowSpan = 3;
-            }
-            // Apply styling for header cells
-            th.style.backgroundColor = 'darkblue';
-            th.style.color = 'white';
-            headerRow.appendChild(th);
-        });
-    })();
-
-    // Loop through each basin in the combined data
-    combinedDataRiver.forEach((basin) => {
-        const basinRow = document.createElement('tr');
-        const basinCell = document.createElement('th');
-        basinCell.colSpan = 14;
-        basinCell.textContent = basin[`id`];
-        basinCell.style.height = '30px';
-        basinCell.style.textAlign = 'left'; // Align text to the left
-        basinCell.style.paddingLeft = '10px'; // Add left padding of 10px
-        basinCell.style.backgroundColor = 'darkblue';
-        basinRow.appendChild(basinCell);
-        table.appendChild(basinRow);
-
-        basin['assigned-locations'].forEach((location) => {
-            const row = document.createElement('tr');
-
-            // 01 - River Mile
-            (() => {
-                const riverMileCell = document.createElement('td');
-
-                // use hard coded river mile
-                (() => {
-                    // const riverMileValue = location['river-mile-hard-coded'] && location['river-mile-hard-coded']['river_mile_hard_coded'];
-                    // riverMileCell.textContent = riverMileValue != null ? parseFloat(riverMileValue).toFixed(1) : "N/A";
-                    // riverMileCell.title = "Hard Coded with Json File";
-                    // riverMileCell.style.textShadow = '0 0 2px rgba(255, 165, 0, 0.7), 0 0 2px rgba(255, 140, 0, 0.5)';
-                })();
-
-                // use hard coded river mile
-                (() => {
-                    // Example usage
-                    const locationId = location['location-id'];
-                    const riverMileObject = location['river-mile'];
-                    const riverMileValue = getStationForLocation(locationId, riverMileObject);
-                    // console.log(`Station for location ${locationId}: ${riverMileValue}`);
-                    riverMileCell.textContent = riverMileValue != null ? parseFloat(riverMileValue).toFixed(1) : "N/A";
-                })();
-
-
-                row.appendChild(riverMileCell);
-            })();
-
-            // 02 - Gage Station
-            (() => {
-                // Location cell without link
-                const locationCell = document.createElement('td');
-                // locationCell.textContent = location['location-id'];
-                locationCell.textContent = location['location-id'].split('-')[0];
-                row.appendChild(locationCell);
-            })();
-
-            // 03 - Current Level
-            (() => {
-                // Ensure 'stage-last-value' exists and has at least one entry
-                const stageLastValue = location['stage-last-value'] && location['stage-last-value'][0];
-                if (!stageLastValue || !stageLastValue['tsid']) {
-                    console.warn("Missing 'tsid' or 'stage-last-value' data for location:", location);
-                    return; // Exit early if data is missing
-                }
-
-                // Create the link element for current level
-                const tsid = stageLastValue['tsid'];
-                const link = `https://wm.mvs.ds.usace.army.mil/apps/chart/index.html?&office=MVS&cwms_ts_id=${tsid}&cda=internal&lookback=4&lookforward=0`;
-                const currentLevelTd = document.createElement('td');
-                const linkElement = document.createElement('a');
-                linkElement.href = link;
-                linkElement.target = '_blank';
-
-                const currentLevel = stageLastValue['value'];
-                const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
-                const lwrpValue = location['lwrp'] ? location['lwrp']['constant-value'] : null;
-                const recordStage = location['record-stage'];
-                const recordStageValue = recordStage ? recordStage['constant-value'] : null;
-
-                // Set text content and styles based on flood and recordStage thresholds
-                if (currentLevel != null) {
-                    const formattedLevel = currentLevel.toFixed(2);
-                    linkElement.textContent = formattedLevel;
-
-                    if (recordStageValue !== null && currentLevel >= recordStageValue) {
-                        linkElement.classList.add('record_breaking'); // Add "alert" class when currentLevel >= recordStageValue
-                    }
-
-                    if (floodValue != null && currentLevel >= floodValue) {
-                        linkElement.style.color = 'red';  // Make text red if currentLevel exceeds floodValue
-                    }
-
-                    if (lwrpValue != null && currentLevel <= lwrpValue && lwrpValue < 900) {
-                        linkElement.style.color = 'red';  // Make text red if currentLevel lower lwrpValue
-                    }
-                } else {
-                    linkElement.textContent = '';  // Display an empty string if currentLevel is null
-                }
-
-                currentLevelTd.appendChild(linkElement);
-                row.appendChild(currentLevelTd);
-            })();
-
-            // 04 - 24hr Delta
-            (() => {
-                const deltaCell = document.createElement('td');
-
-                // Ensure 'stage-last-value' exists, is an array, and has at least one entry
-                const stageLastValue = location['stage-last-value'] && Array.isArray(location['stage-last-value']) && location['stage-last-value'][0];
-
-                // If stageLastValue is valid, get 'delta', otherwise default to null
-                const deltaValue = stageLastValue ? stageLastValue['delta'] : null;
-
-                // Display the delta value, or 'N/A' if delta is not available
-                deltaCell.textContent = deltaValue != null ? parseFloat(deltaValue).toFixed(2) : '--';
-                row.appendChild(deltaCell);
-            })();
-
-            table.appendChild(row);
-        });
-    });
-
-    // Return the constructed table element
-    return table;
-}
-
-function updateLocData(locData, type, data, lastValue, maxValue, minValue, cumValue, incValue, hourlyValue, day1NwsValue, day2NwsValue, day3NwsValue) {
-    const keys = {
-        apiDataKey: `${type}-api-data`,
-        lastValueKey: `${type}-last-value`,
-        maxValueKey: `${type}-max-value`,
-        minValueKey: `${type}-min-value`,
-        cumValueKey: `${type}-cum-value`,
-        incValueKey: `${type}-inc-value`,
-        hourlyValueKey: `${type}-hourly-value`,
-        day1NwsValueKey: `${type}-day1-nws-value`,
-        day2NwsValueKey: `${type}-day2-nws-value`,
-        day3NwsValueKey: `${type}-day3-nws-value`
-    };
-
-    for (let [key, value] of Object.entries(keys)) {
-        if (!locData[value]) {
-            locData[value] = [];
-        }
-
-        switch (key) {
-            case 'apiDataKey':
-                locData[value].push(data);
-                break;
-            case 'lastValueKey':
-                locData[value].push(lastValue);
-                break;
-            case 'maxValueKey':
-                locData[value].push(maxValue);
-                break;
-            case 'minValueKey':
-                locData[value].push(minValue);
-                break;
-            case 'cumValueKey':
-                locData[value].push(cumValue);
-                break;
-            case 'incValueKey':
-                locData[value].push(incValue);
-                break;
-            case 'hourlyValueKey':
-                locData[value].push(hourlyValue);
-                break;
-            case 'day1NwsValueKey':
-                locData[value].push(day1NwsValue);
-                break;
-            case 'day2NwsValueKey':
-                locData[value].push(day2NwsValue);
-                break;
-            case 'day3NwsValueKey':
-                locData[value].push(day3NwsValue);
-                break;
-            default:
-                console.error('Unknown key:', key);
-        }
-    }
-}
-
-function updateLocDataRiverReservoir(locData, type, data, lastValue, day1NwsValue, day2NwsValue, day3NwsValue) {
-    const keys = {
-        apiDataKey: `${type}-api-data`,
-        lastValueKey: `${type}-last-value`,
-        day1NwsValueKey: `${type}-day1-nws-value`,
-        day2NwsValueKey: `${type}-day2-nws-value`,
-        day3NwsValueKey: `${type}-day3-nws-value`
-    };
-
-    for (let [key, value] of Object.entries(keys)) {
-        if (!locData[value]) {
-            locData[value] = [];
-        }
-
-        switch (key) {
-            case 'apiDataKey':
-                locData[value].push(data);
-                break;
-            case 'lastValueKey':
-                locData[value].push(lastValue);
-                break;
-            case 'day1NwsValueKey':
-                locData[value].push(day1NwsValue);
-                break;
-            case 'day2NwsValueKey':
-                locData[value].push(day2NwsValue);
-                break;
-            case 'day3NwsValueKey':
-                locData[value].push(day3NwsValue);
-                break;
-            default:
-                console.error('Unknown key:', key);
-        }
-    }
 }
 
 function getStationForLocation(locationId, riverMileObject) {
@@ -1793,7 +1427,7 @@ function fetchAdditionalLocationGroupOwnerData(locationId, setBaseUrl, setLocati
 async function fetchDataFromNwsForecastsOutput(setJsonFileBaseUrl) {
     let url = null;
     url = setJsonFileBaseUrl + 'php_data_api/public/json/exportNwsForecasts2Json.json';
-    console.log("url: ", url);
+    // console.log("url: ", url);
 
     try {
         const response = await fetch(url);
@@ -1816,7 +1450,7 @@ function filterDataByTsid(NwsOutput, cwms_ts_id) {
     return filteredData;
 }
 
-async function fetchAndLogNwsData(nwsForecastTsid, forecastTimeCell, setJsonFileBaseUrl) {
+async function fetchAndLogNwsData(nwsForecastTsid, forecastTimeCell, setJsonFileBaseUrl, isMobile) {
     try {
         const NwsOutput = await fetchDataFromNwsForecastsOutput(setJsonFileBaseUrl);
         // console.log('NwsOutput:', NwsOutput);
@@ -1825,7 +1459,7 @@ async function fetchAndLogNwsData(nwsForecastTsid, forecastTimeCell, setJsonFile
         // console.log("Filtered NwsOutput Data for", nwsForecastTsid + ":", filteredData);
 
         // Update the HTML element with filtered data
-        updateNwsForecastTimeHTML(filteredData, forecastTimeCell);
+        updateNwsForecastTimeHTML(filteredData, forecastTimeCell, isMobile);
 
         // Further processing of ROutput data as needed
     } catch (error) {
@@ -1834,7 +1468,7 @@ async function fetchAndLogNwsData(nwsForecastTsid, forecastTimeCell, setJsonFile
     }
 }
 
-function updateNwsForecastTimeHTML(filteredData, forecastTimeCell) {
+function updateNwsForecastTimeHTML(filteredData, forecastTimeCell, isMobile) {
     const locationData = filteredData.find(item => item !== null); // Find the first non-null item
     if (!locationData) {
         forecastTimeCell.innerHTML = ''; // Handle case where no valid data is found
@@ -1868,9 +1502,13 @@ function updateNwsForecastTimeHTML(filteredData, forecastTimeCell) {
 
     // Construct formatted date and time
     const formattedDateTime = `${month}-${day}-${year} ${hours}:${minutes} ${period}`;
+    const displayDateTime = isMobile ? formattedDateTime.slice(0, 8) : formattedDateTime;
+
+    forecastTimeCell.style.whiteSpace = 'nowrap';
 
     // Update the HTML content
-    forecastTimeCell.innerHTML = `<div class="hard_coded_php" title="Uses PHP exportNwsForecasts2Json.json Output, No Cloud Option Yet">${formattedDateTime}</div>`;
+    forecastTimeCell.innerHTML = `<div class="hard_coded_php" title="Uses PHP exportNwsForecasts2Json.json Output, No Cloud Option Yet">${displayDateTime}</div>`;
+
 }
 
 async function fetchInBatches(urls) {
@@ -1907,7 +1545,7 @@ async function fetchInBatches(urls) {
 async function fetchDataFromROutput(setJsonFileBaseUrl) {
     let url = null;
     url = setJsonFileBaseUrl + 'php_data_api/public/json/outputR.json';
-    console.log("url: ", url);
+    // console.log("url: ", url);
 
     try {
         const response = await fetch(url);
@@ -1965,7 +1603,7 @@ async function fetchAndLogMidnightFlowDataTd(location_id, midnightCell, setJsonF
     }
 }
 
-async function fetchAndLogMidnightFlowDataTd(location_id, eveningCell, setJsonFileBaseUrl) {
+async function fetchAndLogEveningFlowDataTd(location_id, eveningCell, setJsonFileBaseUrl) {
     try {
         const ROutput = await fetchDataFromROutput(setJsonFileBaseUrl);
         // console.log('ROutput:', ROutput);
@@ -2073,7 +1711,8 @@ function updateRuleCurveHTML(filteredData, seasonalRuleCurveCell) {
 function updateLakeCrestHTML(filteredData, crestCell) {
     const locationData = filteredData[Object.keys(filteredData)[0]]; // Get the first (and only) key's data
     if (locationData.crest) {
-        crestCell.innerHTML = `<div class="hard_coded_php" title="Uses PHP Json Output, No Cloud Option to Access Custom Schema Yet">${locationData.crest}</div>`;
+        crestCell.innerHTML = `<div class="hard_coded_php" title="Uses PHP Json Output, No Cloud Option to Access Custom Schema Yet">${locationData.option} ${locationData.crest}</div>`;
+        crestCell.style.whiteSpace = 'nowrap'; // Prevent line break
     } else {
         crestCell.innerHTML = `<div class="hard_coded_php" title="Uses PHP Json Output, No Cloud Option to Access Custom Schema Yet"></div>`;
     }
@@ -2082,11 +1721,12 @@ function updateLakeCrestHTML(filteredData, crestCell) {
 function updateLakeCrestDateHTML(filteredData, crestDateCell) {
     const locationData = filteredData[Object.keys(filteredData)[0]]; // Get the first (and only) key's data
     if (locationData.crest) {
-        crestDateCell.innerHTML = `<div class="hard_coded_php" title="Uses PHP Json Output, No Cloud Option to Access Custom Schema Yet">${locationData.crest_date_time}</div>`;
+        crestDateCell.innerHTML = `<div class="hard_coded_php" style="white-space: nowrap;" title="Uses PHP Json Output, No Cloud Option to Access Custom Schema Yet">${locationData.crest_date_time.slice(0, 5)}</div>`;
     } else {
-        crestDateCell.innerHTML = `<div class="hard_coded_php" title="Uses PHP Json Output, No Cloud Option to Access Custom Schema Yet"></div>`;
+        crestDateCell.innerHTML = `<div class="hard_coded_php" style="white-space: nowrap;" title="Uses PHP Json Output, No Cloud Option to Access Custom Schema Yet"></div>`;
     }
 }
+
 /******************************************************************************
  *                               FETCH CDA FUNCTIONS                          *
  ******************************************************************************/
@@ -2141,11 +1781,7 @@ function fetchAndUpdateStageTd(stageTd, DeltaTd, tsidStage, flood_level, current
                         innerHTMLStage = "<span class='missing'>-M-</span>";
                     } else {
                         const floodClass = determineStageClass(valueLast, flood_level);
-                        innerHTMLStage = `<span class='${floodClass}' title='${stage.name}, Value = ${valueLast}, Date Time = ${timestampLast}'>
-                                            <a href='../chart?office=${office}&cwms_ts_id=${stage.name}&lookback=4' target='_blank'>
-                                                ${valueLast}
-                                            </a>
-                                         </span>`;
+                        innerHTMLStage = `<span class='${floodClass}' title='${stage.name}, Value = ${valueLast}, Date Time = ${timestampLast}'>${valueLast}</span>`;
                     }
 
                     stageTd.innerHTML = innerHTMLStage;
@@ -2179,24 +1815,38 @@ function fetchAndUpdateNwsForecastTd(tsidStage, nwsForecastTsid, flood_level, cu
                     return response.json();
                 })
                 .then(nws3Days => {
+                    // console.log("Raw nws3Days data:", nws3Days);
+
                     nws3Days.values.forEach(entry => {
                         entry[0] = formatNWSDate(entry[0]);
                     });
 
+                    // console.log("Formatted nws3Days.values:", nws3Days.values);
+
                     const valuesWithTimeNoon = extractValuesWithTimeNoon(nws3Days.values);
+                    // console.log("Values at noon:", valuesWithTimeNoon);
 
                     const getFormattedValue = (arr, index) => {
                         const rawValue = arr?.[index]?.[1];
-                        return rawValue !== null && rawValue !== undefined && !isNaN(parseFloat(rawValue))
-                            ? parseFloat(rawValue).toFixed(2)
-                            : "-";
+                        const parsedValue = parseFloat(rawValue);
+                        return !isNaN(parsedValue) ? parsedValue.toFixed(2) : "-";
                     };
 
                     const firstMiddleValue = getFormattedValue(valuesWithTimeNoon, 1);
                     const secondMiddleValue = getFormattedValue(valuesWithTimeNoon, 2);
                     const thirdMiddleValue = getFormattedValue(valuesWithTimeNoon, 3);
 
-                    resolve({ nwsDay1Td: firstMiddleValue, nwsDay2Td: secondMiddleValue, nwsDay3Td: thirdMiddleValue });
+                    // console.log("Extracted noon values:", {
+                    //     nwsDay1Td: firstMiddleValue,
+                    //     nwsDay2Td: secondMiddleValue,
+                    //     nwsDay3Td: thirdMiddleValue
+                    // });
+
+                    resolve({
+                        nwsDay1Td: firstMiddleValue,
+                        nwsDay2Td: secondMiddleValue,
+                        nwsDay3Td: thirdMiddleValue
+                    });
                 })
                 .catch(error => {
                     console.error("Error fetching or processing data:", error);
@@ -2208,10 +1858,10 @@ function fetchAndUpdateNwsForecastTd(tsidStage, nwsForecastTsid, flood_level, cu
     });
 }
 
-function fetchAndUpdateCrestTd(stageTd, DeltaTd, tsidStage, flood_level, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl) {
+function fetchAndUpdateCrestTd(stageTd, DeltaTd, tsidStage, flood_level, currentDateTimeMinus2Hours, currentDateTimePlus14Days, currentDateTimeMinus30Hours, setBaseUrl) {
     return new Promise((resolve, reject) => {
         if (tsidStage !== null) {
-            const urlStage = `${setBaseUrl}timeseries?name=${tsidStage}&begin=${currentDateTimeMinus30Hours.toISOString()}&end=${currentDateTime.toISOString()}&office=${office}`;
+            const urlStage = `${setBaseUrl}timeseries?name=${tsidStage}&begin=${currentDateTimeMinus30Hours.toISOString()}&end=${currentDateTimePlus14Days.toISOString()}&office=${office}`;
 
             // console.log("urlStage = ", urlStage);
             fetch(urlStage, {
@@ -2227,49 +1877,59 @@ function fetchAndUpdateCrestTd(stageTd, DeltaTd, tsidStage, flood_level, current
                     return response.json();
                 })
                 .then(stage => {
+                    console.log("Stage received:", stage);
+
                     stage.values.forEach(entry => {
                         entry[0] = formatNWSDate(entry[0]);
+                        console.log("Formatted entry timestamp:", entry[0]);
                     });
 
                     const lastNonNullValue = getLastNonNullValue(stage);
+                    // console.log("Last non-null value:", lastNonNullValue);
+
                     let valueLast = null;
                     let timestampLast = null;
 
                     if (lastNonNullValue !== null) {
                         timestampLast = lastNonNullValue.timestamp;
-                        valueLast = parseFloat(lastNonNullValue.value).toFixed(2);
+                        valueLast = lastNonNullValue.value;
+                        // console.log("Parsed valueLast:", valueLast, "timestampLast:", timestampLast);
                     }
-
-                    const c_count = calculateCCount(tsidStage);
-                    const lastNonNull24HoursValue = getLastNonNull24HoursValue(stage, c_count);
-                    let value24HoursLast = null;
-                    let timestamp24HoursLast = null;
-
-                    if (lastNonNull24HoursValue !== null) {
-                        timestamp24HoursLast = lastNonNull24HoursValue.timestamp;
-                        value24HoursLast = parseFloat(lastNonNull24HoursValue.value).toFixed(2);
-                    }
-
-                    const delta_24 = (valueLast !== null && value24HoursLast !== null)
-                        ? (valueLast - value24HoursLast).toFixed(2)
-                        : null;
+                    // console.log("valueLast: ", valueLast);
 
                     let innerHTMLStage;
                     if (valueLast === null) {
                         innerHTMLStage = "<span class='missing'></span>";
                     } else {
                         const floodClass = determineStageClass(valueLast, flood_level);
-                        innerHTMLStage = `<span class='${floodClass}' title='${stage.name}, Value = ${valueLast}, Date Time = ${timestampLast}'>
+                        innerHTMLStage = `<span class='${floodClass}'>
                                             <a href='../chart?office=${office}&cwms_ts_id=${stage.name}&lookback=4' target='_blank'>
-                                                ${valueLast}
+                                                ${valueLast.toFixed(2)}
                                             </a>
                                          </span>`;
                     }
+                    // console.log("Generated innerHTMLStage:", innerHTMLStage);
+
+                    if (isMobile && timestampLast !== null) {
+                        const noBreakTimestamp = timestampLast.slice(0, 5).replace('-', '/');
+                        DeltaTd.innerHTML = noBreakTimestamp;
+                        // console.log("Mobile timestamp displayed:", noBreakTimestamp);
+                    } else {
+                        DeltaTd.innerHTML = timestampLast !== null ? timestampLast : '';
+                        // console.log("Regular timestamp displayed:", timestampLast);
+                    }
 
                     stageTd.innerHTML = innerHTMLStage;
-                    DeltaTd.innerHTML = delta_24 !== null ? delta_24 : "";
+                    DeltaTd.innerHTML = isMobile && timestampLast !== null
+                        ? timestampLast.slice(0, 5).replace('-', '/')
+                        : timestampLast;
 
-                    resolve({ stageTd: valueLast, deltaTd: delta_24 });
+                    resolve({
+                        stageTd: valueLast,
+                        deltaTd: isMobile && timestampLast !== null
+                            ? timestampLast.slice(0, 5).replace('-', '/')
+                            : timestampLast
+                    });
                 })
                 .catch(error => {
                     console.error("Error fetching or processing data:", error);
@@ -2632,10 +2292,8 @@ function formatNWSDate(timestamp) {
 
 function extractValuesWithTimeNoon(values) {
     return values.filter(entry => {
-        const timestamp = new Date(entry[0]);
-        const hours = timestamp.getHours();
-        const minutes = timestamp.getMinutes();
-        return (hours === 7 || hours === 6) && minutes === 0; // Check if time is 13:00
+        const time = entry[0].split(' ')[1];
+        return time === '13:00' || time === '12:00' || time === '11:00';
     });
 }
 

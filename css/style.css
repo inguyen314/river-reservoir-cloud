@@ -105,12 +105,10 @@ hr {
 }
 .hard_coded {
 	color: purple; /* Base text color */
-	/* text-shadow: 0 0 2px orange; */
 }
 .hard_coded_php {
 	color: purple; /* Base text color */
-	/* text-shadow: 0 0 1.5px purple; */
-	font-size: 0.9em
+	font-size: 1.0em
 }
 /* CSS class for flashing red, larger text */
 .record_breaking {

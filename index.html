@@ -29,6 +29,11 @@
 
     var json = urlParams.get('json') || "true";
     console.log('json: ', json);
+
+    let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+        || window.innerWidth <= 768;
+
+    console.log("Is this site viewed on mobile?", isMobile);
 </script>
 <!DOCTYPE html>
 <html lang="en">
@@ -47,8 +52,6 @@
     <script src="js/main.js"></script>
     <script src="js/libraries/moment.min.js"></script>
     <script src="js/libraries/moment-timezone-with-data.js"></script>
-    <script src="js/libraries/chart.js"></script>
-    <script src="js/libraries/chartjs-adapter-moment.min.js"></script>
 </head>
 
 <body>
@@ -65,7 +68,7 @@
                     <div id="topPane" class="col-md backend-cp-collapsible">
                         <div class="box-usace">
                             <h2 class="box-header-striped">
-                                <span class="titleLabel title">Realtime River Reservoir</span>
+                                <span class="titleLabel title">River Reservoir</span>
                                 <span class="rss"></span>
                             </h2>
                             <div class="box-content" style="background-color:white;margin:auto">
@@ -109,14 +112,15 @@
         if (type === "morning") {
             title = `${office} Realtime Morning Report`;
         } else {
-            title = `${office} Realtime River Reservoir`;
+            // title = `${office} Realtime River Reservoir`;
+            title = `${office} Realtime River Reservoir`; 
         }
 
         if (title) {
             document.title = title;
             const titleSpan = document.querySelector('.titleLabel.title');
             if (titleSpan) {
-                titleSpan.textContent = title;
+                titleSpan.textContent = `River Reservoir`;
             }
         }
     });
