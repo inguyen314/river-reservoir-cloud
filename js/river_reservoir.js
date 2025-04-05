@@ -1028,7 +1028,7 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
 
                     // Highlight the cell and show a tooltip if the vertical datum is NGVD29
                     if (datum === "NGVD29") {
-                        gageZeroCell.style.color = 'brown';        // Change text color to purple
+                        gageZeroCell.style.color = 'black';        // Change text color to purple
                         gageZeroCell.title = 'Datum: NGVD29';       // Add a tooltip to indicate the datum
                     }
 

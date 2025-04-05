@@ -104,10 +104,11 @@ hr {
 	margin-bottom: 20px;
 }
 .hard_coded {
-	color: purple; /* Base text color */
+	/* color: purple; Base text color */
+	color: black; /* Base text color */
 }
 .hard_coded_php {
-	color: purple; /* Base text color */
+	/* color: purple; Base text color */
 	font-size: 1.0em
 }
 /* CSS class for flashing red, larger text */
