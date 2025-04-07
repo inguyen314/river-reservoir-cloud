@@ -639,6 +639,105 @@ function getLastNonNullValue(data, tsid) {
     return null;
 }
 
+function getLastNonNull6amValue(data, tsid, dstOffsetHours, c_count) {
+    // Iterate over the values array in reverse
+    for (let i = data.values.length - 1; i >= 0; i--) {
+        const [timestamp, value, qualityCode] = data.values[i];
+
+        const date = new Date(timestamp);
+        const hours = date.getUTCHours();
+        const minutes = date.getUTCMinutes();
+
+        // Check for 6:00 AM adjusted for DST offset
+        if (hours === (6 + dstOffsetHours) && minutes === 0 && value !== null) {
+            const result = {
+                current6am: {
+                    tsid: tsid,
+                    timestamp: timestamp,
+                    value: value,
+                    qualityCode: qualityCode
+                },
+                valueCountRowsBefore: null
+            };
+
+            // Try to get the value c_count rows before
+            if (i - c_count >= 0) {
+                const [tsPrev, valPrev, qualPrev] = data.values[i - c_count];
+                result.valueCountRowsBefore = {
+                    tsid: tsid,
+                    timestamp: tsPrev,
+                    value: valPrev,
+                    qualityCode: qualPrev
+                };
+            }
+
+            return result;
+        }
+    }
+
+    // If no non-null 6AM value is found
+    return {
+        current6am: null,
+        value48RowsBefore: null
+    };
+}
+
+function getLastNonNullMidnightValue(data, tsid, dstOffsetHours, c_count) {
+    // Iterate over the values array in reverse
+    for (let i = data.values.length - 1; i >= 0; i--) {
+        const [timestamp, value, qualityCode] = data.values[i];
+
+        const date = new Date(timestamp);
+        const hours = date.getUTCHours();
+        const minutes = date.getUTCMinutes();
+
+        // Check for 00:00 AM adjusted for DST offset
+        if (hours === (0 + dstOffsetHours) && minutes === 0 && value !== null) {
+            const result = {
+                current6am: {
+                    tsid: tsid,
+                    timestamp: timestamp,
+                    value: value,
+                    qualityCode: qualityCode
+                },
+                valueCountRowsBefore: null
+            };
+
+            // Try to get the value c_count rows before
+            if (i - c_count >= 0) {
+                const [tsPrev, valPrev, qualPrev] = data.values[i - c_count];
+                result.valueCountRowsBefore = {
+                    tsid: tsid,
+                    timestamp: tsPrev,
+                    value: valPrev,
+                    qualityCode: qualPrev
+                };
+            }
+
+            return result;
+        }
+    }
+
+    // If no non-null 6AM value is found
+    return {
+        current6am: null,
+        value48RowsBefore: null
+    };
+}
+
+function getDSTOffsetInHours() {
+    // Get the current date
+    const now = new Date();
+
+    // Get the current time zone offset in minutes (with DST, if applicable)
+    const currentOffset = now.getTimezoneOffset();
+
+    // Convert the offset from minutes to hours
+    const dstOffsetHours = currentOffset / 60;
+
+    return dstOffsetHours; // Returns the offset in hours (e.g., -5 or -6)
+}
+
 function getLastNonNullValueWithDelta24hrs(data, tsid) {
     let lastNonNull = null;
     let secondLastNonNull = null;
@@ -812,7 +911,7 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
         const headerRow = table.insertRow(0);
 
         // Define all columns
-        const allColumns = ["River Mile", "Gage Station", "Current Level", "24hr Delta",
+        const allColumns = ["River Mile", "Gage Station", "6am Level", "24hr Delta",
             "National Weather Service River Forecast", "Flood Level",
             "Gage Zero", "Record Stage", "Record Date"];
 
@@ -824,7 +923,7 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
             th.textContent = columnName;
 
             // Set row spans or column spans based on header requirements
-            if (["River Mile", "Gage Station", "Current Level", "24hr Delta",
+            if (["River Mile", "Gage Station", "6am Level", "24hr Delta",
                 "Flood Level", "Gage Zero", "Record Stage", "Record Date"].includes(columnName)) {
                 th.rowSpan = 3;
             }
@@ -1164,12 +1263,12 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
         const headerRow = table.insertRow(0);
 
         // Create table headers for the desired columns
-        const columns = ["Lake", "Current Level", "24hr Delta", "Storage Utilized", "Precip (in)", "Yesterdays Inflow (dsf)", "Controlled Outflow", "Seasonal Rule Curve", "Pool Forecast", "Record Stage", "Record Date"];
+        const columns = ["Lake", "Midnight Level", "24hr Delta", "Storage Utilized", "Precip (in)", "Yesterdays Inflow (dsf)", "Controlled Outflow", "Seasonal Rule Curve", "Pool Forecast", "Record Stage", "Record Date"];
 
         columns.forEach((columnName) => {
             const th = document.createElement('th');
             th.textContent = columnName;
-            if (["Lake", "Current Level", "24hr Delta", "Precip (in)", "Yesterdays Inflow (dsf)", "Seasonal Rule Curve", "Record Stage", "Record Date"].includes(columnName)) {
+            if (["Lake", "Midnight Level", "24hr Delta", "Precip (in)", "Yesterdays Inflow (dsf)", "Seasonal Rule Curve", "Record Stage", "Record Date"].includes(columnName)) {
                 th.rowSpan = 2;
             }
             if (["Storage Utilized", "Controlled Outflow", "Pool Forecast"].includes(columnName)) {
@@ -1237,7 +1336,7 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
                 row.appendChild(lakeTd);
             })();
 
-            // 02 - Current Level
+            // 02 - Midnight Level
             (() => {
                 const stageTd = document.createElement('td');
                 const deltaTd = document.createElement('td');
@@ -1246,7 +1345,7 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
                 const stageTsid = location?.['tsid-stage']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
 
                 if (stageTsid) {
-                    fetchAndUpdateStageTd(stageTd, deltaTd, stageTsid, floodValue, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl);
+                    fetchAndUpdateStageMidnightTd(stageTd, deltaTd, stageTsid, floodValue, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl);
                 }
 
                 row.appendChild(stageTd);
@@ -1562,9 +1661,11 @@ async function fetchInBatches(urls) {
 
     return results;
 }
+
 // ******************************************************
 // ******* Hard Coded Lake Outflow and Crest ************
 // ******************************************************
+
 async function fetchDataFromROutput(setJsonFileBaseUrl) {
     let url = null;
     url = setJsonFileBaseUrl + 'php_data_api/public/json/outputR.json';
@@ -1749,12 +1850,13 @@ function updateLakeCrestDateHTML(filteredData, crestDateCell) {
         crestDateCell.innerHTML = `<div class="hard_coded_php" style="white-space: nowrap;" title="crest_date_time">${locationData.crest_date_time.slice(0, 5)}</div>`;
     } else {
         crestDateCell.innerHTML = `<div class="hard_coded_php" style="white-space: nowrap;" title="crest_date_time"></div>`;
-    }    
+    }
 }
 
 /******************************************************************************
  *                               FETCH CDA FUNCTIONS                          *
  ******************************************************************************/
+
 function fetchAndUpdateStageTd(stageTd, DeltaTd, tsidStage, flood_level, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl) {
     return new Promise((resolve, reject) => {
         if (tsidStage !== null) {
@@ -1777,43 +1879,163 @@ function fetchAndUpdateStageTd(stageTd, DeltaTd, tsidStage, flood_level, current
                     stage.values.forEach(entry => {
                         entry[0] = formatNWSDate(entry[0]);
                     });
+                    // console.log("stage:", stage);
 
-                    const lastNonNullValue = getLastNonNullValue(stage);
+                    let dstOffsetHours = getDSTOffsetInHours();
+                    // console.log("dstOffsetHours:", dstOffsetHours);
+
+                    const c_count = calculateCCount(tsidStage);
+
+                    const lastNonNullValue = getLastNonNull6amValue(stage, stage.name, dstOffsetHours, c_count);
+                    // console.log("lastNonNullValue:", lastNonNullValue);
+
                     let valueLast = null;
                     let timestampLast = null;
 
                     if (lastNonNullValue !== null) {
-                        timestampLast = lastNonNullValue.timestamp;
-                        valueLast = parseFloat(lastNonNullValue.value).toFixed(2);
+                        timestampLast = lastNonNullValue.current6am.timestamp;
+                        valueLast = parseFloat(lastNonNullValue.current6am.value).toFixed(2);
                     }
+                    // console.log("valueLast:", valueLast);
+                    // console.log("timestampLast:", timestampLast);
 
-                    const c_count = calculateCCount(tsidStage);
-                    const lastNonNull24HoursValue = getLastNonNull24HoursValue(stage, c_count);
                     let value24HoursLast = null;
                     let timestamp24HoursLast = null;
 
-                    if (lastNonNull24HoursValue !== null) {
-                        timestamp24HoursLast = lastNonNull24HoursValue.timestamp;
-                        value24HoursLast = parseFloat(lastNonNull24HoursValue.value).toFixed(2);
+                    if (lastNonNullValue !== null) {
+                        timestamp24HoursLast = lastNonNullValue.valueCountRowsBefore.timestamp;
+                        value24HoursLast = parseFloat(lastNonNullValue.valueCountRowsBefore.value).toFixed(2);
                     }
 
-                    const delta_24 = (valueLast !== null && value24HoursLast !== null)
-                        ? (valueLast - value24HoursLast).toFixed(2)
-                        : null;
+                    // console.log("value24HoursLast:", value24HoursLast);
+                    // console.log("timestamp24HoursLast:", timestamp24HoursLast);
+
+                    let delta_24 = null;
+
+                    // Check if the values are numbers and not null/undefined
+                    if (valueLast !== null && value24HoursLast !== null && !isNaN(valueLast) && !isNaN(value24HoursLast)) {
+                        delta_24 = (valueLast - value24HoursLast).toFixed(2);
+                    } else {
+                        delta_24 = "";  // or set to "-1" or something else if you prefer
+                    }
+
+                    // console.log("delta_24:", delta_24);
+
+                    // Make sure delta_24 is a valid number before calling parseFloat
+                    if (delta_24 !== "" && delta_24 !== null && delta_24 !== undefined) {
+                        delta_24 = parseFloat(delta_24).toFixed(2);
+                    } else {
+                        delta_24 = "-";
+                    }
 
                     let innerHTMLStage;
                     if (valueLast === null) {
                         innerHTMLStage = "<span class='missing'>-M-</span>";
                     } else {
                         const floodClass = determineStageClass(valueLast, flood_level);
-                        // innerHTMLStage = `<span class='${floodClass}' title='${stage.name}, Value = ${valueLast}, Date Time = ${timestampLast}'>${valueLast}</span>`;
                         innerHTMLStage = `<span class='${floodClass}' title='${timestampLast}'>${valueLast}</span>`;
                     }
 
                     stageTd.innerHTML = innerHTMLStage;
-                    DeltaTd.innerHTML = delta_24 !== null ? delta_24 : "-";
+                    DeltaTd.innerHTML = delta_24;
 
                     resolve({ stageTd: valueLast, deltaTd: delta_24 });
+
+                })
+                .catch(error => {
+                    console.error("Error fetching or processing data:", error);
+                    reject(error);
+                });
+        } else {
+            resolve({ stageTd: null, deltaTd: null });
+        }
+    });
+}
+
+function fetchAndUpdateStageMidnightTd(stageTd, DeltaTd, tsidStage, flood_level, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl) {
+    return new Promise((resolve, reject) => {
+        if (tsidStage !== null) {
+            const urlStage = `${setBaseUrl}timeseries?name=${tsidStage}&begin=${currentDateTimeMinus30Hours.toISOString()}&end=${currentDateTime.toISOString()}&office=${office}`;
+
+            // console.log("urlStage = ", urlStage);
+            fetch(urlStage, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json;version=2'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(stage => {
+                    stage.values.forEach(entry => {
+                        entry[0] = formatNWSDate(entry[0]);
+                    });
+                    // console.log("stage:", stage);
+
+                    let dstOffsetHours = getDSTOffsetInHours();
+                    // console.log("dstOffsetHours:", dstOffsetHours);
+
+                    const c_count = calculateCCount(tsidStage);
+
+                    const lastNonNullValue = getLastNonNullMidnightValue(stage, stage.name, dstOffsetHours, c_count);
+                    // console.log("lastNonNullValue:", lastNonNullValue);
+
+                    let valueLast = null;
+                    let timestampLast = null;
+
+                    if (lastNonNullValue !== null) {
+                        timestampLast = lastNonNullValue.current6am.timestamp;
+                        valueLast = parseFloat(lastNonNullValue.current6am.value).toFixed(2);
+                    }
+                    // console.log("valueLast:", valueLast);
+                    // console.log("timestampLast:", timestampLast);
+
+                    let value24HoursLast = null;
+                    let timestamp24HoursLast = null;
+
+                    if (lastNonNullValue !== null) {
+                        timestamp24HoursLast = lastNonNullValue.valueCountRowsBefore.timestamp;
+                        value24HoursLast = parseFloat(lastNonNullValue.valueCountRowsBefore.value).toFixed(2);
+                    }
+
+                    // console.log("value24HoursLast:", value24HoursLast);
+                    // console.log("timestamp24HoursLast:", timestamp24HoursLast);
+
+                    let delta_24 = null;
+
+                    // Check if the values are numbers and not null/undefined
+                    if (valueLast !== null && value24HoursLast !== null && !isNaN(valueLast) && !isNaN(value24HoursLast)) {
+                        delta_24 = (valueLast - value24HoursLast).toFixed(2);
+                    } else {
+                        delta_24 = "";  // or set to "-1" or something else if you prefer
+                    }
+
+                    // console.log("delta_24:", delta_24);
+
+                    // Make sure delta_24 is a valid number before calling parseFloat
+                    if (delta_24 !== "" && delta_24 !== null && delta_24 !== undefined) {
+                        delta_24 = parseFloat(delta_24).toFixed(2);
+                    } else {
+                        delta_24 = "-";
+                    }
+
+                    let innerHTMLStage;
+                    if (valueLast === null) {
+                        innerHTMLStage = "<span class='missing'>-M-</span>";
+                    } else {
+                        const floodClass = determineStageClass(valueLast, flood_level);
+                        innerHTMLStage = `<span class='${floodClass}' title='${timestampLast}'>${valueLast}</span>`;
+                    }
+
+                    stageTd.innerHTML = innerHTMLStage;
+                    DeltaTd.innerHTML = delta_24;
+
+                    resolve({ stageTd: valueLast, deltaTd: delta_24 });
+
                 })
                 .catch(error => {
                     console.error("Error fetching or processing data:", error);
@@ -2211,28 +2433,23 @@ function fetchAndUpdateStorageTd(stageTd, DeltaTd, tsidStorage, flood_level, cur
                         entry[0] = formatNWSDate(entry[0]);
                     });
 
-                    const lastNonNullValue = getLastNonNullValue(stage);
+                    let dstOffsetHours = getDSTOffsetInHours();
+                    // console.log("dstOffsetHours:", dstOffsetHours);
+
+                    const c_count = calculateCCount(tsidStorage);
+
+                    const lastNonNullValue = getLastNonNullMidnightValue(stage, stage.name, dstOffsetHours, c_count);
+                    // console.log("lastNonNullValue:", lastNonNullValue);
+
                     let valueLast = null;
                     let timestampLast = null;
 
                     if (lastNonNullValue !== null) {
-                        timestampLast = lastNonNullValue.timestamp;
-                        valueLast = parseFloat(lastNonNullValue.value).toFixed(2);
+                        timestampLast = lastNonNullValue.current6am.timestamp;
+                        valueLast = parseFloat(lastNonNullValue.current6am.value).toFixed(2);
                     }
-
-                    const c_count = calculateCCount(tsidStorage);
-                    const lastNonNull24HoursValue = getLastNonNull24HoursValue(stage, c_count);
-                    let value24HoursLast = null;
-                    let timestamp24HoursLast = null;
-
-                    if (lastNonNull24HoursValue !== null) {
-                        timestamp24HoursLast = lastNonNull24HoursValue.timestamp;
-                        value24HoursLast = parseFloat(lastNonNull24HoursValue.value).toFixed(2);
-                    }
-
-                    const delta_24 = (valueLast !== null && value24HoursLast !== null)
-                        ? (valueLast - value24HoursLast).toFixed(2)
-                        : null;
+                    // console.log("valueLast:", valueLast);
+                    // console.log("timestampLast:", timestampLast);
 
                     if (valueLast > 0.0 && topOfConservationLevel > 0.0 && bottomOfConservationLevel >= 0.0) {
                         if (valueLast < bottomOfConservationLevel) {
@@ -2366,9 +2583,11 @@ function updateNwsCrestForecastTimeHTML(filteredData, crestCell, crestDateCell) 
         crestDateCell.innerHTML = ''; // If no date_time exists, clear the cell
     }
 }
+
 /******************************************************************************
  *                            SUPPORT CDA FUNCTIONS                           *
  ******************************************************************************/
+
 function filterByLocationCategory(array, category) {
     return array.filter(item =>
         item['location-category'] &&
@@ -2534,9 +2753,11 @@ function formatTimestampToStringIOS(timestamp) {
     // Format as "YYYY-MM-DD HH:mm"
     return dateObj.toISOString().replace("T", " ").slice(0, 16);
 }
+
 /******************************************************************************
  *                           GET DATA FUNCTIONS                               *
  ******************************************************************************/
+
 function getLastNonNullValue(data) {
     // Iterate over the values array in reverse
     for (let i = data.values.length - 1; i >= 0; i--) {
@@ -2608,6 +2829,7 @@ function getFirstNonNullValue(data) {
 /******************************************************************************
  *                            CLASSES CDA FUNCTIONS                           *
  ******************************************************************************/
+
 function determineStageClass(stage_value, flood_value) {
     // console.log("determineStageClass = ", stage_value + typeof (stage_value) + " " + flood_value + typeof (flood_value));
     var myStageClass;
