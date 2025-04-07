@@ -66,9 +66,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                 let tableRiver = null;
                 let tableReservoir = null;
                 if (type === "morning") {
-                    tableRiver = createTableRiver(combinedDataRiver, type, day1, day2, day3, setBaseUrl, setJsonFileBaseUrl);
+                    tableRiver = createTableRiver(combinedDataRiver, type, day1, day2, day3, lakeLocs, setBaseUrl, setJsonFileBaseUrl);
                 } else {
-                    tableRiver = createTableRiver(combinedDataRiver, type, day1, day2, day3, setBaseUrl, setJsonFileBaseUrl);
+                    tableRiver = createTableRiver(combinedDataRiver, type, day1, day2, day3, lakeLocs, setBaseUrl, setJsonFileBaseUrl);
                     tableReservoir = createTableReservoir(combinedDataReservoir, type, day1, day2, day3, lakeLocs, setBaseUrl, setJsonFileBaseUrl);
                 }
                 document.getElementById(`table_container_${setReportDiv}`).append(tableRiver, tableReservoir);
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const floodMap = new Map();
         const stageTsidMap = new Map();
         const riverMileMap = new Map();
-        const riverMileHardCodedMap = new Map();
+        // const riverMileHardCodedMap = new Map();
         const forecastNwsTsidMap = new Map();
         const crestNwsTsidMap = new Map();
         const precipLakeTsidMap = new Map();
@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const floodPromises = [];
         const stageTsidPromises = [];
         const riverMilePromises = [];
-        const riverMileHardCodedPromises = [];
+        // const riverMileHardCodedPromises = [];
         const forecastNwsTsidPromises = [];
         const crestTsidPromises = [];
         const precipLakeTsidPromises = [];
@@ -163,6 +163,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                     console.warn('No basins found for the given category.');
                     return;
                 }
+                console.log('Filtered basins:', basins);
+
+                // Limit to first 3 basins for testing
+                // basins = basins.slice(0, 3);
+                // console.log('Filtered testing basins:', basins);
 
                 // Loop through each basin and get all the assigned locations
                 basins.forEach(basin => {
@@ -270,31 +275,31 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 .catch(error => console.error(`Error fetching river mile for ${loc['location-id']}:`, error))
                             );
 
-                            riverMileHardCodedPromises.push(
-                                fetch('json/gage_control_official.json')
-                                    .then(response => {
-                                        if (!response.ok) {
-                                            throw new Error(`Network response was not ok: ${response.statusText}`);
-                                        }
-                                        return response.json();
-                                    })
-                                    .then(riverMilesJson => {
-                                        for (const basin in riverMilesJson) {
-                                            const locations = riverMilesJson[basin];
-                                            for (const locId in locations) {
-                                                const ownerData = locations[locId];
-                                                const riverMile = ownerData.river_mile_hard_coded;
-                                                const outputData = {
-                                                    locationId: locId,
-                                                    basin: basin,
-                                                    riverMile: riverMile
-                                                };
-                                                riverMileHardCodedMap.set(locId, ownerData);
-                                            }
-                                        }
-                                    })
-                                    .catch(error => console.error('Problem with the fetch operation:', error))
-                            );
+                            // riverMileHardCodedPromises.push(
+                            //     fetch('json/gage_control_official.json')
+                            //         .then(response => {
+                            //             if (!response.ok) {
+                            //                 throw new Error(`Network response was not ok: ${response.statusText}`);
+                            //             }
+                            //             return response.json();
+                            //         })
+                            //         .then(riverMilesJson => {
+                            //             for (const basin in riverMilesJson) {
+                            //                 const locations = riverMilesJson[basin];
+                            //                 for (const locId in locations) {
+                            //                     const ownerData = locations[locId];
+                            //                     const riverMile = ownerData.river_mile_hard_coded;
+                            //                     const outputData = {
+                            //                         locationId: locId,
+                            //                         basin: basin,
+                            //                         riverMile: riverMile
+                            //                     };
+                            //                     riverMileHardCodedMap.set(locId, ownerData);
+                            //                 }
+                            //             }
+                            //         })
+                            //         .catch(error => console.error('Problem with the fetch operation:', error))
+                            // );
 
                             const levelIdLwrp = `${loc['location-id']}.Stage.Inst.0.LWRP`;
                             const lwrpApiUrl = `${setBaseUrl}levels/${levelIdLwrp}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ft`;
@@ -441,7 +446,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         ...bottomOfFloodPromises,
                         ...bottomOfConservationPromises,
                         ...riverMilePromises,
-                        ...riverMileHardCodedPromises,
+                        // ...riverMileHardCodedPromises,
                         ...stageTsidPromises,
                         ...forecastNwsTsidPromises,
                         ...crestTsidPromises,
@@ -462,7 +467,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     loc['bottom-of-flood'] = bottomOfFloodMap.get(loc['location-id']);
                                     loc['bottom-of-conservation'] = bottomOfConservationMap.get(loc['location-id']);
                                     loc['river-mile'] = riverMileMap.get(loc['location-id']);
-                                    loc['river-mile-hard-coded'] = riverMileHardCodedMap.get(loc['location-id']);
+                                    // loc['river-mile-hard-coded'] = riverMileHardCodedMap.get(loc['location-id']);
                                     loc['tsid-stage'] = stageTsidMap.get(loc['location-id']);
                                     loc['tsid-nws-forecast'] = forecastNwsTsidMap.get(loc['location-id']);
                                     loc['tsid-nws-crest'] = crestNwsTsidMap.get(loc['location-id']);
@@ -519,8 +524,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                         console.log('combinedDataRiver:', combinedDataRiver);
                         console.log('combinedDataReservoir:', combinedDataReservoir);
 
-                        const tableRiver = createTableRiver(combinedDataRiver, type, day1, day2, day3, setBaseUrl);
-                        const tableReservoir = createTableReservoir(combinedDataReservoir, type, day1, day2, day3, lakeLocs, setBaseUrl);
+                        const tableRiver = createTableRiver(combinedDataRiver, type, day1, day2, day3, lakeLocs, setBaseUrl, setJsonFileBaseUrl);
+                        const tableReservoir = createTableReservoir(combinedDataReservoir, type, day1, day2, day3, lakeLocs, setBaseUrl, setJsonFileBaseUrl);
 
                         document.getElementById(`table_container_${setReportDiv}`).append(tableRiver, tableReservoir);
 
@@ -755,7 +760,7 @@ function getNoonDataForDay3(data, tsid) {
     return noonData;
 }
 
-function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2_date_title, nws_day3_date_title, setBaseUrl, setJsonFileBaseUrl) {
+function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2_date_title, nws_day3_date_title, lakeLocs, setBaseUrl, setJsonFileBaseUrl) {
     // Create a table element and set an ID for styling or selection purposes
     const table = document.createElement('table');
     table.setAttribute('id', 'webrep');
@@ -786,6 +791,20 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
     // console.log('currentDateTimePlus4Days :', typeof(currentDateTimePlus4Days));
 
     const currentDateTimePlus14Days = addDaysToDate(currentDateTime, 14);
+
+    // Filter out locations not in lakeLocs, and remove basins without assigned-locations
+    combinedDataRiver = combinedDataRiver.filter((basin) => {
+        // Filter 'assigned-locations' within each basin
+        basin['assigned-locations'] = basin['assigned-locations'].filter((location) => {
+            const currentLocationId = location['location-id'];
+
+            // Remove location if it is in lakeLocs
+            return !lakeLocs.includes(currentLocationId);
+        });
+
+        // Remove the basin if it has no assigned locations left
+        return basin['assigned-locations'].length > 0;
+    });
 
     // Add 3-rows title
     (() => {
@@ -1431,7 +1450,7 @@ function fetchAdditionalLocationGroupOwnerData(locationId, setBaseUrl, setLocati
 async function fetchDataFromNwsForecastsOutput(setJsonFileBaseUrl) {
     let url = null;
     url = setJsonFileBaseUrl + 'php_data_api/public/json/exportNwsForecasts2Json.json';
-    // console.log("url: ", url);
+    console.log("url: ", url);
 
     try {
         const response = await fetch(url);
@@ -1721,16 +1740,16 @@ function updateLakeCrestHTML(filteredData, crestCell) {
         crestCell.style.whiteSpace = 'nowrap'; // Prevent line break
     } else {
         crestCell.innerHTML = `<div class="hard_coded_php" title="crest"></div>`;
-    }       
+    }
 }
 
 function updateLakeCrestDateHTML(filteredData, crestDateCell) {
     const locationData = filteredData[Object.keys(filteredData)[0]]; // Get the first (and only) key's data
-    if (locationData.crest) {
+    if (locationData.crest && locationData.crest_date_time) {
         crestDateCell.innerHTML = `<div class="hard_coded_php" style="white-space: nowrap;" title="crest_date_time">${locationData.crest_date_time.slice(0, 5)}</div>`;
     } else {
         crestDateCell.innerHTML = `<div class="hard_coded_php" style="white-space: nowrap;" title="crest_date_time"></div>`;
-    }
+    }    
 }
 
 /******************************************************************************
@@ -2260,10 +2279,10 @@ function fetchAndUpdateStorageTd(stageTd, DeltaTd, tsidStorage, flood_level, cur
 async function fetchAndLogNwsCrestData(tsid, crestCell, crestDateCell) {
     try {
         const NwsCrestOutput = await fetchDataFromNwsCrestForecastsOutput();
-        console.log('NwsCrestOutput:', NwsCrestOutput);
+        // console.log('NwsCrestOutput:', NwsCrestOutput);
 
         const filteredData = filterDataByTsidCrest(NwsCrestOutput, tsid);
-        console.log("Filtered NwsCrestOutput Data for", tsid + ":", filteredData);
+        // console.log("Filtered NwsCrestOutput Data for", tsid + ":", filteredData);
 
         // Update the HTML element with filtered data
         updateNwsCrestForecastTimeHTML(filteredData, crestCell, crestDateCell);
@@ -2309,7 +2328,7 @@ async function fetchDataFromNwsCrestForecastsOutput() {
 
 function updateNwsCrestForecastTimeHTML(filteredData, crestCell, crestDateCell) {
     // Find the first non-null item in the filteredData
-    const locationData = filteredData.find(item => item !== null); 
+    const locationData = filteredData.find(item => item !== null);
     if (!locationData) {
         crestCell.innerHTML = ''; // Handle case where no valid data is found
         crestDateCell.innerHTML = ''; // Handle case where no valid data is found
@@ -2334,7 +2353,7 @@ function updateNwsCrestForecastTimeHTML(filteredData, crestCell, crestDateCell) 
             NOV: '11',
             DEC: '12'
         };
-        
+
         const [day, monthAbbr] = date_time.split('-');
         const month = monthMap[monthAbbr.toUpperCase()];
         const shortDate = `${month}-${day}`;
