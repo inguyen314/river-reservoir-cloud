@@ -880,7 +880,7 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                 (() => {
                     // const riverMileValue = location['river-mile-hard-coded'] && location['river-mile-hard-coded']['river_mile_hard_coded'];
                     // riverMileCell.textContent = riverMileValue != null ? parseFloat(riverMileValue).toFixed(1) : "N/A";
-                    // riverMileCell.title = "Hard Coded with Json File";
+                    // riverMileCell.title = "Json";
                     // riverMileCell.style.textShadow = '0 0 2px rgba(255, 165, 0, 0.7), 0 0 2px rgba(255, 140, 0, 0.5)';
                 })();
 
@@ -982,9 +982,13 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                     const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
                     const crestTsid = location?.['tsid-nws-crest']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
 
-                    if (crestTsid) {
-                        fetchAndUpdateCrestTd(crestTd, crestDateTd, crestTsid, floodValue, currentDateTimeMinus2Hours, currentDateTimePlus14Days, currentDateTimeMinus30Hours, setBaseUrl);
-                    }
+                    // Use PHP
+                    fetchAndLogNwsCrestData(crestTsid, crestTd, crestDateTd);
+
+                    // Use CDA
+                    // if (crestTsid) {
+                    //     fetchAndUpdateCrestTd(crestTd, crestDateTd, crestTsid, floodValue, currentDateTimeMinus2Hours, currentDateTimePlus14Days, currentDateTimeMinus30Hours, setBaseUrl);
+                    // }
 
                     row.appendChild(crestTd);
                     row.appendChild(crestDateTd);
@@ -1067,7 +1071,7 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                     recordDateCell.innerHTML = formattedRecordDateValue;
 
                     // Set the title for the cell
-                    recordDateCell.title = "Hard Coded with Json File";
+                    recordDateCell.title = "Json";
 
                     // Set halo effect using text-shadow with orange color
                     recordDateCell.className = 'hard_coded';
@@ -1358,7 +1362,7 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
 
                 recordDateTd.innerHTML = formattedRecordDateValue;
                 // Set the title for the cell
-                recordDateTd.title = "Hard Coded with Json File";
+                recordDateTd.title = "Json";
                 // Set halo effect using text-shadow with orange color
                 // recordDateTd.style.textShadow = '0 0 2px rgba(255, 165, 0, 0.7), 0 0 2px rgba(255, 140, 0, 0.5)';
                 recordDateTd.className = 'hard_coded';
@@ -1695,35 +1699,37 @@ async function fetchAndLogPoolForecastDateDataTd(location_id, crestDateCell, set
 
 function updateFlowMidnightHTML(filteredData, midnightCell) {
     const locationData = filteredData[Object.keys(filteredData)[0]]; // Get the first (and only) key's data
-    midnightCell.innerHTML = `<div class="hard_coded_php" title="Uses PHP Json Output, No Cloud Option to Access Custom Schema Yet">${locationData.outflow_midnight}</div>`;
+    midnightCell.innerHTML = `<div class="hard_coded_php" title="outflow_midnight">${locationData.outflow_midnight}</div>`;
 }
 
 function updateFlowEveningHTML(filteredData, eveningCell) {
     const locationData = filteredData[Object.keys(filteredData)[0]]; // Get the first (and only) key's data
-    eveningCell.innerHTML = `<div class="hard_coded_php" title="Uses PHP Json Output, No Cloud Option to Access Custom Schema Yet">${locationData.outflow_evening}</div>`;
+    eveningCell.innerHTML = `<div class="hard_coded_php" title="outflow_evening">${locationData.outflow_evening}</div>`;
 }
 
 function updateRuleCurveHTML(filteredData, seasonalRuleCurveCell) {
     const locationData = filteredData[Object.keys(filteredData)[0]]; // Get the first (and only) key's data
-    seasonalRuleCurveCell.innerHTML = `<div class="hard_coded_php" title="Uses PHP Json Output, No Cloud Option to Access Custom Schema Yet">${(parseFloat(locationData.rule_curve)).toFixed(2)}</div>`;
+    seasonalRuleCurveCell.innerHTML = `<div class="hard_coded_php" title="rule_curve">${(parseFloat(locationData.rule_curve)).toFixed(2)}</div>`;
 }
 
 function updateLakeCrestHTML(filteredData, crestCell) {
     const locationData = filteredData[Object.keys(filteredData)[0]]; // Get the first (and only) key's data
-    if (locationData.crest) {
-        crestCell.innerHTML = `<div class="hard_coded_php" title="Uses PHP Json Output, No Cloud Option to Access Custom Schema Yet">${locationData.option} ${locationData.crest}</div>`;
+    if (locationData.crest || locationData.option === "CG") {
+        const isCresting = locationData.option === "CG";
+        const crestText = isCresting ? "Cresting" : `${locationData.option} ${locationData.crest}`;
+        crestCell.innerHTML = `<div class="hard_coded_php" title="crest">${crestText}</div>`;
         crestCell.style.whiteSpace = 'nowrap'; // Prevent line break
     } else {
-        crestCell.innerHTML = `<div class="hard_coded_php" title="Uses PHP Json Output, No Cloud Option to Access Custom Schema Yet"></div>`;
-    }
+        crestCell.innerHTML = `<div class="hard_coded_php" title="crest"></div>`;
+    }       
 }
 
 function updateLakeCrestDateHTML(filteredData, crestDateCell) {
     const locationData = filteredData[Object.keys(filteredData)[0]]; // Get the first (and only) key's data
     if (locationData.crest) {
-        crestDateCell.innerHTML = `<div class="hard_coded_php" style="white-space: nowrap;" title="Uses PHP Json Output, No Cloud Option to Access Custom Schema Yet">${locationData.crest_date_time.slice(0, 5)}</div>`;
+        crestDateCell.innerHTML = `<div class="hard_coded_php" style="white-space: nowrap;" title="crest_date_time">${locationData.crest_date_time.slice(0, 5)}</div>`;
     } else {
-        crestDateCell.innerHTML = `<div class="hard_coded_php" style="white-space: nowrap;" title="Uses PHP Json Output, No Cloud Option to Access Custom Schema Yet"></div>`;
+        crestDateCell.innerHTML = `<div class="hard_coded_php" style="white-space: nowrap;" title="crest_date_time"></div>`;
     }
 }
 
@@ -1781,7 +1787,8 @@ function fetchAndUpdateStageTd(stageTd, DeltaTd, tsidStage, flood_level, current
                         innerHTMLStage = "<span class='missing'>-M-</span>";
                     } else {
                         const floodClass = determineStageClass(valueLast, flood_level);
-                        innerHTMLStage = `<span class='${floodClass}' title='${stage.name}, Value = ${valueLast}, Date Time = ${timestampLast}'>${valueLast}</span>`;
+                        // innerHTMLStage = `<span class='${floodClass}' title='${stage.name}, Value = ${valueLast}, Date Time = ${timestampLast}'>${valueLast}</span>`;
+                        innerHTMLStage = `<span class='${floodClass}' title='${timestampLast}'>${valueLast}</span>`;
                     }
 
                     stageTd.innerHTML = innerHTMLStage;
@@ -2061,10 +2068,11 @@ function fetchAndUpdatePrecipTd(precipCell, tsid, currentDateTimeMinus2Hours, cu
                         + "</table>";
                 } else {
                     innerHTMLPrecip = "</table>"
-                        + "<span class='last_max_value' title='" + precip.name + ", Value = " + valuePrecipLast + ", Date Time = " + timestampPrecipLast + "'>"
-                        + "<a href='../chart?office=" + office + "&cwms_ts_id=" + precip.name + "&lookback=4' target='_blank'>"
+                        // + "<span class='last_max_value' title='" + precip.name + ", Value = " + valuePrecipLast + ", Date Time = " + timestampPrecipLast + "'>"
+                        + "<span class='last_max_value'>"
+                        // + "<a href='../chart?office=" + office + "&cwms_ts_id=" + precip.name + "&lookback=4' target='_blank'>"
                         + valuePrecipLast
-                        + "</a>"
+                        // + "</a>"
                         + "</span>";
                 }
                 return precipCell.innerHTML += innerHTMLPrecip;
@@ -2143,10 +2151,11 @@ function fetchAndUpdateYesterdayInflowTd(precipCell, tsid, currentDateTimeMinus2
                         + "</table>";
                 } else {
                     innerHTMLPrecip = "</table>"
-                        + "<span class='last_max_value' title='" + precip.name + ", Value = " + valuePrecipLast + ", Date Time = " + timestampPrecipLast + "'>"
-                        + "<a href='../chart?office=" + office + "&cwms_ts_id=" + precip.name + "&lookback=4' target='_blank'>"
+                        // + "<span class='last_max_value' title='" + precip.name + ", Value = " + valuePrecipLast + ", Date Time = " + timestampPrecipLast + "'>"
+                        + "<span class='last_max_value'>"
+                        // + "<a href='../chart?office=" + office + "&cwms_ts_id=" + precip.name + "&lookback=4' target='_blank'>"
                         + valuePrecipLast
-                        + "</a>"
+                        // + "</a>"
                         + "</span>";
                 }
                 return precipCell.innerHTML += innerHTMLPrecip;
@@ -2245,6 +2254,98 @@ function fetchAndUpdateStorageTd(stageTd, DeltaTd, tsidStorage, flood_level, cur
             resolve({ stageTd: null, deltaTd: null });
         }
     });
+}
+
+/****************************************************************************** NWS CREST OUTPUT FUNCTIONS ******/
+async function fetchAndLogNwsCrestData(tsid, crestCell, crestDateCell) {
+    try {
+        const NwsCrestOutput = await fetchDataFromNwsCrestForecastsOutput();
+        console.log('NwsCrestOutput:', NwsCrestOutput);
+
+        const filteredData = filterDataByTsidCrest(NwsCrestOutput, tsid);
+        console.log("Filtered NwsCrestOutput Data for", tsid + ":", filteredData);
+
+        // Update the HTML element with filtered data
+        updateNwsCrestForecastTimeHTML(filteredData, crestCell, crestDateCell);
+
+        // Further processing of ROutput data as needed
+    } catch (error) {
+        // Handle errors from fetchDataFromROutput
+        console.error('Failed to fetch data:', error);
+    }
+}
+
+function filterDataByTsidCrest(NwsCrestOutput, cwms_ts_id) {
+    const filteredData = NwsCrestOutput.filter(item => {
+        return item !== null && item.cwms_ts_id === cwms_ts_id;
+    });
+
+    return filteredData;
+}
+
+async function fetchDataFromNwsCrestForecastsOutput() {
+    let urlNwsForecast = null;
+    if (cda === "public") {
+        urlNwsForecast = '../../../php_data_api/public/json/exportNwsCrestForecasts2Json.json';
+    } else if (cda === "internal") {
+        urlNwsForecast = '../../../php_data_api/public/json/exportNwsCrestForecasts2Json.json';
+    } else {
+
+    }
+    // console.log("urlNwsForecast: ", urlNwsForecast);
+
+    try {
+        const response = await fetch(urlNwsForecast);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        throw error; // Propagate the error further if needed
+    }
+}
+
+function updateNwsCrestForecastTimeHTML(filteredData, crestCell, crestDateCell) {
+    // Find the first non-null item in the filteredData
+    const locationData = filteredData.find(item => item !== null); 
+    if (!locationData) {
+        crestCell.innerHTML = ''; // Handle case where no valid data is found
+        crestDateCell.innerHTML = ''; // Handle case where no valid data is found
+        return;
+    }
+
+    // Extract value and date_time from the first valid data object
+    const { value, date_time } = locationData;
+
+    if (value && date_time) {
+        const monthMap = {
+            JAN: '01',
+            FEB: '02',
+            MAR: '03',
+            APR: '04',
+            MAY: '05',
+            JUN: '06',
+            JUL: '07',
+            AUG: '08',
+            SEP: '09',
+            OCT: '10',
+            NOV: '11',
+            DEC: '12'
+        };
+        
+        const [day, monthAbbr] = date_time.split('-');
+        const month = monthMap[monthAbbr.toUpperCase()];
+        const shortDate = `${month}-${day}`;
+
+        // Display value in crestCell with one decimal place (in red color), and shortDate in crestDateCell
+        crestCell.innerHTML = `<div style="font-size: 1em; color: red;">${parseFloat(value).toFixed(1)}</div>`; // Value in red and 1 decimal place
+        crestDateCell.innerHTML = `<div style="font-size: 1em;">${shortDate}</div>`; // Display date (e.g., "08-APR") with font size 1.5em
+    } else {
+        crestCell.innerHTML = ''; // If no value exists, clear the cell
+        crestDateCell.innerHTML = ''; // If no date_time exists, clear the cell
+    }
 }
 /******************************************************************************
  *                            SUPPORT CDA FUNCTIONS                           *
