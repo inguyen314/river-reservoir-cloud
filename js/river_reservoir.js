@@ -1881,32 +1881,27 @@ function fetchAndUpdateCrestTd(stageTd, DeltaTd, tsidStage, flood_level, current
 
                     stage.values.forEach(entry => {
                         entry[0] = formatNWSDate(entry[0]);
-                        console.log("Formatted entry timestamp:", entry[0]);
+                        // console.log("Formatted entry timestamp:", entry[0]);
                     });
 
                     const lastNonNullValue = getLastNonNullValue(stage);
-                    // console.log("Last non-null value:", lastNonNullValue);
+                    // console.log("lastNonNullValue:", lastNonNullValue);
 
                     let valueLast = null;
                     let timestampLast = null;
-
                     if (lastNonNullValue !== null) {
                         timestampLast = lastNonNullValue.timestamp;
                         valueLast = lastNonNullValue.value;
-                        // console.log("Parsed valueLast:", valueLast, "timestampLast:", timestampLast);
                     }
                     // console.log("valueLast: ", valueLast);
+                    // console.log("timestampLast: ", timestampLast);
 
                     let innerHTMLStage;
                     if (valueLast === null) {
                         innerHTMLStage = "<span class='missing'></span>";
                     } else {
                         const floodClass = determineStageClass(valueLast, flood_level);
-                        innerHTMLStage = `<span class='${floodClass}'>
-                                            <a href='../chart?office=${office}&cwms_ts_id=${stage.name}&lookback=4' target='_blank'>
-                                                ${valueLast.toFixed(2)}
-                                            </a>
-                                         </span>`;
+                        innerHTMLStage = `<span class='${floodClass}'>${valueLast.toFixed(2)}</span>`;
                     }
                     // console.log("Generated innerHTMLStage:", innerHTMLStage);
 
