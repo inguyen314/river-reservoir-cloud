@@ -44,6 +44,15 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "LD 20 Pool-Mississippi.Height.Inst.0.NGVD29",
+                    "constant-value": 999.99,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "LD 20 Pool-Mississippi.Stage.Inst.0.Flood",
@@ -73,10 +82,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 343.2,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": null
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": null,
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -88,8 +96,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "LD 20 Pool-Mississippi.Stage.Inst.~2Hours.0.lpmsShef-raw",
-                            "ts-code": 1665018
+                            "timeseries-id": "LD 20 Pool-Mississippi.Stage.Inst.~2Hours.0.lpmsShef-raw"
                         }
                     ]
                 },
@@ -138,6 +145,15 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "LD 20 TW-Mississippi.Height.Inst.0.NGVD29",
+                    "constant-value": 999.99,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "LD 20 TW-Mississippi.Stage.Inst.0.Flood",
@@ -167,10 +183,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 343.2,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": null
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": null,
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -182,8 +197,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "LD 20 TW-Mississippi.Stage.Inst.~2Hours.0.lpmsShef-raw",
-                            "ts-code": 1666018
+                            "timeseries-id": "LD 20 TW-Mississippi.Stage.Inst.~2Hours.0.lpmsShef-raw"
                         }
                     ]
                 },
@@ -232,6 +246,15 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "LD 21 Pool-Mississippi.Height.Inst.0.NGVD29",
+                    "constant-value": 999.9899999999998,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "LD 21 Pool-Mississippi.Stage.Inst.0.Flood",
@@ -261,10 +284,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 324.9,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": null
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": null,
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -276,8 +298,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "LD 21 Pool-Mississippi.Stage.Inst.~2Hours.0.lpmsShef-raw",
-                            "ts-code": 1673018
+                            "timeseries-id": "LD 21 Pool-Mississippi.Stage.Inst.~2Hours.0.lpmsShef-raw"
                         }
                     ]
                 },
@@ -326,6 +347,15 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "LD 21 TW-Mississippi.Height.Inst.0.NGVD29",
+                    "constant-value": 999.9899999999998,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "LD 21 TW-Mississippi.Stage.Inst.0.Flood",
@@ -355,10 +385,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 324.9,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": null
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": null,
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -370,8 +399,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "LD 21 TW-Mississippi.Stage.Inst.~2Hours.0.lpmsShef-raw",
-                            "ts-code": 1674018
+                            "timeseries-id": "LD 21 TW-Mississippi.Stage.Inst.~2Hours.0.lpmsShef-raw"
                         }
                     ]
                 },
@@ -402,7 +430,7 @@
                     "location-kind": "STREAM_LOCATION",
                     "nation": "US",
                     "state-initial": "MO",
-                    "county-name": "Unknown County or County N/A",
+                    "county-name": "Unknown County or County N/A for Missouri",
                     "nearest-city": "Hannibal",
                     "horizontal-datum": "WGS84",
                     "vertical-datum": "NGVD29",
@@ -423,6 +451,15 @@
                     "office-id": "MVS",
                     "location-level-id": "Hannibal-Mississippi.Stage.Inst.0.LWRP",
                     "constant-value": 908.9999999999999,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Hannibal-Mississippi.Height.Inst.0.NGVD29",
+                    "constant-value": 449.42999999999995,
                     "level-units-id": "ft",
                     "level-date": "2024-01-01T08:00:00Z",
                     "attribute-units-id": "ft",
@@ -457,10 +494,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 309,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "07-16-1993"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "07-16-1993",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -472,8 +508,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Hannibal-Mississippi.Stage.Inst.15Minutes.0.lrgsShef-rev",
-                            "ts-code": 4351018
+                            "timeseries-id": "Hannibal-Mississippi.Stage.Inst.15Minutes.0.lrgsShef-rev"
                         }
                     ]
                 },
@@ -487,8 +522,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Hannibal-Mississippi.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 1760018
+                            "timeseries-id": "Hannibal-Mississippi.Stage.Inst.6Hours.0.RVFShef-FF"
                         }
                     ]
                 },
@@ -503,7 +537,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Hannibal-Mississippi.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 4358018,
                             "attribute": 1
                         }
                     ]
@@ -544,6 +577,15 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "LD 22 Pool-Mississippi.Height.Inst.0.NGVD29",
+                    "constant-value": 446.09999999999997,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "LD 22 Pool-Mississippi.Stage.Inst.0.Flood",
@@ -573,10 +615,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 301.2,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": null
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": null,
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -588,8 +629,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "LD 22 Pool-Mississippi.Stage.Inst.~2Hours.0.lpmsShef-raw",
-                            "ts-code": 1681018
+                            "timeseries-id": "LD 22 Pool-Mississippi.Stage.Inst.~2Hours.0.lpmsShef-raw"
                         }
                     ]
                 },
@@ -649,6 +689,15 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "LD 22 TW-Mississippi.Height.Inst.0.NGVD29",
+                    "constant-value": 446.09999999999997,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "LD 22 TW-Mississippi.Stage.Inst.0.Flood",
@@ -681,10 +730,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 301.2,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "07-25-1993"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "07-25-1993",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -696,8 +744,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "LD 22 TW-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev",
-                            "ts-code": 4505018
+                            "timeseries-id": "LD 22 TW-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev"
                         }
                     ]
                 },
@@ -711,8 +758,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "LD 22 TW-Mississippi.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 1958018
+                            "timeseries-id": "LD 22 TW-Mississippi.Stage.Inst.6Hours.0.RVFShef-FF"
                         }
                     ]
                 },
@@ -727,7 +773,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "LD 22 TW-Mississippi.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 4509018,
                             "attribute": 1
                         }
                     ]
@@ -779,6 +824,15 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Louisiana-Mississippi.Height.Inst.0.NGVD29",
+                    "constant-value": 437.3299999999999,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Louisiana-Mississippi.Stage.Inst.0.Flood",
@@ -811,10 +865,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 282.9,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "07-28-1993"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "07-28-1993",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -826,8 +879,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Louisiana-Mississippi.Stage.Inst.15Minutes.0.lrgsShef-rev",
-                            "ts-code": 3599018
+                            "timeseries-id": "Louisiana-Mississippi.Stage.Inst.15Minutes.0.lrgsShef-rev"
                         }
                     ]
                 },
@@ -841,8 +893,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Louisiana-Mississippi.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 1961018
+                            "timeseries-id": "Louisiana-Mississippi.Stage.Inst.6Hours.0.RVFShef-FF"
                         }
                     ]
                 },
@@ -857,7 +908,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Louisiana-Mississippi.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 3604018,
                             "attribute": 1
                         }
                     ]
@@ -901,6 +951,15 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "LD 24 Pool-Mississippi.Height.Inst.0.NGVD29",
+                    "constant-value": 421.80999999999995,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "LD 24 Pool-Mississippi.Stage.Inst.0.Flood",
@@ -933,10 +992,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 273.5,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": null
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": null,
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -948,8 +1006,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "LD 24 Pool-Mississippi.Stage.Inst.30Minutes.0.29",
-                            "ts-code": 43612018
+                            "timeseries-id": "LD 24 Pool-Mississippi.Stage.Inst.30Minutes.0.29"
                         }
                     ]
                 },
@@ -1009,6 +1066,15 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "LD 24 TW-Mississippi.Height.Inst.0.NGVD29",
+                    "constant-value": 421.80999999999995,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "LD 24 TW-Mississippi.Stage.Inst.0.Flood",
@@ -1041,10 +1107,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 273.5,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "07-29-1993"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "07-29-1993",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -1056,8 +1121,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "LD 24 TW-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev",
-                            "ts-code": 4543018
+                            "timeseries-id": "LD 24 TW-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev"
                         }
                     ]
                 },
@@ -1072,7 +1136,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "LD 24 TW-Mississippi.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 1963018,
                             "attribute": 1
                         }
                     ]
@@ -1088,7 +1151,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "LD 24 TW-Mississippi.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 4548018,
                             "attribute": 1
                         }
                     ]
@@ -1140,6 +1202,15 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Mosier Ldg-Mississippi.Height.Inst.0.NGVD29",
+                    "constant-value": 399.99999999999994,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Mosier Ldg-Mississippi.Stage.Inst.0.Flood",
@@ -1172,10 +1243,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 260.3,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "07-29-1993"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "07-29-1993",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -1187,8 +1257,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Mosier Ldg-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev",
-                            "ts-code": 3753018
+                            "timeseries-id": "Mosier Ldg-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev"
                         }
                     ]
                 },
@@ -1240,6 +1309,15 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "LD 25 Pool-Mississippi.Height.Inst.0.NGVD29",
+                    "constant-value": 406.99999999999994,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "LD 25 Pool-Mississippi.Stage.Inst.0.Flood",
@@ -1272,10 +1350,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 241.5,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": null
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": null,
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -1287,8 +1364,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "LD 25 Pool-Mississippi.Stage.Inst.30Minutes.0.29",
-                            "ts-code": 43614018
+                            "timeseries-id": "LD 25 Pool-Mississippi.Stage.Inst.30Minutes.0.29"
                         }
                     ]
                 },
@@ -1348,6 +1424,15 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "LD 25 TW-Mississippi.Height.Inst.0.NGVD29",
+                    "constant-value": 406.99999999999994,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "LD 25 TW-Mississippi.Stage.Inst.0.Flood",
@@ -1380,10 +1465,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 241.2,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "08-01-1993"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "08-01-1993",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -1395,8 +1479,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "LD 25 TW-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev",
-                            "ts-code": 4585018
+                            "timeseries-id": "LD 25 TW-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev"
                         }
                     ]
                 },
@@ -1411,7 +1494,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "LD 25 TW-Mississippi.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 1964018,
                             "attribute": 1
                         }
                     ]
@@ -1427,7 +1509,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "LD 25 TW-Mississippi.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 4590018,
                             "attribute": 1
                         }
                     ]
@@ -1479,6 +1560,15 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Grafton-Mississippi.Height.Inst.0.NGVD29",
+                    "constant-value": 403.78999999999996,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Grafton-Mississippi.Stage.Inst.0.Flood",
@@ -1511,10 +1601,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 218,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "08-01-1993"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "08-01-1993",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -1526,8 +1615,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Grafton-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev",
-                            "ts-code": 4311018
+                            "timeseries-id": "Grafton-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev"
                         }
                     ]
                 },
@@ -1542,7 +1630,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Grafton-Mississippi.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 1762018,
                             "attribute": 1
                         }
                     ]
@@ -1558,7 +1645,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Grafton-Mississippi.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 4322018,
                             "attribute": 1
                         }
                     ]
@@ -1602,6 +1688,15 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Mel Price Pool-Mississippi.Height.Inst.0.NGVD29",
+                    "constant-value": 395.47999999999996,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Mel Price Pool-Mississippi.Stage.Inst.0.Flood",
@@ -1634,10 +1729,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 201.1,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": null
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": null,
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -1649,8 +1743,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Mel Price Pool-Mississippi.Stage.Inst.15Minutes.0.29",
-                            "ts-code": 43651018
+                            "timeseries-id": "Mel Price Pool-Mississippi.Stage.Inst.15Minutes.0.29"
                         }
                     ]
                 },
@@ -1710,6 +1803,15 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Mel Price TW-Mississippi.Height.Inst.0.NGVD29",
+                    "constant-value": 395.47999999999996,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Mel Price TW-Mississippi.Stage.Inst.0.Flood",
@@ -1742,10 +1844,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 200.5,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "08-01-1993"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "08-01-1993",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -1757,8 +1858,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Mel Price TW-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev",
-                            "ts-code": 3676018
+                            "timeseries-id": "Mel Price TW-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev"
                         }
                     ]
                 },
@@ -1773,7 +1873,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Mel Price TW-Mississippi.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 1763018,
                             "attribute": 1
                         }
                     ]
@@ -1789,7 +1888,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Mel Price TW-Mississippi.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 3681018,
                             "attribute": 1
                         }
                     ]
@@ -1833,6 +1931,15 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "LD 27 Pool-Mississippi.Height.Inst.0.NGVD29",
+                    "constant-value": 350,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "LD 27 Pool-Mississippi.Stage.Inst.0.Flood",
@@ -1865,10 +1972,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 185.3,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": null
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": null,
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -1881,7 +1987,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "LD 27 Pool-Mississippi.Stage.Inst.30Minutes.0.29",
-                            "ts-code": 43619018,
                             "attribute": 1
                         }
                     ]
@@ -1934,6 +2039,15 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "LD 27 TW-Mississippi.Height.Inst.0.NGVD29",
+                    "constant-value": 350,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "LD 27 TW-Mississippi.Stage.Inst.0.Flood",
@@ -1966,10 +2080,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 185.3,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": null
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": null,
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -1981,8 +2094,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "LD 27 TW-Mississippi.Stage.Inst.30Minutes.0.29",
-                            "ts-code": 43644018
+                            "timeseries-id": "LD 27 TW-Mississippi.Stage.Inst.30Minutes.0.29"
                         }
                     ]
                 },
@@ -2043,6 +2155,15 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "St Louis-Mississippi.Height.Inst.0.NGVD29",
+                    "constant-value": 379.93999999999994,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "St Louis-Mississippi.Stage.Inst.0.Flood",
@@ -2074,10 +2195,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 179.6,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "08-01-1993"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "08-01-1993",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -2089,8 +2209,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "St Louis-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev",
-                            "ts-code": 3484018
+                            "timeseries-id": "St Louis-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev"
                         }
                     ]
                 },
@@ -2105,7 +2224,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "St Louis-Mississippi.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 1765018,
                             "attribute": 1
                         }
                     ]
@@ -2121,7 +2239,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "St Louis-Mississippi.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 3492018,
                             "attribute": 1
                         }
                     ]
@@ -2165,6 +2282,15 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Engineers Depot-Mississippi.Height.Inst.0.NGVD29",
+                    "constant-value": 379.5799999999999,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Engineers Depot-Mississippi.Stage.Inst.0.Flood",
@@ -2196,10 +2322,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 176.8,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": null
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": null,
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -2211,8 +2336,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Engineers Depot-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev",
-                            "ts-code": 104312018
+                            "timeseries-id": "Engineers Depot-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev"
                         }
                     ]
                 },
@@ -2264,6 +2388,15 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Jefferson Brks-Mississippi.Height.Inst.0.NGVD29",
+                    "constant-value": 377.68999999999994,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Jefferson Brks-Mississippi.Stage.Inst.0.Flood",
@@ -2295,10 +2428,8 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 168.7,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": null
+                "record-stage-date-hard-coded": {
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -2310,8 +2441,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Jefferson Brks-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev",
-                            "ts-code": 936136018
+                            "timeseries-id": "Jefferson Brks-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev"
                         }
                     ]
                 },
@@ -2360,6 +2490,15 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Herculaneum-Mississippi.Height.Inst.0.NGVD29",
+                    "constant-value": 998.9999999999999,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Herculaneum-Mississippi.Stage.Inst.0.Flood",
@@ -2391,10 +2530,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 151.9,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": null
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": null,
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -2406,8 +2544,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Herculaneum-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev",
-                            "ts-code": 93609018
+                            "timeseries-id": "Herculaneum-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev"
                         }
                     ]
                 },
@@ -2467,6 +2604,15 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Chester-Mississippi.Height.Inst.0.NGVD29",
+                    "constant-value": 341.04999999999995,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Chester-Mississippi.Stage.Inst.0.Flood",
@@ -2499,10 +2645,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 109.9,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "08-07-1993"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "08-07-1993",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -2515,7 +2660,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Chester-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev",
-                            "ts-code": 4162018,
                             "attribute": 1
                         }
                     ]
@@ -2531,7 +2675,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Chester-Mississippi.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 1767018,
                             "attribute": 1
                         }
                     ]
@@ -2547,7 +2690,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Chester-Mississippi.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 4167018,
                             "attribute": 1
                         }
                     ]
@@ -2599,6 +2741,15 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Cape Girardeau-Mississippi.Height.Inst.0.NGVD29",
+                    "constant-value": 304.65,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Cape Girardeau-Mississippi.Stage.Inst.0.Flood",
@@ -2631,10 +2782,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 52.1,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "01-01-2016"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "01-01-2016",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -2646,8 +2796,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Cape Girardeau-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev",
-                            "ts-code": 4093018
+                            "timeseries-id": "Cape Girardeau-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev"
                         }
                     ]
                 },
@@ -2662,7 +2811,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Cape Girardeau-Mississippi.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 8765018,
                             "attribute": 1
                         }
                     ]
@@ -2678,7 +2826,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Cape Girardeau-Mississippi.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 8786018,
                             "attribute": 1
                         }
                     ]
@@ -2730,6 +2877,15 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Thebes-Mississippi.Height.Inst.0.NGVD29",
+                    "constant-value": 299.99999999999994,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Thebes-Mississippi.Stage.Inst.0.Flood",
@@ -2762,10 +2918,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 43.7,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "01-02-2016"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "01-02-2016",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -2777,8 +2932,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Thebes-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev",
-                            "ts-code": 3203018
+                            "timeseries-id": "Thebes-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev"
                         }
                     ]
                 },
@@ -2793,7 +2947,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Thebes-Mississippi.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 8866018,
                             "attribute": 1
                         }
                     ]
@@ -2809,7 +2962,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Thebes-Mississippi.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 8865018,
                             "attribute": 1
                         }
                     ]
@@ -2861,6 +3013,15 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Thompson Ldg-Mississippi.Height.Inst.0.NGVD29",
+                    "constant-value": 279.99999999999994,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Thompson Ldg-Mississippi.Stage.Inst.0.Flood",
@@ -2893,10 +3054,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 20.2,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "01-03-2016"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "01-03-2016",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -2908,8 +3068,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Thompson Ldg-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev",
-                            "ts-code": 3215018
+                            "timeseries-id": "Thompson Ldg-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev"
                         }
                     ]
                 },
@@ -2969,6 +3128,16 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Birds Point-Mississippi.Height.Inst.0.NGVD29",
+                    "constant-value": 274.53,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "level-comment": "Data from GAGE_CTL",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Birds Point-Mississippi.Stage.Inst.0.Flood",
@@ -3001,10 +3170,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 2,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "05-02-2011"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "05-02-2011",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -3016,8 +3184,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Birds Point-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev",
-                            "ts-code": 4023018
+                            "timeseries-id": "Birds Point-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev"
                         }
                     ]
                 },
@@ -3117,6 +3284,10 @@
                         "stage-units": "ft"
                     }
                 ],
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "04-19-2013",
+                    "tsid_null": null
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -3236,6 +3407,10 @@
                         "stage-units": "ft"
                     }
                 ],
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "04-20-2013",
+                    "tsid_null": null
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -3355,6 +3530,10 @@
                         "stage-units": "ft"
                     }
                 ],
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "04-23-2013",
+                    "tsid_null": null
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -3479,6 +3658,10 @@
                         "stage-units": "ft"
                     }
                 ],
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "04-27-2013",
+                    "tsid_null": null
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -3610,6 +3793,10 @@
                         "stage-units": "ft"
                     }
                 ],
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "07-02-2015",
+                    "tsid_null": null
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -3742,6 +3929,10 @@
                         "stage-units": "ft"
                     }
                 ],
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "05-26-1943",
+                    "tsid_null": null
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -3866,6 +4057,10 @@
                         "stage-units": "ft"
                     }
                 ],
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "08-01-1993",
+                    "tsid_null": null
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -3978,6 +4173,10 @@
                         "stage-units": "ft"
                     }
                 ],
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "08-03-1993",
+                    "tsid_null": null
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -4115,6 +4314,10 @@
                         "stage-units": "ft"
                     }
                 ],
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "04-12-1994",
+                    "tsid_null": null
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -4174,7 +4377,7 @@
                     "location-kind": "STREAM_LOCATION",
                     "nation": "US",
                     "state-initial": "MO",
-                    "county-name": "Unknown County or County N/A",
+                    "county-name": "Unknown County or County N/A for Missouri",
                     "nearest-city": "Washington",
                     "horizontal-datum": "WGS84",
                     "vertical-datum": "NGVD29",
@@ -4193,6 +4396,15 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Hermann-Missouri.Height.Inst.0.NGVD29",
+                    "constant-value": 481.5599999999999,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Hermann-Missouri.Stage.Inst.0.Flood",
@@ -4222,10 +4434,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 97.9,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "07-31-1993"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "07-31-1993",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -4237,8 +4448,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Hermann-Missouri.Stage.Inst.15Minutes.0.lrgsShef-rev",
-                            "ts-code": 23641018
+                            "timeseries-id": "Hermann-Missouri.Stage.Inst.15Minutes.0.lrgsShef-rev"
                         }
                     ]
                 },
@@ -4252,8 +4462,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Hermann-Missouri.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 1786018
+                            "timeseries-id": "Hermann-Missouri.Stage.Inst.6Hours.0.RVFShef-FF"
                         }
                     ]
                 },
@@ -4268,7 +4477,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Hermann-Missouri.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 4401018,
                             "attribute": 1
                         }
                     ]
@@ -4310,6 +4518,15 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Washington-Missouri.Height.Inst.0.NGVD29",
+                    "constant-value": 457.56,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Washington-Missouri.Stage.Inst.0.Flood",
@@ -4339,10 +4556,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 67,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "07-31-1993"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "07-31-1993",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -4354,8 +4570,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Washington-Missouri.Stage.Inst.15Minutes.0.lrgsShef-rev",
-                            "ts-code": 3303018
+                            "timeseries-id": "Washington-Missouri.Stage.Inst.15Minutes.0.lrgsShef-rev"
                         }
                     ]
                 },
@@ -4369,8 +4584,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Washington-Missouri.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 1788018
+                            "timeseries-id": "Washington-Missouri.Stage.Inst.6Hours.0.RVFShef-FF"
                         }
                     ]
                 },
@@ -4385,7 +4599,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Washington-Missouri.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 3307018,
                             "attribute": 1
                         }
                     ]
@@ -4429,6 +4642,15 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "St Charles-Missouri.Height.Inst.0.NGVD29",
+                    "constant-value": 413.54999999999995,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "St Charles-Missouri.Stage.Inst.0.Flood",
@@ -4461,10 +4683,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 27.9,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "08-02-1993"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "08-02-1993",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -4476,8 +4697,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "St Charles-Missouri.Stage.Inst.30Minutes.0.lrgsShef-rev",
-                            "ts-code": 3457018
+                            "timeseries-id": "St Charles-Missouri.Stage.Inst.30Minutes.0.lrgsShef-rev"
                         }
                     ]
                 },
@@ -4492,7 +4712,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "St Charles-Missouri.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 1789018,
                             "attribute": 1
                         }
                     ]
@@ -4508,7 +4727,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "St Charles-Missouri.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 3459018,
                             "attribute": 1
                         }
                     ]
@@ -4527,9 +4745,210 @@
         "description": "Meramec",
         "assigned-locations": [
             {
+                "location-id": "Steelville-Meramec",
+                "office-id": "MVS",
+                "attribute": 1,
+                "metadata": {
+                    "office-id": "MVS",
+                    "name": "Steelville-Meramec",
+                    "latitude": 37.998499,
+                    "longitude": -91.360977,
+                    "active": true,
+                    "public-name": "Steelville",
+                    "long-name": "Steelville-Meramec",
+                    "description": "IN NE 1/4 SEC. 21, T. 38 N., R. 4 W., CRAWFORD COUNTY, HYDROLOGIC UNITY 07140102, ON LEFT BANK 20 FT DOWNSTREAM FROM RAILROAD BRIDGE, 400 FT UPSTREAM FROM HIGHWAY BRIDGE, 0.8 MI UPSTREAM FROM WHITTENBURG CREEK, 1.5 MI NORTH OF STEELVILLE AND AT MILE 146.4.",
+                    "timezone-name": "US/Central",
+                    "location-kind": "STREAM_LOCATION",
+                    "nation": "US",
+                    "state-initial": "MO",
+                    "county-name": "Crawford",
+                    "nearest-city": "Steelville",
+                    "horizontal-datum": "WGS84",
+                    "published-longitude": -91.360977,
+                    "published-latitude": 37.998499,
+                    "vertical-datum": "NAVD88",
+                    "elevation": 681.66,
+                    "map-label": "Steelville",
+                    "bounding-office-id": "MVS",
+                    "elevation-units": "ft"
+                },
+                "record-stage": null,
+                "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Steelville-Meramec.Height.Inst.0.NGVD29",
+                    "constant-value": 681.68,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
+                "flood": {
+                    "office-id": "MVS",
+                    "location-level-id": "Steelville-Meramec.Stage.Inst.0.Flood",
+                    "constant-value": 12,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
+                "river-mile": [
+                    {
+                        "stream-location-node": {
+                            "id": {
+                                "office-id": "MVS",
+                                "name": "Steelville-Meramec"
+                            },
+                            "stream-node": {
+                                "stream-id": {
+                                    "office-id": "MVS",
+                                    "name": "Meramec R"
+                                },
+                                "bank": "L",
+                                "station": 146.4,
+                                "station-units": "mi"
+                            }
+                        },
+                        "published-station": 146.4,
+                        "total-drainage-area": 780.9999999999999,
+                        "area-units": "mile2",
+                        "stage-units": "ft"
+                    }
+                ],
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": null,
+                    "tsid_null": null
+                },
+                "tsid-stage": {
+                    "office-id": "MVS",
+                    "id": "Stage",
+                    "time-series-category": {
+                        "office-id": "MVS",
+                        "id": "Steelville-Meramec"
+                    },
+                    "assigned-time-series": [
+                        {
+                            "office-id": "MVS",
+                            "timeseries-id": "Steelville-Meramec.Stage.Inst.15Minutes.0.Usgs-raw"
+                        }
+                    ]
+                },
+                "tsid-nws-forecast": {
+                    "office-id": "MVS",
+                    "id": "Forecast-NWS",
+                    "time-series-category": {
+                        "office-id": "MVS",
+                        "id": "Steelville-Meramec"
+                    },
+                    "assigned-time-series": [
+                        {
+                            "office-id": "MVS",
+                            "timeseries-id": "Steelville-Meramec.Stage.Inst.6Hours.0.RVFShef-FF",
+                            "attribute": 1
+                        }
+                    ]
+                }
+            },
+            {
+                "location-id": "Champion City-Bourbeuse",
+                "office-id": "MVS",
+                "attribute": 2,
+                "metadata": {
+                    "office-id": "MVS",
+                    "name": "Champion City-Bourbeuse",
+                    "latitude": 38.3120083,
+                    "longitude": -91.2775,
+                    "active": true,
+                    "public-name": "Champion City",
+                    "long-name": "Champion City",
+                    "description": "Champion City-Bourbeuse",
+                    "timezone-name": "US/Central",
+                    "location-kind": "STREAM_LOCATION",
+                    "nation": "US",
+                    "state-initial": "MO",
+                    "county-name": "St. Louis",
+                    "nearest-city": "Saint Louis",
+                    "published-longitude": -91.2775,
+                    "published-latitude": 38.3120083,
+                    "vertical-datum": "NAVD88",
+                    "elevation": 618.92,
+                    "bounding-office-id": "MVS",
+                    "elevation-units": "ft"
+                },
+                "record-stage": null,
+                "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Champion City-Bourbeuse.Height.Inst.0.NGVD29",
+                    "constant-value": 999.99,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
+                "flood": {
+                    "office-id": "MVS",
+                    "location-level-id": "Champion City-Bourbeuse.Stage.Inst.0.Flood",
+                    "constant-value": 908.9999999999999,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
+                "river-mile": [
+                    {
+                        "stream-location-node": {
+                            "id": {
+                                "office-id": "MVS",
+                                "name": "Champion City-Bourbeuse"
+                            },
+                            "stream-node": {
+                                "stream-id": {
+                                    "office-id": "MVS",
+                                    "name": "Bourbeuse R"
+                                },
+                                "station": 75.3,
+                                "station-units": "mi"
+                            }
+                        },
+                        "published-station": 75.3,
+                        "area-units": "mile2",
+                        "stage-units": "ft"
+                    }
+                ],
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": null,
+                    "tsid_null": null
+                },
+                "tsid-stage": {
+                    "office-id": "MVS",
+                    "id": "Stage",
+                    "time-series-category": {
+                        "office-id": "MVS",
+                        "id": "Champion City-Bourbeuse"
+                    },
+                    "assigned-time-series": [
+                        {
+                            "office-id": "MVS",
+                            "timeseries-id": "Champion City-Bourbeuse.Stage.Inst.15Minutes.0.lrgsShef-rev",
+                            "attribute": 1
+                        }
+                    ]
+                },
+                "tsid-nws-crest": {
+                    "office-id": "MVS",
+                    "id": "Crest",
+                    "time-series-category": {
+                        "office-id": "MVS",
+                        "id": "Champion City-Bourbeuse"
+                    },
+                    "assigned-time-series": []
+                }
+            },
+            {
                 "location-id": "Sullivan-Meramec",
                 "office-id": "MVS",
-                "attribute": 5,
+                "attribute": 3,
                 "metadata": {
                     "office-id": "MVS",
                     "name": "Sullivan-Meramec",
@@ -4564,6 +4983,15 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Sullivan-Meramec.Height.Inst.0.NGVD29",
+                    "constant-value": 581.8199999999999,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Sullivan-Meramec.Stage.Inst.0.Flood",
@@ -4596,10 +5024,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 117,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "12-04-1982"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "12-04-1982",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -4611,8 +5038,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Sullivan-Meramec.Stage.Inst.15Minutes.0.Usgs-raw",
-                            "ts-code": 1975098018
+                            "timeseries-id": "Sullivan-Meramec.Stage.Inst.15Minutes.0.Usgs-raw"
                         }
                     ]
                 },
@@ -4627,7 +5053,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Sullivan-Meramec.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 8122018,
                             "attribute": 1
                         }
                     ]
@@ -4642,8 +5067,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Sullivan-Meramec.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 8121018
+                            "timeseries-id": "Sullivan-Meramec.Stage.Inst.6Hours.0.RVFShef-FX"
                         }
                     ]
                 }
@@ -4651,7 +5075,7 @@
             {
                 "location-id": "Union-Bourbeuse",
                 "office-id": "MVS",
-                "attribute": 7,
+                "attribute": 8,
                 "metadata": {
                     "office-id": "MVS",
                     "name": "Union-Bourbeuse",
@@ -4686,6 +5110,15 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Union-Bourbeuse.Height.Inst.0.NGVD29",
+                    "constant-value": 908.9999999999999,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Union-Bourbeuse.Stage.Inst.0.Flood",
@@ -4718,10 +5151,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 13.4,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "12-29-2015"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "12-29-2015",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -4734,7 +5166,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Union-Bourbeuse.Stage.Inst.30Minutes.0.lrgsShef-rev",
-                            "ts-code": 3231018,
                             "attribute": 1
                         }
                     ]
@@ -4750,7 +5181,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Union-Bourbeuse.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 3234018,
                             "attribute": 1
                         }
                     ]
@@ -4766,7 +5196,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Union-Bourbeuse.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 3235018,
                             "attribute": 1
                         }
                     ]
@@ -4775,7 +5204,7 @@
             {
                 "location-id": "Pacific-Meramec",
                 "office-id": "MVS",
-                "attribute": 8,
+                "attribute": 9,
                 "metadata": {
                     "office-id": "MVS",
                     "name": "Pacific-Meramec",
@@ -4810,6 +5239,15 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Pacific-Meramec.Height.Inst.0.NGVD29",
+                    "constant-value": 432.53,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Pacific-Meramec.Stage.Inst.0.Flood",
@@ -4842,10 +5280,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 50.85,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "12-30-2015"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "12-30-2015",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -4858,7 +5295,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Pacific-Meramec.Stage.Inst.15Minutes.0.lrgsShef-rev",
-                            "ts-code": 3832018,
                             "attribute": 1
                         }
                     ]
@@ -4874,7 +5310,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Pacific-Meramec.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 3837018,
                             "attribute": 1
                         }
                     ]
@@ -4890,7 +5325,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Pacific-Meramec.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 3838018,
                             "attribute": 1
                         }
                     ]
@@ -4899,7 +5333,7 @@
             {
                 "location-id": "Byrnesville-Big",
                 "office-id": "MVS",
-                "attribute": 12,
+                "attribute": 13,
                 "metadata": {
                     "office-id": "MVS",
                     "name": "Byrnesville-Big",
@@ -4934,6 +5368,16 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Byrnesville-Big.Height.Inst.0.NGVD29",
+                    "constant-value": 433.69,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "level-comment": "Data from GAGE_CTL",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Byrnesville-Big.Stage.Inst.0.Flood",
@@ -4965,10 +5409,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 14.1,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "08-21-2015"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "08-21-2015",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -4981,7 +5424,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Byrnesville-Big.Stage.Inst.15Minutes.0.lrgsShef-rev",
-                            "ts-code": 4055018,
                             "attribute": 1
                         }
                     ]
@@ -4997,7 +5439,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Byrnesville-Big.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 4059018,
                             "attribute": 1
                         }
                     ]
@@ -5013,7 +5454,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Byrnesville-Big.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 4060018,
                             "attribute": 1
                         }
                     ]
@@ -5022,7 +5462,7 @@
             {
                 "location-id": "Eureka-Meramec",
                 "office-id": "MVS",
-                "attribute": 13,
+                "attribute": 14,
                 "metadata": {
                     "office-id": "MVS",
                     "name": "Eureka-Meramec",
@@ -5057,6 +5497,15 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Eureka-Meramec.Height.Inst.0.NGVD29",
+                    "constant-value": 404.17999999999995,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Eureka-Meramec.Stage.Inst.0.Flood",
@@ -5089,10 +5538,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 34.1,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "05-03-2017"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "05-03-2017",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -5104,8 +5552,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Eureka-Meramec.Stage.Inst.30Minutes.0.lrgsShef-rev",
-                            "ts-code": 4218018
+                            "timeseries-id": "Eureka-Meramec.Stage.Inst.30Minutes.0.lrgsShef-rev"
                         }
                     ]
                 },
@@ -5120,7 +5567,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Eureka-Meramec.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 1774018,
                             "attribute": 1
                         }
                     ]
@@ -5136,7 +5582,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Eureka-Meramec.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 4222018,
                             "attribute": 1
                         }
                     ]
@@ -5145,7 +5590,7 @@
             {
                 "location-id": "Valley Park-Meramec",
                 "office-id": "MVS",
-                "attribute": 14,
+                "attribute": 15,
                 "metadata": {
                     "office-id": "MVS",
                     "name": "Valley Park-Meramec",
@@ -5180,6 +5625,15 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Valley Park-Meramec.Height.Inst.0.NGVD29",
+                    "constant-value": 391.54,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Valley Park-Meramec.Stage.Inst.0.Flood",
@@ -5211,10 +5665,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 21.4,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "12-31-2015"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "12-31-2015",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -5227,7 +5680,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Valley Park-Meramec.Stage.Inst.15Minutes.0.lrgsShef-rev",
-                            "ts-code": 3256018,
                             "attribute": 1
                         }
                     ]
@@ -5243,7 +5695,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Valley Park-Meramec.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 3261018,
                             "attribute": 1
                         }
                     ]
@@ -5259,99 +5710,9 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Valley Park-Meramec.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 3262018,
                             "attribute": 1
                         }
                     ]
-                }
-            },
-            {
-                "location-id": "Champion City-Bourbeuse",
-                "office-id": "MVS",
-                "attribute": 16,
-                "metadata": {
-                    "office-id": "MVS",
-                    "name": "Champion City-Bourbeuse",
-                    "latitude": 38.3120083,
-                    "longitude": -91.2775,
-                    "active": true,
-                    "public-name": "Champion City",
-                    "long-name": "Champion City",
-                    "description": "Champion City-Bourbeuse",
-                    "timezone-name": "US/Central",
-                    "location-kind": "STREAM_LOCATION",
-                    "nation": "US",
-                    "state-initial": "MO",
-                    "county-name": "St. Louis",
-                    "nearest-city": "Saint Louis",
-                    "published-longitude": -91.2775,
-                    "published-latitude": 38.3120083,
-                    "vertical-datum": "NAVD88",
-                    "elevation": 618.92,
-                    "bounding-office-id": "MVS",
-                    "elevation-units": "ft"
-                },
-                "record-stage": null,
-                "lwrp": null,
-                "flood": {
-                    "office-id": "MVS",
-                    "location-level-id": "Champion City-Bourbeuse.Stage.Inst.0.Flood",
-                    "constant-value": 908.9999999999999,
-                    "level-units-id": "ft",
-                    "level-date": "2024-01-01T08:00:00Z",
-                    "attribute-units-id": "ft",
-                    "seasonal-values": []
-                },
-                "river-mile": [
-                    {
-                        "stream-location-node": {
-                            "id": {
-                                "office-id": "MVS",
-                                "name": "Champion City-Bourbeuse"
-                            },
-                            "stream-node": {
-                                "stream-id": {
-                                    "office-id": "MVS",
-                                    "name": "Bourbeuse R"
-                                },
-                                "station": 75.3,
-                                "station-units": "mi"
-                            }
-                        },
-                        "published-station": 75.3,
-                        "area-units": "mile2",
-                        "stage-units": "ft"
-                    }
-                ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 75.3,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": null
-                },
-                "tsid-stage": {
-                    "office-id": "MVS",
-                    "id": "Stage",
-                    "time-series-category": {
-                        "office-id": "MVS",
-                        "id": "Champion City-Bourbeuse"
-                    },
-                    "assigned-time-series": [
-                        {
-                            "office-id": "MVS",
-                            "timeseries-id": "Champion City-Bourbeuse.Stage.Inst.15Minutes.0.lrgsShef-rev",
-                            "ts-code": 936152018,
-                            "attribute": 1
-                        }
-                    ]
-                },
-                "tsid-nws-crest": {
-                    "office-id": "MVS",
-                    "id": "Crest",
-                    "time-series-category": {
-                        "office-id": "MVS",
-                        "id": "Champion City-Bourbeuse"
-                    },
-                    "assigned-time-series": []
                 }
             },
             {
@@ -5392,6 +5753,15 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Arnold-Meramec.Height.Inst.0.NGVD29",
+                    "constant-value": 373.21,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Arnold-Meramec.Stage.Inst.0.Flood",
@@ -5424,10 +5794,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 6,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "12-31-2015"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "12-31-2015",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -5440,7 +5809,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Arnold-Meramec.Stage.Inst.15Minutes.0.lrgsShef-rev",
-                            "ts-code": 3978018,
                             "attribute": 1
                         }
                     ]
@@ -5456,7 +5824,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Arnold-Meramec.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 3984018,
                             "attribute": 1
                         }
                     ]
@@ -5472,7 +5839,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Arnold-Meramec.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 3985018,
                             "attribute": 1
                         }
                     ]
@@ -5535,6 +5901,16 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Cairo-Ohio.Height.Inst.0.NGVD29",
+                    "constant-value": 270.46999999999997,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "level-comment": "Data from GAGE_CTL and CWMS",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Cairo-Ohio.Stage.Inst.0.Flood",
@@ -5566,10 +5942,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 2,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "05-02-2011"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "05-02-2011",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -5582,7 +5957,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Cairo-Ohio.Stage.Inst.1Hour.0.lrgsShef-rev",
-                            "ts-code": 4067018,
                             "attribute": 22
                         }
                     ]
@@ -5598,7 +5972,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Cairo-Ohio.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 8766018,
                             "attribute": 1
                         }
                     ]
@@ -5614,7 +5987,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Cairo-Ohio.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 8885018,
                             "attribute": 1
                         }
                     ]
@@ -5655,6 +6027,15 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Paducah-Ohio.Height.Inst.0.NGVD29",
+                    "constant-value": 286.26,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Paducah-Ohio.Stage.Inst.0.Flood",
@@ -5684,10 +6065,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 42.8,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "02-02-1937"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "02-02-1937",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -5700,7 +6080,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Paducah-Ohio.Stage.Inst.15Minutes.0.lrgsShef-rev",
-                            "ts-code": 3842018,
                             "attribute": 11
                         }
                     ]
@@ -5716,7 +6095,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Paducah-Ohio.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 8764018,
                             "attribute": 1
                         }
                     ]
@@ -5731,8 +6109,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Paducah-Ohio.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 9684018
+                            "timeseries-id": "Paducah-Ohio.Stage.Inst.6Hours.0.RVFShef-FX"
                         }
                     ]
                 }
@@ -5823,10 +6200,9 @@
                     "attribute-units-id": "ac-ft",
                     "seasonal-values": []
                 },
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 197.9,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "06-29-1974"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "06-29-1974",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -5839,7 +6215,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Lk Shelbyville-Kaskaskia.Stage.Inst.30Minutes.0.29",
-                            "ts-code": 43645018,
                             "attribute": 1
                         }
                     ]
@@ -5854,8 +6229,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Lk Shelbyville-Kaskaskia.Precip.Total.~1Day.1Day.lakerep-rev",
-                            "ts-code": 76202018
+                            "timeseries-id": "Lk Shelbyville-Kaskaskia.Precip.Total.~1Day.1Day.lakerep-rev"
                         }
                     ]
                 },
@@ -5869,8 +6243,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Lk Shelbyville-Kaskaskia.Flow-In.Ave.~1Day.1Day.lakerep-rev",
-                            "ts-code": 45277018
+                            "timeseries-id": "Lk Shelbyville-Kaskaskia.Flow-In.Ave.~1Day.1Day.lakerep-rev"
                         }
                     ]
                 },
@@ -5884,8 +6257,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Lk Shelbyville-Kaskaskia.Stor.Inst.30Minutes.0.RatingCOE",
-                            "ts-code": 15249018
+                            "timeseries-id": "Lk Shelbyville-Kaskaskia.Stor.Inst.30Minutes.0.RatingCOE"
                         }
                     ]
                 }
@@ -5928,6 +6300,15 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Vandalia-Kaskaskia.Height.Inst.0.NGVD29",
+                    "constant-value": 453.29999999999995,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Vandalia-Kaskaskia.Stage.Inst.0.Flood",
@@ -5960,10 +6341,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 135.7,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "04-19-2013"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "04-19-2013",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -5976,7 +6356,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Vandalia-Kaskaskia.Stage.Inst.15Minutes.0.lrgsShef-rev",
-                            "ts-code": 3268018,
                             "attribute": 1
                         }
                     ]
@@ -5992,7 +6371,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Vandalia-Kaskaskia.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 3122018,
                             "attribute": 1
                         }
                     ]
@@ -6008,7 +6386,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Vandalia-Kaskaskia.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 3121018,
                             "attribute": 1
                         }
                     ]
@@ -6088,10 +6465,9 @@
                     "attribute-units-id": "ac-ft",
                     "seasonal-values": []
                 },
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 94.2,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "05-18-2002"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "05-18-2002",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -6104,7 +6480,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Carlyle Lk-Kaskaskia.Stage.Inst.30Minutes.0.29",
-                            "ts-code": 43643018,
                             "attribute": 1
                         }
                     ]
@@ -6119,8 +6494,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Carlyle Lk-Kaskaskia.Precip.Total.~1Day.1Day.lakerep-rev",
-                            "ts-code": 44386018
+                            "timeseries-id": "Carlyle Lk-Kaskaskia.Precip.Total.~1Day.1Day.lakerep-rev"
                         }
                     ]
                 },
@@ -6131,11 +6505,11 @@
                         "office-id": "MVS",
                         "id": "Carlyle Lk-Kaskaskia"
                     },
+                    "description": "Webrep and Lake Sheet",
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Carlyle Lk-Kaskaskia.Flow-In.Ave.~1Day.1Day.lakerep-rev",
-                            "ts-code": 45275018
+                            "timeseries-id": "Carlyle Lk-Kaskaskia.Flow-In.Ave.~1Day.1Day.lakerep-rev"
                         }
                     ]
                 },
@@ -6146,11 +6520,11 @@
                         "office-id": "MVS",
                         "id": "Carlyle Lk-Kaskaskia"
                     },
+                    "description": "Webrep and Lake Sheet",
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Carlyle Lk-Kaskaskia.Stor.Inst.30Minutes.0.RatingCOE",
-                            "ts-code": 15190018
+                            "timeseries-id": "Carlyle Lk-Kaskaskia.Stor.Inst.30Minutes.0.RatingCOE"
                         }
                     ]
                 }
@@ -6191,6 +6565,15 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Red Bud-Kaskaskia.Height.Inst.0.NGVD29",
+                    "constant-value": 299.99999999999994,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Red Bud-Kaskaskia.Stage.Inst.0.Flood",
@@ -6221,10 +6604,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 19.3,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "01-02-2016"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "01-02-2016",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -6237,7 +6619,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Red Bud-Kaskaskia.Stage.Inst.30Minutes.0.lrgsShef-rev",
-                            "ts-code": 3347018,
                             "attribute": 1
                         }
                     ]
@@ -6290,6 +6671,15 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Nav Pool-Kaskaskia.Height.Inst.0.NGVD29",
+                    "constant-value": 299.99999999999994,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Nav Pool-Kaskaskia.Stage.Inst.0.Flood",
@@ -6322,10 +6712,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 0.8,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "08-06-1993"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "08-06-1993",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -6338,7 +6727,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Nav Pool-Kaskaskia.Stage.Inst.30Minutes.0.29",
-                            "ts-code": 43646018,
                             "attribute": 1
                         }
                     ]
@@ -6399,6 +6787,15 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Nav TW-Kaskaskia.Height.Inst.0.NGVD29",
+                    "constant-value": 299.99999999999994,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Nav TW-Kaskaskia.Stage.Inst.0.Flood",
@@ -6430,10 +6827,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 0.8,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "08-06-1993"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "08-06-1993",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -6445,8 +6841,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Nav TW-Kaskaskia.Stage.Inst.30Minutes.0.lrgsShef-rev",
-                            "ts-code": 3798018
+                            "timeseries-id": "Nav TW-Kaskaskia.Stage.Inst.30Minutes.0.lrgsShef-rev"
                         }
                     ]
                 },
@@ -6544,6 +6939,10 @@
                     "level-date": "2024-01-01T08:00:00Z",
                     "attribute-units-id": "ac-ft",
                     "seasonal-values": []
+                },
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "05-19-1995",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -6681,6 +7080,10 @@
                         "stage-units": "ft"
                     }
                 ],
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "05-01-1996",
+                    "tsid_null": null
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -6806,6 +7209,10 @@
                         "stage-units": "ft"
                     }
                 ],
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "05-15-1961",
+                    "tsid_null": null
+                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -6894,6 +7301,15 @@
                 },
                 "record-stage": null,
                 "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Patterson-St Francis.Height.Inst.0.NGVD29",
+                    "constant-value": 370.45,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Patterson-St Francis.Stage.Inst.0.Flood",
@@ -6924,10 +7340,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": null,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": null
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": null,
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -6940,7 +7355,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Patterson-St Francis.Stage.Inst.15Minutes.0.lrgsShef-rev",
-                            "ts-code": 3859018,
                             "attribute": 1
                         }
                     ]
@@ -6956,7 +7370,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Patterson-St Francis.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 3863018,
                             "attribute": 1
                         }
                     ]
@@ -7035,10 +7448,9 @@
                     "attribute-units-id": "ac-ft",
                     "seasonal-values": []
                 },
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 213.2,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "05-03-2011"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "05-03-2011",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -7051,7 +7463,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Wappapello Lk-St Francis.Stage.Inst.30Minutes.0.29",
-                            "ts-code": 43616018,
                             "attribute": 1
                         }
                     ]
@@ -7066,8 +7477,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Wappapello Lk-St Francis.Precip.Total.~1Day.1Day.lakerep-rev",
-                            "ts-code": 44150018
+                            "timeseries-id": "Wappapello Lk-St Francis.Precip.Total.~1Day.1Day.lakerep-rev"
                         }
                     ]
                 },
@@ -7081,8 +7491,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Wappapello Lk-St Francis.Flow-In.Ave.~1Day.1Day.lakerep-rev",
-                            "ts-code": 45279018
+                            "timeseries-id": "Wappapello Lk-St Francis.Flow-In.Ave.~1Day.1Day.lakerep-rev"
                         }
                     ]
                 },
@@ -7096,8 +7505,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Wappapello Lk-St Francis.Stor.Inst.30Minutes.0.RatingCOE",
-                            "ts-code": 15246018
+                            "timeseries-id": "Wappapello Lk-St Francis.Stor.Inst.30Minutes.0.RatingCOE"
                         }
                     ]
                 }
@@ -7132,6 +7540,15 @@
                 },
                 "record-stage": null,
                 "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Iron Bridge-St Francis.Height.Inst.0.NGVD29",
+                    "constant-value": 315.15,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Iron Bridge-St Francis.Stage.Inst.0.Flood",
@@ -7163,10 +7580,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 211.9,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": null
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": null,
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -7179,7 +7595,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Iron Bridge-St Francis.Stage.Inst.30Minutes.0.lrgsShef-rev",
-                            "ts-code": 4438018,
                             "attribute": 1
                         }
                     ]
@@ -7271,10 +7686,9 @@
                     "attribute-units-id": "ac-ft",
                     "seasonal-values": []
                 },
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 63,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "07-30-2008"
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": "07-30-2008",
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -7287,7 +7701,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Mark Twain Lk-Salt.Stage.Inst.30Minutes.0.29",
-                            "ts-code": 43618018,
                             "attribute": 1
                         }
                     ]
@@ -7302,8 +7715,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Mark Twain Lk-Salt.Precip.Total.~1Day.1Day.lakerep-rev",
-                            "ts-code": 44146018
+                            "timeseries-id": "Mark Twain Lk-Salt.Precip.Total.~1Day.1Day.lakerep-rev"
                         }
                     ]
                 },
@@ -7317,8 +7729,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Mark Twain Lk-Salt.Flow-In.Ave.~1Day.1Day.lakerep-rev",
-                            "ts-code": 45273018
+                            "timeseries-id": "Mark Twain Lk-Salt.Flow-In.Ave.~1Day.1Day.lakerep-rev"
                         }
                     ]
                 },
@@ -7332,8 +7743,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Mark Twain Lk-Salt.Stor.Inst.30Minutes.0.RatingCOE",
-                            "ts-code": 15248018
+                            "timeseries-id": "Mark Twain Lk-Salt.Stor.Inst.30Minutes.0.RatingCOE"
                         }
                     ]
                 }
@@ -7368,6 +7778,15 @@
                 },
                 "record-stage": null,
                 "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Norton Bridge-Salt.Height.Inst.0.NGVD29",
+                    "constant-value": 499.99999999999994,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Norton Bridge-Salt.Stage.Inst.0.Flood",
@@ -7400,10 +7819,9 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 53.1,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": null
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": null,
+                    "tsid_null": null
                 },
                 "tsid-stage": {
                     "office-id": "MVS",
@@ -7416,7 +7834,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Norton Bridge-Salt.Stage.Inst.15Minutes.0.lrgsShef-rev",
-                            "ts-code": 3818018,
                             "attribute": 1
                         }
                     ]

@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const floodMap = new Map();
         const stageTsidMap = new Map();
         const riverMileMap = new Map();
-        // const riverMileHardCodedMap = new Map();
+        const recordStageDateHardCodedMap = new Map();
         const forecastNwsTsidMap = new Map();
         const crestNwsTsidMap = new Map();
         const precipLakeTsidMap = new Map();
@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const floodPromises = [];
         const stageTsidPromises = [];
         const riverMilePromises = [];
-        // const riverMileHardCodedPromises = [];
+        const recordStageDateHardCodedPromises = [];
         const forecastNwsTsidPromises = [];
         const crestTsidPromises = [];
         const precipLakeTsidPromises = [];
@@ -170,6 +170,20 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Limit to first 3 basins for testing
                 // basins = basins.slice(2, 6);
                 // console.log('Filtered testing basins:', basins);
+                basins =
+                    [
+                        // "Big Muddy"
+                        // "Castor"
+                        // "Cuivre"
+                        "Illinois",
+                        // "Kaskaskia"
+                        // "Meramec"
+                        "Mississippi",
+                        // "Missouri",
+                        "Ohio"
+                        // "Salt",
+                        // "St Francis"
+                    ]
 
                 // Loop through each basin and get all the assigned locations
                 basins.forEach(basin => {
@@ -217,7 +231,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                                     return true;
                                                 } else {
                                                     // Log the location that has been removed
-                                                    console.log("Removed location: ", location);
+                                                    // console.log("Removed location: ", location);
                                                     return false;  // Remove location if there is no match
                                                 }
                                             });
@@ -277,31 +291,31 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 .catch(error => console.error(`Error fetching river mile for ${loc['location-id']}:`, error))
                             );
 
-                            // riverMileHardCodedPromises.push(
-                            //     fetch('json/gage_control_official.json')
-                            //         .then(response => {
-                            //             if (!response.ok) {
-                            //                 throw new Error(`Network response was not ok: ${response.statusText}`);
-                            //             }
-                            //             return response.json();
-                            //         })
-                            //         .then(riverMilesJson => {
-                            //             for (const basin in riverMilesJson) {
-                            //                 const locations = riverMilesJson[basin];
-                            //                 for (const locId in locations) {
-                            //                     const ownerData = locations[locId];
-                            //                     const riverMile = ownerData.river_mile_hard_coded;
-                            //                     const outputData = {
-                            //                         locationId: locId,
-                            //                         basin: basin,
-                            //                         riverMile: riverMile
-                            //                     };
-                            //                     riverMileHardCodedMap.set(locId, ownerData);
-                            //                 }
-                            //             }
-                            //         })
-                            //         .catch(error => console.error('Problem with the fetch operation:', error))
-                            // );
+                            recordStageDateHardCodedPromises.push(
+                                fetch('https://wm.mvs.ds.usace.army.mil/php_data_api/public/json/gage_control_official.json')
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error(`Network response was not ok: ${response.statusText}`);
+                                        }
+                                        return response.json();
+                                    })
+                                    .then(riverMilesJson => {
+                                        for (const basin in riverMilesJson) {
+                                            const locations = riverMilesJson[basin];
+                                            for (const locId in locations) {
+                                                const ownerData = locations[locId];
+                                                const riverMile = ownerData.river_mile_hard_coded;
+                                                const outputData = {
+                                                    locationId: locId,
+                                                    basin: basin,
+                                                    riverMile: riverMile
+                                                };
+                                                recordStageDateHardCodedMap.set(locId, ownerData);
+                                            }
+                                        }
+                                    })
+                                    .catch(error => console.error('Problem with the fetch operation:', error))
+                            );
 
                             // LWRP LEVEL
                             const levelIdLwrp = `${loc['location-id']}.Stage.Inst.0.LWRP`;
@@ -464,7 +478,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         ...bottomOfFloodPromises,
                         ...bottomOfConservationPromises,
                         ...riverMilePromises,
-                        // ...riverMileHardCodedPromises,
+                        ...recordStageDateHardCodedPromises,
                         ...stageTsidPromises,
                         ...forecastNwsTsidPromises,
                         ...crestTsidPromises,
@@ -486,7 +500,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                     loc['bottom-of-flood'] = bottomOfFloodMap.get(loc['location-id']);
                                     loc['bottom-of-conservation'] = bottomOfConservationMap.get(loc['location-id']);
                                     loc['river-mile'] = riverMileMap.get(loc['location-id']);
-                                    // loc['river-mile-hard-coded'] = riverMileHardCodedMap.get(loc['location-id']);
+                                    loc['record-stage-date-hard-coded'] = recordStageDateHardCodedMap.get(loc['location-id']);
                                     loc['tsid-stage'] = stageTsidMap.get(loc['location-id']);
                                     loc['tsid-nws-forecast'] = forecastNwsTsidMap.get(loc['location-id']);
                                     loc['tsid-nws-crest'] = crestNwsTsidMap.get(loc['location-id']);
@@ -659,7 +673,7 @@ function getLastNonNullValue(data, tsid) {
 }
 
 function getLastNonNull6amValue(data, tsid, dstOffsetHours, c_count) {
-    console.log(data);
+    // console.log(data);
 
     if (!data || !Array.isArray(data.values)) {
         return {
@@ -1239,7 +1253,7 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                     const recordDateCell = document.createElement('td');
 
                     // Retrieve the record stage date value, or use null if not available
-                    const recordDateValue = (location['river-mile-hard-coded'] && location['river-mile-hard-coded']['record_stage_date_hard_coded']);
+                    const recordDateValue = (location['record-stage-date-hard-coded'] && location['record-stage-date-hard-coded']['record_stage_date_hard_coded']);
                     // console.log("recordDateValue: ", typeof (recordDateValue));
 
                     // Replace all dashes with non-breaking hyphens
@@ -1534,10 +1548,8 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
             // 14 - Record Date
             (() => {
                 const recordDateTd = document.createElement('td');
-                const recordDateValue = location['river-mile-hard-coded'] && location['river-mile-hard-coded']['record_stage_date_hard_coded'];
-
+                const recordDateValue = (location['record-stage-date-hard-coded'] && location['record-stage-date-hard-coded']['record_stage_date_hard_coded']);
                 const formattedRecordDateValue = recordDateValue != null ? recordDateValue.replace(/-/g, '&#8209;') : "";
-
                 recordDateTd.innerHTML = formattedRecordDateValue;
                 // Set the title for the cell
                 recordDateTd.title = "Json";
@@ -1896,7 +1908,8 @@ function updateLakeCrestHTML(filteredData, crestCell) {
     const locationData = filteredData[Object.keys(filteredData)[0]]; // Get the first (and only) key's data
     if (locationData.crest || locationData.option === "CG") {
         const isCresting = locationData.option === "CG";
-        const crestText = isCresting ? "Cresting" : `${locationData.option} ${locationData.crest}`;
+        const option = locationData?.option ?? '';
+        const crestText = isCresting ? "Cresting" : `${option} ${locationData.crest}`;
         crestCell.innerHTML = `<div class="hard_coded_php" title="crest">${crestText}</div>`;
         crestCell.style.whiteSpace = 'nowrap'; // Prevent line break
     } else {
@@ -1956,8 +1969,8 @@ function fetchAndUpdateStageTd(stageTd, DeltaTd, tsidStage, flood_level, current
                         timestampLast = lastNonNullValue.current6am.timestamp;
                         valueLast = parseFloat(lastNonNullValue.current6am.value).toFixed(2);
                     }
-                    console.log("valueLast:", valueLast);
-                    console.log("timestampLast:", timestampLast);
+                    // console.log("valueLast:", valueLast);
+                    // console.log("timestampLast:", timestampLast);
 
                     let value24HoursLast = null;
                     let timestamp24HoursLast = null;
@@ -2637,7 +2650,7 @@ function updateNwsCrestForecastTimeHTML(filteredData, crestCell, crestDateCell) 
 
         // Display value in crestCell with one decimal place (in red color), and shortDate in crestDateCell
         crestCell.innerHTML = `<div style="font-size: 1em; color: red;">${parseFloat(value).toFixed(1)}</div>`; // Value in red and 1 decimal place
-        crestDateCell.innerHTML = `<div style="font-size: 1em;">${shortDate}</div>`; // Display date (e.g., "08-APR") with font size 1.5em
+        crestDateCell.innerHTML = `<div style="font-size: 1em; white-space: nowrap;">${shortDate}</div>`; // Display date (e.g., "08-APR") with font size 1.5em
     } else {
         crestCell.innerHTML = ''; // If no value exists, clear the cell
         crestDateCell.innerHTML = ''; // If no date_time exists, clear the cell
