@@ -3061,7 +3061,7 @@
                     "location-kind": "STREAM_LOCATION",
                     "nation": "US",
                     "state-initial": "IL",
-                    "county-name": "Unknown County or County N/A",
+                    "county-name": "Unknown County or County N/A for Illinois",
                     "nearest-city": "Morris",
                     "horizontal-datum": "WGS84",
                     "vertical-datum": "NGVD29",
@@ -3079,6 +3079,15 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Morris-Illinois.Height.Inst.0.NGVD29",
+                    "constant-value": 998.9999999999999,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Morris-Illinois.Stage.Inst.0.Flood",
@@ -3108,11 +3117,6 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 263.1,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "04-19-2013"
-                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -3124,7 +3128,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Morris-Illinois.Stage.Inst.15Minutes.0.lrgsShef-rev",
-                            "ts-code": 3737018,
                             "attribute": 1
                         }
                     ]
@@ -3140,7 +3143,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Morris-Illinois.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 1744018,
                             "attribute": 1
                         }
                     ]
@@ -3156,7 +3158,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Morris-Illinois.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 3743018,
                             "attribute": 1
                         }
                     ]
@@ -3179,7 +3180,7 @@
                     "location-kind": "STREAM_LOCATION",
                     "nation": "US",
                     "state-initial": "IL",
-                    "county-name": "Unknown County or County N/A",
+                    "county-name": "Unknown County or County N/A for Illinois",
                     "nearest-city": "Ottawa",
                     "horizontal-datum": "WGS84",
                     "vertical-datum": "NGVD29",
@@ -3197,6 +3198,15 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "La Salle-Illinois.Height.Inst.0.NGVD29",
+                    "constant-value": 998.9999999999999,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "La Salle-Illinois.Stage.Inst.0.Flood",
@@ -3226,11 +3236,6 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 224.7,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "04-20-2013"
-                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -3242,7 +3247,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "La Salle-Illinois.Stage.Inst.15Minutes.0.lrgsShef-rev",
-                            "ts-code": 4624018,
                             "attribute": 1
                         }
                     ]
@@ -3258,7 +3262,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "La Salle-Illinois.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 1753018,
                             "attribute": 1
                         }
                     ]
@@ -3274,7 +3277,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "La Salle-Illinois.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 4631018,
                             "attribute": 1
                         }
                     ]
@@ -3297,7 +3299,7 @@
                     "location-kind": "STREAM_LOCATION",
                     "nation": "US",
                     "state-initial": "IL",
-                    "county-name": "Unknown County or County N/A",
+                    "county-name": "Unknown County or County N/A for Illinois",
                     "nearest-city": "East Peoria",
                     "horizontal-datum": "WGS84",
                     "vertical-datum": "NGVD29",
@@ -3315,6 +3317,15 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Peoria-Illinois.Height.Inst.0.NGVD29",
+                    "constant-value": 908.9999999999999,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Peoria-Illinois.Stage.Inst.0.Flood",
@@ -3344,11 +3355,6 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 164.6,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "04-23-2013"
-                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -3360,7 +3366,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Peoria-Illinois.Stage.Inst.15Minutes.0.lrgsShef-rev",
-                            "ts-code": 21481018,
                             "attribute": 1
                         }
                     ]
@@ -3376,7 +3381,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Peoria-Illinois.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 1751018,
                             "attribute": 1
                         }
                     ]
@@ -3392,7 +3396,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Peoria-Illinois.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 3874018,
                             "attribute": 1
                         }
                     ]
@@ -3435,6 +3438,16 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Beardstown-Illinois.Height.Inst.0.NGVD29",
+                    "constant-value": 419.8999999999999,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "level-comment": "Data from CWMS NGVD29",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Beardstown-Illinois.Stage.Inst.0.Flood",
@@ -3466,11 +3479,6 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 88.6,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "04-27-2013"
-                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -3482,7 +3490,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Beardstown-Illinois.Stage.Inst.30Minutes.0.lrgsShef-rev",
-                            "ts-code": 4009018,
                             "attribute": 1
                         }
                     ]
@@ -3498,7 +3505,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Beardstown-Illinois.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 1747018,
                             "attribute": 1
                         }
                     ]
@@ -3514,7 +3520,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Beardstown-Illinois.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 4013018,
                             "attribute": 1
                         }
                     ]
@@ -3566,6 +3571,15 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Meredosia-Illinois.Height.Inst.0.NGVD29",
+                    "constant-value": 28.829999999999995,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Meredosia-Illinois.Stage.Inst.0.Flood",
@@ -3596,11 +3610,6 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 70.8,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "07-02-2015"
-                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -3612,7 +3621,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Meredosia-Illinois.Stage.Inst.30Minutes.0.lrgsShef-rev",
-                            "ts-code": 3703018,
                             "attribute": 1
                         }
                     ]
@@ -3628,7 +3636,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Meredosia-Illinois.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 1746018,
                             "attribute": 1
                         }
                     ]
@@ -3644,7 +3651,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Meredosia-Illinois.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 3706018,
                             "attribute": 1
                         }
                     ]
@@ -3696,6 +3702,15 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Valley City-Illinois.Height.Inst.0.NGVD29",
+                    "constant-value": 418,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Valley City-Illinois.Stage.Inst.0.Flood",
@@ -3727,11 +3742,6 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 61.3,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "05-26-1943"
-                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -3742,8 +3752,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Valley City-Illinois.Stage.Inst.30Minutes.0.lrgsShef-rev",
-                            "ts-code": 3242018
+                            "timeseries-id": "Valley City-Illinois.Stage.Inst.30Minutes.0.lrgsShef-rev"
                         }
                     ]
                 },
@@ -3758,7 +3767,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Valley City-Illinois.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 1756018,
                             "attribute": 1
                         }
                     ]
@@ -3774,7 +3782,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Valley City-Illinois.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 3245018,
                             "attribute": 1
                         }
                     ]
@@ -3818,6 +3825,15 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Florence-Illinois.Height.Inst.0.NGVD29",
+                    "constant-value": 399.99999999999994,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Florence-Illinois.Stage.Inst.0.Flood",
@@ -3850,11 +3866,6 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 56,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "08-01-1993"
-                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -3866,7 +3877,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Florence-Illinois.Stage.Inst.30Minutes.0.lrgsShef-rev",
-                            "ts-code": 4275018,
                             "attribute": 1
                         }
                     ]
@@ -3927,6 +3937,15 @@
                     "attribute-units-id": "ft",
                     "seasonal-values": []
                 },
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Hardin-Illinois.Height.Inst.0.NGVD29",
+                    "constant-value": 399.99999999999994,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Hardin-Illinois.Stage.Inst.0.Flood",
@@ -3959,11 +3978,6 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 21.5,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "08-03-1993"
-                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -3975,7 +3989,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Hardin-Illinois.Stage.Inst.30Minutes.0.lrgsShef-rev",
-                            "ts-code": 4369018,
                             "attribute": 1
                         }
                     ]
@@ -3991,7 +4004,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Hardin-Illinois.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 1757018,
                             "attribute": 1
                         }
                     ]
@@ -4007,7 +4019,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Hardin-Illinois.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 4372018,
                             "attribute": 1
                         }
                     ]
@@ -4063,6 +4074,15 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Troy-Cuivre.Height.Inst.0.NGVD29",
+                    "constant-value": 450.27,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Troy-Cuivre.Stage.Inst.0.Flood",
@@ -4095,11 +4115,6 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 20,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "04-12-1994"
-                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -4110,8 +4125,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Troy-Cuivre.Stage.Inst.15Minutes.0.lrgsShef-rev",
-                            "ts-code": 3220018
+                            "timeseries-id": "Troy-Cuivre.Stage.Inst.15Minutes.0.lrgsShef-rev"
                         }
                     ]
                 },
@@ -4126,7 +4140,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Troy-Cuivre.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 3224018,
                             "attribute": 1
                         }
                     ]
@@ -6532,11 +6545,6 @@
                     "attribute-units-id": "ac-ft",
                     "seasonal-values": []
                 },
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 103.9,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "05-19-1995"
-                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -6548,7 +6556,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Rend Lk-Big Muddy.Stage.Inst.30Minutes.0.29",
-                            "ts-code": 43607018,
                             "attribute": 1
                         }
                     ]
@@ -6563,8 +6570,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Rend Lk-Big Muddy.Precip.Total.~1Day.1Day.lakerep-rev",
-                            "ts-code": 44147018
+                            "timeseries-id": "Rend Lk-Big Muddy.Precip.Total.~1Day.1Day.lakerep-rev"
                         }
                     ]
                 },
@@ -6579,7 +6585,7 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Rend Lk-Big Muddy.Flow-In.Ave.~1Day.1Day.lakerep-rev",
-                            "ts-code": 45689018
+                            "attribute": 1
                         }
                     ]
                 },
@@ -6593,8 +6599,7 @@
                     "assigned-time-series": [
                         {
                             "office-id": "MVS",
-                            "timeseries-id": "Rend Lk-Big Muddy.Stor.Inst.30Minutes.0.RatingCOE",
-                            "ts-code": 19758018
+                            "timeseries-id": "Rend Lk-Big Muddy.Stor.Inst.30Minutes.0.RatingCOE"
                         }
                     ]
                 }
@@ -6637,6 +6642,15 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Plumfield-Big Muddy.Height.Inst.0.NGVD29",
+                    "constant-value": 353.23999999999995,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Plumfield-Big Muddy.Stage.Inst.0.Flood",
@@ -6667,11 +6681,6 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 86.6,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "05-01-1996"
-                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -6683,7 +6692,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Plumfield-Big Muddy.Stage.Inst.15Minutes.0.lrgsShef-rev",
-                            "ts-code": 3893018,
                             "attribute": 1
                         }
                     ]
@@ -6699,7 +6707,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Plumfield-Big Muddy.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 3897018,
                             "attribute": 1
                         }
                     ]
@@ -6715,7 +6722,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Plumfield-Big Muddy.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 3898018,
                             "attribute": 1
                         }
                     ]
@@ -6759,6 +6765,15 @@
                     "seasonal-values": []
                 },
                 "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Murphysboro-Big Muddy.Height.Inst.0.NGVD29",
+                    "constant-value": 335.5,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
                 "flood": {
                     "office-id": "MVS",
                     "location-level-id": "Murphysboro-Big Muddy.Stage.Inst.0.Flood",
@@ -6791,11 +6806,6 @@
                         "stage-units": "ft"
                     }
                 ],
-                "river-mile-hard-coded": {
-                    "river_mile_hard_coded": 36,
-                    "tsid_null": null,
-                    "record_stage_date_hard_coded": "05-15-1961"
-                },
                 "tsid-stage": {
                     "office-id": "MVS",
                     "id": "Stage",
@@ -6807,7 +6817,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Murphysboro-Big Muddy.Stage.Inst.15Minutes.0.lrgsShef-rev",
-                            "ts-code": 3777018,
                             "attribute": 1
                         }
                     ]
@@ -6823,7 +6832,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Murphysboro-Big Muddy.Stage.Inst.6Hours.0.RVFShef-FF",
-                            "ts-code": 3781018,
                             "attribute": 1
                         }
                     ]
@@ -6839,7 +6847,6 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Murphysboro-Big Muddy.Stage.Inst.6Hours.0.RVFShef-FX",
-                            "ts-code": 3782018,
                             "attribute": 1
                         }
                     ]
