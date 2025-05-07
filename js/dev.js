@@ -78,15 +78,19 @@ document.addEventListener('DOMContentLoaded', async function () {
         const categoryApiUrl = `${setBaseUrl}location/group?office=${office}&group-office-id=${office}&category-office-id=${office}&category-id=${setLocationCategory}`;
 
         // Maps to hold data
+        const stageTsidMap = new Map();
         const metadataMap = new Map();
         const floodMap = new Map();
-        const stageTsidMap = new Map();
+        const riverMileMap = new Map();
 
+        // Promises
+        const stageTsidPromises = [];
         const metadataPromises = [];
         const floodPromises = [];
-        const stageTsidPromises = [];
+        const riverMilePromises = [];
         const apiPromises = [];
 
+        // Set empty data array to store gage_data.json
         let combinedData = [];
 
         // Fetch initial category
@@ -138,7 +142,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 return Promise.all(apiPromises);
             })
-            .then(() => Promise.all([...metadataPromises, ...floodPromises, ...stageTsidPromises]))
+            .then(() => Promise.all([...metadataPromises, ...floodPromises, ...stageTsidPromises, ...riverMilePromises]))
             .then(() => {
                 // Merge fetched data into locations
                 combinedData.forEach(basin => {
@@ -146,6 +150,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         loc.metadata = metadataMap.get(loc['location-id']);
                         loc.flood = floodMap.get(loc['location-id']);
                         loc['tsid-stage'] = stageTsidMap.get(loc['location-id']);
+                        loc['river-mile'] = riverMileMap.get(loc['location-id']);
                     });
                 });
 
@@ -224,8 +229,16 @@ document.addEventListener('DOMContentLoaded', async function () {
                     .then(data => data && stageTsidMap.set(locationId, data))
                     .catch(err => console.error(`TSID fetch failed for ${locationId}:`, err))
             );
-        }
 
+            const riverMileApiUrl = `${setBaseUrl}stream-locations?office-mask=${office}&name-mask=${loc['location-id']}`;
+
+            riverMilePromises.push(
+                fetch(riverMileApiUrl)
+                    .then(res => res.ok ? res.json() : null)
+                    .then(data => data && riverMileMap.set(locationId, data))
+                    .catch(err => console.error(`TSID fetch failed for ${locationId}:`, err))
+            );
+        }
     }
 });
 
@@ -617,6 +630,7 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
         // Remove the basin if it has no assigned locations left
         return basin['assigned-locations'].length > 0;
     });
+    console.log("combinedDataRiver:", combinedDataRiver);
 
     // Add 3-rows title
     (() => {
@@ -709,7 +723,6 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                 const locationId = location['location-id'];
                 const riverMileObject = location['river-mile'];
                 const riverMileValue = getStationForLocation(locationId, riverMileObject);
-                // console.log("riverMileValue: ", riverMileValue);
                 riverMileCell.textContent = riverMileValue != null ? parseFloat(riverMileValue).toFixed(1) : "--";
                 row.appendChild(riverMileCell);
             })();
@@ -845,14 +858,8 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
 
                     // Ensure gageZeroValue is a valid number before formatting
                     if (typeof gageZeroValue === 'number' && !isNaN(gageZeroValue)) {
-                        if (location[`metadata`][`public-name`] === "Nav Pool") {
-                            // TODO: Remove this hard-coded value
-                            gageZeroCell.textContent = -0.50;
-
-                        } else {
-                            gageZeroCell.textContent = (gageZeroValue > 900) ? '--' : gageZeroValue.toFixed(2);
-                            gageZeroCell.title = 'NAVD88';
-                        }
+                        gageZeroCell.textContent = (gageZeroValue > 900) ? '--' : gageZeroValue.toFixed(2);
+                        gageZeroCell.title = 'NAVD88';
                     } else {
                         gageZeroCell.textContent = 'N/A';
                     }
@@ -921,8 +928,8 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
     const table = document.createElement('table');
     table.setAttribute('id', 'webreplake');
 
-    console.log("lakeLocs: ", lakeLocs);
-    console.log("combinedDataReservoir (before): ", combinedDataReservoir);
+    // console.log("lakeLocs: ", lakeLocs);
+    // console.log("combinedDataReservoir (before): ", combinedDataReservoir);
 
     // Get current date and time
     const currentDateTime = new Date();
@@ -962,8 +969,7 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
         // Remove the basin if it has no assigned locations left
         return basin['assigned-locations'].length > 0;
     });
-
-    console.log("combinedDataReservoir (after): ", combinedDataReservoir);
+    console.log("combinedDataReservoir:", combinedDataReservoir);
 
     // Add 3-rows title
     (() => {
