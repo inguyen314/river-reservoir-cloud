@@ -81,7 +81,11 @@
                 <div id="loading_river_reservoir" style="display: none;">
                     <img src="images/loading4.gif" style='height: 50px; width: 50px;' alt="Loading..." />
                 </div>
+                <p>All water levels given in stage, unless indicated (Gage Zero + Stage = Elevation). Forecasts include
+                    observed precip up to 6am today plus expected precip to 6am tomorrow only.</p>
                 <div id="table_container_river_reservoir"></div>
+                <p>Lake Level and discharges are in <span style="color: red; font-weight: bold;">red/bold</span> exceed
+                    arbitary impact levels.</p>
                 <script src="js/river_reservoir.js"></script>
             </div>
             <button id="returnTop" title="Return to Top of Page">Top</button>
@@ -113,15 +117,42 @@
             title = `${office} Realtime Morning Report`;
         } else {
             // title = `${office} Realtime River Reservoir`;
-            title = `${office} Realtime River Reservoir`; 
+            title = `${office} Realtime River Reservoir`;
         }
 
         if (title) {
             document.title = title;
             const titleSpan = document.querySelector('.titleLabel.title');
             if (titleSpan) {
-                titleSpan.textContent = `River Reservoir`;
+                if (type === "morning") {
+                    titleSpan.textContent = `Morning Report`;
+                } else {
+                    titleSpan.textContent = `River Reservoir`;
+                }
             }
         }
     });
+</script>
+
+<script>
+    function matchTableWidths() {
+        const t1 = document.getElementById('webrep');
+        const t2 = document.getElementById('webreplake');
+
+        // Reset widths to natural size
+        t1.style.width = 'auto';
+        t2.style.width = 'auto';
+
+        // Get the widest table
+        const w1 = t1.offsetWidth;
+        const w2 = t2.offsetWidth;
+        const maxWidth = Math.max(w1, w2);
+
+        // Apply the max width to both
+        t1.style.width = maxWidth + 'px';
+        t2.style.width = maxWidth + 'px';
+    }
+
+    window.addEventListener('load', matchTableWidths);
+    window.addEventListener('resize', matchTableWidths);
 </script>

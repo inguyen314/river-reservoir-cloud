@@ -175,12 +175,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                         // "Big Muddy"
                         // "Castor"
                         // "Cuivre"
-                        "Illinois",
+                        // "Illinois",
                         // "Kaskaskia"
-                        // "Meramec"
-                        "Mississippi",
+                        "Meramec"
+                        // "Mississippi",
                         // "Missouri",
-                        "Ohio"
+                        // "Ohio"
                         // "Salt",
                         // "St Francis"
                     ]
@@ -1198,13 +1198,20 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                     const gageZeroValue = location['metadata']?.['elevation'];
                     const datum = location['metadata']?.['vertical-datum'];
 
+                    // check if stage is stage 29
+                    const stageTsid = location?.['tsid-stage']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
+                    const isStage29 = stageTsid.split(".").pop() === "29";
+                    // console.log("isStage29: ", isStage29);
+
+                    // get NGVD29 value
+                    const ngvd29Value = location['ngvd29']?.['constant-value'] ?? null;
+
                     // Ensure gageZeroValue is a valid number before formatting
                     if (typeof gageZeroValue === 'number' && !isNaN(gageZeroValue)) {
                         // Only display the value if it's not unusually high (e.g., a placeholder or error code)
-                        if (location[`metadata`][`public-name`] === "Nav Pool") {
-                            // TODO: Remove this hard-coded value
-                            gageZeroCell.textContent = -0.50;
-                            // gageZeroCell.title = 'Datum: NAVD88'; // Add a tooltip to indicate the datum
+                        if (isStage29 === true) {
+                            gageZeroCell.textContent = (gageZeroValue - ngvd29Value).toFixed(2);
+                            gageZeroCell.title = 'Datum: NAVD88'; // Add a tooltip to indicate the datum
                         } else {
                             gageZeroCell.textContent = (gageZeroValue > 900) ? '' : gageZeroValue.toFixed(2);
                             gageZeroCell.title = 'Datum: NAVD88'; // Add a tooltip to indicate the datum
@@ -1906,10 +1913,18 @@ function updateRuleCurveHTML(filteredData, seasonalRuleCurveCell) {
 
 function updateLakeCrestHTML(filteredData, crestCell) {
     const locationData = filteredData[Object.keys(filteredData)[0]]; // Get the first (and only) key's data
-    if (locationData.crest || locationData.option === "CG") {
-        const isCresting = locationData.option === "CG";
+    if (locationData.crest || locationData.option === "CG" || locationData.option === "CD") {
         const option = locationData?.option ?? '';
-        const crestText = isCresting ? "Cresting" : `${option} ${locationData.crest}`;
+        let crestText = '';
+
+        if (option === "CG") {
+            crestText = "Cresting";
+        } else if (option === "CD") {
+            crestText = "Crested";
+        } else {
+            crestText = `${option} ${locationData.crest}`;
+        }
+
         crestCell.innerHTML = `<div class="hard_coded_php" title="crest">${crestText}</div>`;
         crestCell.style.whiteSpace = 'nowrap'; // Prevent line break
     } else {

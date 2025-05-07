@@ -4850,105 +4850,9 @@
                 }
             },
             {
-                "location-id": "Champion City-Bourbeuse",
-                "office-id": "MVS",
-                "attribute": 2,
-                "metadata": {
-                    "office-id": "MVS",
-                    "name": "Champion City-Bourbeuse",
-                    "latitude": 38.3120083,
-                    "longitude": -91.2775,
-                    "active": true,
-                    "public-name": "Champion City",
-                    "long-name": "Champion City",
-                    "description": "Champion City-Bourbeuse",
-                    "timezone-name": "US/Central",
-                    "location-kind": "STREAM_LOCATION",
-                    "nation": "US",
-                    "state-initial": "MO",
-                    "county-name": "St. Louis",
-                    "nearest-city": "Saint Louis",
-                    "published-longitude": -91.2775,
-                    "published-latitude": 38.3120083,
-                    "vertical-datum": "NAVD88",
-                    "elevation": 618.92,
-                    "bounding-office-id": "MVS",
-                    "elevation-units": "ft"
-                },
-                "record-stage": null,
-                "lwrp": null,
-                "ngvd29": {
-                    "office-id": "MVS",
-                    "location-level-id": "Champion City-Bourbeuse.Height.Inst.0.NGVD29",
-                    "constant-value": 999.99,
-                    "level-units-id": "ft",
-                    "level-date": "2024-01-01T08:00:00Z",
-                    "attribute-units-id": "ft",
-                    "seasonal-values": []
-                },
-                "flood": {
-                    "office-id": "MVS",
-                    "location-level-id": "Champion City-Bourbeuse.Stage.Inst.0.Flood",
-                    "constant-value": 908.9999999999999,
-                    "level-units-id": "ft",
-                    "level-date": "2024-01-01T08:00:00Z",
-                    "attribute-units-id": "ft",
-                    "seasonal-values": []
-                },
-                "river-mile": [
-                    {
-                        "stream-location-node": {
-                            "id": {
-                                "office-id": "MVS",
-                                "name": "Champion City-Bourbeuse"
-                            },
-                            "stream-node": {
-                                "stream-id": {
-                                    "office-id": "MVS",
-                                    "name": "Bourbeuse R"
-                                },
-                                "station": 75.3,
-                                "station-units": "mi"
-                            }
-                        },
-                        "published-station": 75.3,
-                        "area-units": "mile2",
-                        "stage-units": "ft"
-                    }
-                ],
-                "record-stage-date-hard-coded": {
-                    "record_stage_date_hard_coded": null,
-                    "tsid_null": null
-                },
-                "tsid-stage": {
-                    "office-id": "MVS",
-                    "id": "Stage",
-                    "time-series-category": {
-                        "office-id": "MVS",
-                        "id": "Champion City-Bourbeuse"
-                    },
-                    "assigned-time-series": [
-                        {
-                            "office-id": "MVS",
-                            "timeseries-id": "Champion City-Bourbeuse.Stage.Inst.15Minutes.0.lrgsShef-rev",
-                            "attribute": 1
-                        }
-                    ]
-                },
-                "tsid-nws-crest": {
-                    "office-id": "MVS",
-                    "id": "Crest",
-                    "time-series-category": {
-                        "office-id": "MVS",
-                        "id": "Champion City-Bourbeuse"
-                    },
-                    "assigned-time-series": []
-                }
-            },
-            {
                 "location-id": "Sullivan-Meramec",
                 "office-id": "MVS",
-                "attribute": 3,
+                "attribute": 2,
                 "metadata": {
                     "office-id": "MVS",
                     "name": "Sullivan-Meramec",
@@ -5070,6 +4974,102 @@
                             "timeseries-id": "Sullivan-Meramec.Stage.Inst.6Hours.0.RVFShef-FX"
                         }
                     ]
+                }
+            },
+            {
+                "location-id": "Champion City-Bourbeuse",
+                "office-id": "MVS",
+                "attribute": 3,
+                "metadata": {
+                    "office-id": "MVS",
+                    "name": "Champion City-Bourbeuse",
+                    "latitude": 38.3120083,
+                    "longitude": -91.2775,
+                    "active": true,
+                    "public-name": "Champion City",
+                    "long-name": "Champion City",
+                    "description": "Champion City-Bourbeuse",
+                    "timezone-name": "US/Central",
+                    "location-kind": "STREAM_LOCATION",
+                    "nation": "US",
+                    "state-initial": "MO",
+                    "county-name": "St. Louis",
+                    "nearest-city": "Saint Louis",
+                    "published-longitude": -91.2775,
+                    "published-latitude": 38.3120083,
+                    "vertical-datum": "NAVD88",
+                    "elevation": 618.92,
+                    "bounding-office-id": "MVS",
+                    "elevation-units": "ft"
+                },
+                "record-stage": null,
+                "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "Champion City-Bourbeuse.Height.Inst.0.NGVD29",
+                    "constant-value": 999.99,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
+                "flood": {
+                    "office-id": "MVS",
+                    "location-level-id": "Champion City-Bourbeuse.Stage.Inst.0.Flood",
+                    "constant-value": 908.9999999999999,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
+                "river-mile": [
+                    {
+                        "stream-location-node": {
+                            "id": {
+                                "office-id": "MVS",
+                                "name": "Champion City-Bourbeuse"
+                            },
+                            "stream-node": {
+                                "stream-id": {
+                                    "office-id": "MVS",
+                                    "name": "Bourbeuse R"
+                                },
+                                "station": 75.3,
+                                "station-units": "mi"
+                            }
+                        },
+                        "published-station": 75.3,
+                        "area-units": "mile2",
+                        "stage-units": "ft"
+                    }
+                ],
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": null,
+                    "tsid_null": null
+                },
+                "tsid-stage": {
+                    "office-id": "MVS",
+                    "id": "Stage",
+                    "time-series-category": {
+                        "office-id": "MVS",
+                        "id": "Champion City-Bourbeuse"
+                    },
+                    "assigned-time-series": [
+                        {
+                            "office-id": "MVS",
+                            "timeseries-id": "Champion City-Bourbeuse.Stage.Inst.15Minutes.0.lrgsShef-rev",
+                            "attribute": 1
+                        }
+                    ]
+                },
+                "tsid-nws-crest": {
+                    "office-id": "MVS",
+                    "id": "Crest",
+                    "time-series-category": {
+                        "office-id": "MVS",
+                        "id": "Champion City-Bourbeuse"
+                    },
+                    "assigned-time-series": []
                 }
             },
             {
@@ -7599,6 +7599,90 @@
                         }
                     ]
                 }
+            },
+            {
+                "location-id": "St Francis-St Francis",
+                "office-id": "MVS",
+                "attribute": 16,
+                "metadata": {
+                    "office-id": "MVS",
+                    "name": "St Francis-St Francis",
+                    "latitude": 36.455833,
+                    "longitude": -90.136944,
+                    "active": true,
+                    "public-name": "St Francis",
+                    "timezone-name": "America/Chicago",
+                    "location-kind": "STREAM_LOCATION",
+                    "nation": "US",
+                    "state-initial": "MO",
+                    "county-name": "Dunklin",
+                    "nearest-city": "Kennett",
+                    "published-longitude": -90.136944,
+                    "published-latitude": 36.455833,
+                    "vertical-datum": "NGVD29",
+                    "elevation": 270.56999999999994,
+                    "bounding-office-id": "MVM",
+                    "elevation-units": "ft"
+                },
+                "record-stage": null,
+                "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "St Francis-St Francis.Height.Inst.0.NGVD29",
+                    "constant-value": 270.56999999999994,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
+                "flood": {
+                    "office-id": "MVS",
+                    "location-level-id": "St Francis-St Francis.Stage.Inst.0.Flood",
+                    "constant-value": 22,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
+                "river-mile": [
+                    {
+                        "stream-location-node": {
+                            "id": {
+                                "office-id": "MVS",
+                                "name": "St Francis-St Francis"
+                            },
+                            "stream-node": {
+                                "stream-id": {
+                                    "office-id": "MVS",
+                                    "name": "St Francis R"
+                                },
+                                "station": 158.4,
+                                "station-units": "mi"
+                            }
+                        },
+                        "area-units": "mile2",
+                        "stage-units": "ft"
+                    }
+                ],
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": null,
+                    "tsid_null": null
+                },
+                "tsid-stage": {
+                    "office-id": "MVS",
+                    "id": "Stage",
+                    "time-series-category": {
+                        "office-id": "MVS",
+                        "id": "St Francis-St Francis"
+                    },
+                    "assigned-time-series": [
+                        {
+                            "office-id": "MVS",
+                            "timeseries-id": "St Francis-St Francis.Stage.Inst.1Hour.0.lrgsShef-rev",
+                            "attribute": 1
+                        }
+                    ]
+                }
             }
         ]
     },
@@ -7834,6 +7918,97 @@
                         {
                             "office-id": "MVS",
                             "timeseries-id": "Norton Bridge-Salt.Stage.Inst.15Minutes.0.lrgsShef-rev",
+                            "attribute": 1
+                        }
+                    ]
+                }
+            },
+            {
+                "location-id": "New London-Salt",
+                "office-id": "MVS",
+                "attribute": 14,
+                "metadata": {
+                    "office-id": "MVS",
+                    "name": "New London-Salt",
+                    "latitude": 39.612789,
+                    "longitude": -91.407408,
+                    "active": true,
+                    "public-name": "New London",
+                    "long-name": "New London-Salt",
+                    "description": "ON LEFT BANK 180 FT UPSTREAM FROM UPSTREAM BRIDGE ON DUAL U. S. HIGHWAY 61, 2 MILES NORTH OF NEW LONDON, MILE 35.5 ABOVE THE MOUTH OF THE SALT RIVER.",
+                    "timezone-name": "US/Central",
+                    "location-kind": "STREAM_LOCATION",
+                    "nation": "US",
+                    "state-initial": "MO",
+                    "county-name": "Ralls",
+                    "nearest-city": "New London",
+                    "horizontal-datum": "WGS84",
+                    "published-longitude": -91.407408,
+                    "published-latitude": 39.612789,
+                    "vertical-datum": "NAVD88",
+                    "elevation": 476.56999999999994,
+                    "map-label": "New London",
+                    "bounding-office-id": "MVS",
+                    "elevation-units": "ft"
+                },
+                "record-stage": null,
+                "lwrp": null,
+                "ngvd29": {
+                    "office-id": "MVS",
+                    "location-level-id": "New London-Salt.Height.Inst.0.NGVD29",
+                    "constant-value": 477.0299999999999,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
+                "flood": {
+                    "office-id": "MVS",
+                    "location-level-id": "New London-Salt.Stage.Inst.0.Flood",
+                    "constant-value": 18.999999999999996,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
+                "river-mile": [
+                    {
+                        "stream-location-node": {
+                            "id": {
+                                "office-id": "MVS",
+                                "name": "New London-Salt"
+                            },
+                            "stream-node": {
+                                "stream-id": {
+                                    "office-id": "MVS",
+                                    "name": "Salt R"
+                                },
+                                "bank": "L",
+                                "station": 35.5,
+                                "station-units": "mi"
+                            }
+                        },
+                        "published-station": 35.5,
+                        "total-drainage-area": 2479.9999999999995,
+                        "area-units": "mile2",
+                        "stage-units": "ft"
+                    }
+                ],
+                "record-stage-date-hard-coded": {
+                    "record_stage_date_hard_coded": null,
+                    "tsid_null": null
+                },
+                "tsid-stage": {
+                    "office-id": "MVS",
+                    "id": "Stage",
+                    "time-series-category": {
+                        "office-id": "MVS",
+                        "id": "New London-Salt"
+                    },
+                    "assigned-time-series": [
+                        {
+                            "office-id": "MVS",
+                            "timeseries-id": "New London-Salt.Stage.Inst.15Minutes.0.lrgsShef-rev",
                             "attribute": 1
                         }
                     ]
