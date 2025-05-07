@@ -74,6 +74,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const setLocationCategory = "Basins";
         const setLocationGroupOwner = "River-Reservoir";
         const setTimeseriesGroup1 = "Stage";
+        const setTimeseriesGroup4 = "Precip-Lake-Test";
 
         const categoryApiUrl = `${setBaseUrl}location/group?office=${office}&group-office-id=${office}&category-office-id=${office}&category-id=${setLocationCategory}`;
 
@@ -82,12 +83,14 @@ document.addEventListener('DOMContentLoaded', async function () {
         const metadataMap = new Map();
         const floodMap = new Map();
         const riverMileMap = new Map();
+        const precipLakeTsidMap = new Map();
 
         // Promises
         const stageTsidPromises = [];
         const metadataPromises = [];
         const floodPromises = [];
         const riverMilePromises = [];
+        const precipLakeTsidPromises = [];
         const apiPromises = [];
 
         // Set empty data array to store gage_data.json
@@ -133,7 +136,18 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                                         combinedData.push(getBasin);
 
-                                        getBasin['assigned-locations'].forEach(fetchAndStoreDataForLocation);
+                                        // console.log(getBasin['assigned-locations']);
+                                        // console.log(lakeLocs);
+
+                                        for (const location of getBasin['assigned-locations']) {
+                                            if (lakeLocs.includes(location['location-id'])) {
+                                                // For Lake Only
+                                                fetchAndStoreDataForLakeLocation(location);
+                                            } else {
+                                                // For River Only
+                                                fetchAndStoreDataForRiverLocation(location);
+                                            }
+                                        }
                                     });
                             })
                             .catch(err => console.error(`Fetch error for basin ${basin}:`, err))
@@ -142,7 +156,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 return Promise.all(apiPromises);
             })
-            .then(() => Promise.all([...metadataPromises, ...floodPromises, ...stageTsidPromises, ...riverMilePromises]))
+            .then(() => Promise.all([...metadataPromises, ...floodPromises, ...stageTsidPromises, ...riverMilePromises, ...precipLakeTsidPromises]))
             .then(() => {
                 // Merge fetched data into locations
                 combinedData.forEach(basin => {
@@ -151,6 +165,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         loc.flood = floodMap.get(loc['location-id']);
                         loc['tsid-stage'] = stageTsidMap.get(loc['location-id']);
                         loc['river-mile'] = riverMileMap.get(loc['location-id']);
+                        loc['tsid-lake-precip'] = precipLakeTsidMap.get(loc['location-id']);
                     });
                 });
 
@@ -202,7 +217,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             return response.json();
         }
 
-        function fetchAndStoreDataForLocation(loc) {
+        function fetchAndStoreDataForRiverLocation(loc) {
             const locationId = loc['location-id'];
 
             metadataPromises.push(
@@ -213,7 +228,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             );
 
             const floodUrl = `${setBaseUrl}levels/${locationId}.Stage.Inst.0.Flood?office=${office}&effective-date=2024-01-01T08:00:00&unit=ft`;
-
             floodPromises.push(
                 fetch(floodUrl)
                     .then(res => res.status === 404 ? null : res.ok ? res.json() : Promise.reject(`Flood fetch error: ${res.statusText}`))
@@ -222,7 +236,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             );
 
             const tsidUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup1}?office=${office}&category-id=${locationId}`;
-
             stageTsidPromises.push(
                 fetch(tsidUrl)
                     .then(res => res.ok ? res.json() : null)
@@ -231,11 +244,45 @@ document.addEventListener('DOMContentLoaded', async function () {
             );
 
             const riverMileApiUrl = `${setBaseUrl}stream-locations?office-mask=${office}&name-mask=${loc['location-id']}`;
-
             riverMilePromises.push(
                 fetch(riverMileApiUrl)
                     .then(res => res.ok ? res.json() : null)
                     .then(data => data && riverMileMap.set(locationId, data))
+                    .catch(err => console.error(`TSID fetch failed for ${locationId}:`, err))
+            );
+        }
+
+        function fetchAndStoreDataForLakeLocation(loc) {
+            const locationId = loc['location-id'];
+
+            metadataPromises.push(
+                fetch(`${setBaseUrl}locations/${locationId}?office=${office}`)
+                    .then(res => res.ok ? res.json() : null)
+                    .then(data => data && metadataMap.set(locationId, data))
+                    .catch(err => console.error(`Metadata fetch failed for ${locationId}:`, err))
+            );
+
+            const floodUrl = `${setBaseUrl}levels/${locationId}.Stage.Inst.0.Flood?office=${office}&effective-date=2024-01-01T08:00:00&unit=ft`;
+            floodPromises.push(
+                fetch(floodUrl)
+                    .then(res => res.status === 404 ? null : res.ok ? res.json() : Promise.reject(`Flood fetch error: ${res.statusText}`))
+                    .then(floodData => floodMap.set(locationId, floodData ?? null))
+                    .catch(err => console.error(`Flood fetch failed for ${locationId}:`, err))
+            );
+
+            const tsidUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup1}?office=${office}&category-id=${locationId}`;
+            stageTsidPromises.push(
+                fetch(tsidUrl)
+                    .then(res => res.ok ? res.json() : null)
+                    .then(data => data && stageTsidMap.set(locationId, data))
+                    .catch(err => console.error(`TSID fetch failed for ${locationId}:`, err))
+            );
+
+            const precipLakeApiUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup4}?office=${office}&category-id=${loc['location-id']}`;
+            precipLakeTsidPromises.push(
+                fetch(precipLakeApiUrl)
+                    .then(res => res.ok ? res.json() : null)
+                    .then(data => data && precipLakeTsidMap.set(locationId, data))
                     .catch(err => console.error(`TSID fetch failed for ${locationId}:`, err))
             );
         }
