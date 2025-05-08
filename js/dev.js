@@ -77,6 +77,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const setTimeseriesGroup4 = "Precip-Lake-Test";
         const setTimeseriesGroup5 = "Inflow-Yesterday-Lake";
         const setTimeseriesGroup6 = "Storage";
+        const setTimeseriesGroup7 = "Crest-Forecast-Lake"
 
         const categoryApiUrl = `${setBaseUrl}location/group?office=${office}&group-office-id=${office}&category-office-id=${office}&category-id=${setLocationCategory}`;
 
@@ -93,6 +94,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const bottomOfFloodMap = new Map();
         const bottomOfConservationMap = new Map();
         const seasonalRuleCurveMap = new Map();
+        const crestForecastLakeMap = new Map();
 
         // Promises
         const stageTsidPromises = [];
@@ -107,6 +109,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const bottomOfFloodPromises = [];
         const bottomOfConservationPromises = [];
         const seasonalRuleCurvePromises = [];
+        const crestForecastLakePromises = [];
 
         const apiPromises = [];
 
@@ -182,6 +185,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 ...bottomOfFloodPromises,
                 ...bottomOfConservationPromises,
                 ...seasonalRuleCurvePromises,
+                ...crestForecastLakePromises
             ]))
             .then(() => {
                 // Merge fetched data into locations
@@ -199,6 +203,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         loc['bottom-of-flood'] = bottomOfFloodMap.get(loc['location-id']);
                         loc['bottom-of-conservation'] = bottomOfConservationMap.get(loc['location-id']);
                         loc['seasonal-rule-curve'] = seasonalRuleCurveMap.get(loc['location-id']);
+                        loc['tsid-crest-forecast-lake'] = crestForecastLakeMap.get(loc['location-id']);
                     });
                 });
 
@@ -378,6 +383,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                 fetch(seasonalRuleCurveApiUrl)
                     .then(res => res.ok ? res.json() : null)
                     .then(data => data && seasonalRuleCurveMap.set(locationId, data))
+                    .catch(err => console.error(`TSID fetch failed for ${locationId}:`, err))
+            );
+
+            const crestForecastLakeUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup7}?office=${office}&category-id=${loc['location-id']}`;
+            crestForecastLakePromises.push(
+                fetch(crestForecastLakeUrl)
+                    .then(res => res.ok ? res.json() : null)
+                    .then(data => data && crestForecastLakeMap.set(locationId, data))
                     .catch(err => console.error(`TSID fetch failed for ${locationId}:`, err))
             );
         }
@@ -1098,6 +1111,9 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
     // console.log('currentDateTimePlus4Days :', currentDateTimePlus4Days);
     // console.log('currentDateTimePlus4Days :', typeof(currentDateTimePlus4Days));
 
+    // Add four days to current date and time
+    const currentDateTimePlus7Days = addDaysToDate(currentDateTime, 7);
+
     // Filter out locations not in lakeLocs, and remove basins without assigned-locations
     combinedDataReservoir = combinedDataReservoir.filter((basin) => {
         // Filter 'assigned-locations' within each basin
@@ -1299,21 +1315,21 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
                 row.appendChild(seasonalRuleCurveTd);
             })();
 
-            // 11 - Crest - Pool Forecast
+            // 11 - Crest - Pool Forecast and 12 - Crest Date - Pool Forecast
             (() => {
                 const crestPoolForecastTd = document.createElement('td');
-                const crestPoolForecastValue = "--";
-                // fetchAndLogPoolForecastDataTd(location['location-id'], crestPoolForecastTd, setJsonFileBaseUrl);
-                crestPoolForecastTd.textContent = crestPoolForecastValue;
-                row.appendChild(crestPoolForecastTd);
-            })();
-
-            // 12 - Date - Pool Forecast Date
-            (() => {
                 const datePoolForecastTd = document.createElement('td');
-                const datePoolForecastValue = "--";
-                // fetchAndLogPoolForecastDateDataTd(location['location-id'], datePoolForecastTd, setJsonFileBaseUrl);
-                datePoolForecastTd.textContent = datePoolForecastValue;
+
+                const crestPoolForecastTsid = location?.['tsid-crest-forecast-lake']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
+
+                if (crestPoolForecastTsid) {
+                    fetchAndUpdateCrestPoolForecastTd(crestPoolForecastTd, datePoolForecastTd, crestPoolForecastTsid, currentDateTime, currentDateTimePlus7Days, setBaseUrl);
+                } else {
+                    crestPoolForecastTd.textContent = "--";
+                    datePoolForecastTd.textContent = "--";
+                }
+
+                row.appendChild(crestPoolForecastTd);
                 row.appendChild(datePoolForecastTd);
             })();
 
@@ -1498,24 +1514,6 @@ async function fetchInBatches(urls) {
 // ******* Hard Coded Lake Outflow and Crest ************
 // ******************************************************
 
-async function fetchDataFromROutput(setJsonFileBaseUrl) {
-    let url = null;
-    url = setJsonFileBaseUrl + 'php_data_api/public/json/outputR.json';
-    // console.log("url: ", url);
-
-    try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        throw error; // Propagate the error further if needed
-    }
-}
-
 function filterDataByLocationId(ROutput, location_id) {
     const filteredData = {};
 
@@ -1527,42 +1525,6 @@ function filterDataByLocationId(ROutput, location_id) {
     }
 
     return filteredData;
-}
-
-function updateFlowMidnightHTML(filteredData, midnightCell) {
-    const locationData = filteredData[Object.keys(filteredData)[0]]; // Get the first (and only) key's data
-    midnightCell.innerHTML = `<div class="hard_coded_php" title="outflow_midnight">${locationData.outflow_midnight}</div>`;
-}
-
-function updateFlowEveningHTML(filteredData, eveningCell) {
-    const locationData = filteredData[Object.keys(filteredData)[0]]; // Get the first (and only) key's data
-    eveningCell.innerHTML = `<div class="hard_coded_php" title="outflow_evening">${locationData.outflow_evening}</div>`;
-}
-
-function updateRuleCurveHTML(filteredData, seasonalRuleCurveCell) {
-    const locationData = filteredData[Object.keys(filteredData)[0]]; // Get the first (and only) key's data
-    seasonalRuleCurveCell.innerHTML = `<div class="hard_coded_php" title="rule_curve">${(parseFloat(locationData.rule_curve)).toFixed(2)}</div>`;
-}
-
-function updateLakeCrestHTML(filteredData, crestCell) {
-    const locationData = filteredData[Object.keys(filteredData)[0]]; // Get the first (and only) key's data
-    if (locationData.crest || locationData.option === "CG") {
-        const isCresting = locationData.option === "CG";
-        const crestText = isCresting ? "Cresting" : `${locationData.option} ${locationData.crest}`;
-        crestCell.innerHTML = `<div class="hard_coded_php" title="crest">${crestText}</div>`;
-        crestCell.style.whiteSpace = 'nowrap'; // Prevent line break
-    } else {
-        crestCell.innerHTML = `<div class="hard_coded_php" title="crest"></div>`;
-    }
-}
-
-function updateLakeCrestDateHTML(filteredData, crestDateCell) {
-    const locationData = filteredData[Object.keys(filteredData)[0]]; // Get the first (and only) key's data
-    if (locationData.crest && locationData.crest_date_time) {
-        crestDateCell.innerHTML = `<div class="hard_coded_php" style="white-space: nowrap;" title="crest_date_time">${locationData.crest_date_time.slice(0, 5)}</div>`;
-    } else {
-        crestDateCell.innerHTML = `<div class="hard_coded_php" style="white-space: nowrap;" title="crest_date_time"></div>`;
-    }
 }
 
 /******************************************************************************
@@ -1653,6 +1615,83 @@ function fetchAndUpdateStageTd(stageTd, DeltaTd, tsidStage, flood_level, current
 
                     resolve({ stageTd: valueLast, deltaTd: delta_24 });
 
+                })
+                .catch(error => {
+                    console.error("Error fetching or processing data:", error);
+                    reject(error);
+                });
+        } else {
+            resolve({ stageTd: null, deltaTd: null });
+        }
+    });
+}
+
+function fetchAndUpdateCrestPoolForecastTd(stageTd, DeltaTd, tsidStage, currentDateTime, currentDateTimePlus7Days, setBaseUrl) {
+    function getTodayAtSixCentral() {
+        const today = new Date();
+        const utcOffset = today.getTimezoneOffset(); // Get the difference in minutes from UTC
+        const centralOffset = -6 * 60; // Central Time is UTC-6 (during daylight saving time, it will be UTC-5)
+
+        // Adjust if Daylight Saving Time is in effect (UTC-5)
+        const isDST = (utcOffset === 300); // 300 minutes = UTC-5
+        const offset = isDST ? -5 : -6;
+
+        // Create a new Date object with the time adjusted for Central Time
+        const centralTime = new Date(today);
+        centralTime.setHours(6, 0, 0, 0); // Set the time to 06:00:00.000
+        centralTime.setMinutes(centralTime.getMinutes() - (utcOffset + (offset * 60))); // Adjust to Central Time
+
+        // Format the date in the required format
+        const year = centralTime.getUTCFullYear();
+        const month = String(centralTime.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(centralTime.getUTCDate()).padStart(2, '0');
+
+        return `${year}-${month}-${day}T06:00:00.000Z`;
+    }
+
+    const dateAtSixCentral = getTodayAtSixCentral();
+    console.log(dateAtSixCentral);
+
+    return new Promise((resolve, reject) => {
+        if (tsidStage !== null) {
+            const url = `${setBaseUrl}timeseries?name=${tsidStage}&begin=${currentDateTime.toISOString()}&end=${currentDateTimePlus7Days.toISOString()}&office=${office}&version-date=${dateAtSixCentral}`;
+
+            // console.log("url = ", url);
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json;version=2'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // console.log("data:", data);
+
+                    let valueLast = '';
+                    let valueLastDate = '';
+
+                    if (
+                        data &&
+                        Array.isArray(data.values) &&
+                        data.values.length > 0 &&
+                        Array.isArray(data.values[0])
+                    ) {
+                        const rawStage = data.values[0][1];
+                        const rawDate = data.values[0][0];
+
+                        valueLast = isFinite(rawStage) ? Number(rawStage).toFixed(2) : '';
+                        valueLastDate = rawDate ? formatNWSDate(rawDate).split(' ')[0] : '';
+                    }
+
+                    stageTd.innerHTML = valueLast;
+                    DeltaTd.innerHTML = valueLastDate;
+
+                    resolve({ stageTd: valueLast, deltaTd: valueLastDate });
                 })
                 .catch(error => {
                     console.error("Error fetching or processing data:", error);
