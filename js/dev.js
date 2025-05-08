@@ -76,6 +76,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const setTimeseriesGroup1 = "Stage";
         const setTimeseriesGroup4 = "Precip-Lake-Test";
         const setTimeseriesGroup5 = "Inflow-Yesterday-Lake";
+        const setTimeseriesGroup6 = "Storage";
 
         const categoryApiUrl = `${setBaseUrl}location/group?office=${office}&group-office-id=${office}&category-office-id=${office}&category-id=${setLocationCategory}`;
 
@@ -86,6 +87,11 @@ document.addEventListener('DOMContentLoaded', async function () {
         const riverMileMap = new Map();
         const precipLakeTsidMap = new Map();
         const inflowYesterdayLakeTsidMap = new Map();
+        const storageLakeTsidMap = new Map();
+        const topOfFloodMap = new Map();
+        const topOfConservationMap = new Map();
+        const bottomOfFloodMap = new Map();
+        const bottomOfConservationMap = new Map();
 
         // Promises
         const stageTsidPromises = [];
@@ -94,6 +100,12 @@ document.addEventListener('DOMContentLoaded', async function () {
         const riverMilePromises = [];
         const precipLakeTsidPromises = [];
         const inflowYesterdayLakeTsidPromises = [];
+        const storageLakeTsidPromises = [];
+        const topOfFloodPromises = [];
+        const topOfConservationPromises = [];
+        const bottomOfFloodPromises = [];
+        const bottomOfConservationPromises = [];
+
         const apiPromises = [];
 
         // Set empty data array to store gage_data.json
@@ -156,7 +168,18 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                 return Promise.all(apiPromises);
             })
-            .then(() => Promise.all([...metadataPromises, ...floodPromises, ...stageTsidPromises, ...riverMilePromises, ...precipLakeTsidPromises]))
+            .then(() => Promise.all([
+                ...metadataPromises,
+                ...floodPromises,
+                ...stageTsidPromises,
+                ...riverMilePromises,
+                ...precipLakeTsidPromises,
+                ...inflowYesterdayLakeTsidPromises,
+                ...topOfFloodPromises,
+                ...topOfConservationPromises,
+                ...bottomOfFloodPromises,
+                ...bottomOfConservationPromises,
+            ]))
             .then(() => {
                 // Merge fetched data into locations
                 combinedData.forEach(basin => {
@@ -167,6 +190,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                         loc['river-mile'] = riverMileMap.get(loc['location-id']);
                         loc['tsid-lake-precip'] = precipLakeTsidMap.get(loc['location-id']);
                         loc['tsid-lake-inflow-yesterday'] = inflowYesterdayLakeTsidMap.get(loc['location-id']);
+                        loc['tsid-lake-storage'] = storageLakeTsidMap.get(loc['location-id']);
+                        loc['top-of-flood'] = topOfFloodMap.get(loc['location-id']);
+                        loc['top-of-conservation'] = topOfConservationMap.get(loc['location-id']);
+                        loc['bottom-of-flood'] = bottomOfFloodMap.get(loc['location-id']);
+                        loc['bottom-of-conservation'] = bottomOfConservationMap.get(loc['location-id']);
                     });
                 });
 
@@ -255,6 +283,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         function fetchAndStoreDataForLakeLocation(loc) {
             const locationId = loc['location-id'];
+            const levelIdEffectiveDate = "2024-01-01T08:00:00";
 
             metadataPromises.push(
                 fetch(`${setBaseUrl}locations/${locationId}?office=${office}`)
@@ -263,7 +292,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     .catch(err => console.error(`Metadata fetch failed for ${locationId}:`, err))
             );
 
-            const floodUrl = `${setBaseUrl}levels/${locationId}.Stage.Inst.0.Flood?office=${office}&effective-date=2024-01-01T08:00:00&unit=ft`;
+            const floodUrl = `${setBaseUrl}levels/${locationId}.Stage.Inst.0.Flood?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ft`;
             floodPromises.push(
                 fetch(floodUrl)
                     .then(res => res.status === 404 ? null : res.ok ? res.json() : Promise.reject(`Flood fetch error: ${res.statusText}`))
@@ -292,6 +321,50 @@ document.addEventListener('DOMContentLoaded', async function () {
                 fetch(inflowYesterdayLakeApiUrl)
                     .then(res => res.ok ? res.json() : null)
                     .then(data => data && inflowYesterdayLakeTsidMap.set(locationId, data))
+                    .catch(err => console.error(`TSID fetch failed for ${locationId}:`, err))
+            );
+
+            const storageLakeApiUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup6}?office=${office}&category-id=${loc['location-id']}`;
+            storageLakeTsidPromises.push(
+                fetch(storageLakeApiUrl)
+                    .then(res => res.ok ? res.json() : null)
+                    .then(data => data && storageLakeTsidMap.set(locationId, data))
+                    .catch(err => console.error(`TSID fetch failed for ${locationId}:`, err))
+            );
+
+            const levelIdTopOfFlood = `${loc['location-id'].split('-')[0]}.Stor.Inst.0.Top of Flood`;
+            const topOfFloodApiUrl = `${setBaseUrl}levels/${levelIdTopOfFlood}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ac-ft`;
+            topOfFloodPromises.push(
+                fetch(topOfFloodApiUrl)
+                    .then(res => res.ok ? res.json() : null)
+                    .then(data => data && topOfFloodMap.set(locationId, data))
+                    .catch(err => console.error(`TSID fetch failed for ${locationId}:`, err))
+            );
+
+            const levelIdBottomOfFlood = `${loc['location-id'].split('-')[0]}.Stor.Inst.0.Bottom of Flood`;
+            const bottomOfFloodApiUrl = `${setBaseUrl}levels/${levelIdBottomOfFlood}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ac-ft`;
+            bottomOfFloodPromises.push(
+                fetch(bottomOfFloodApiUrl)
+                    .then(res => res.ok ? res.json() : null)
+                    .then(data => data && bottomOfFloodMap.set(locationId, data))
+                    .catch(err => console.error(`TSID fetch failed for ${locationId}:`, err))
+            );
+
+            const levelIdTopOfConservation = `${loc['location-id'].split('-')[0]}.Stor.Inst.0.Top of Conservation`;
+            const topOfConservationApiUrl = `${setBaseUrl}levels/${levelIdTopOfConservation}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ac-ft`;
+            topOfConservationPromises.push(
+                fetch(topOfConservationApiUrl)
+                    .then(res => res.ok ? res.json() : null)
+                    .then(data => data && topOfConservationMap.set(locationId, data))
+                    .catch(err => console.error(`TSID fetch failed for ${locationId}:`, err))
+            );
+
+            const levelIdBottomOfConservation = `${loc['location-id'].split('-')[0]}.Stor.Inst.0.Bottom of Conservation`;
+            const bottomOfConservationApiUrl = `${setBaseUrl}levels/${levelIdBottomOfConservation}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ac-ft`;
+            bottomOfConservationPromises.push(
+                fetch(bottomOfConservationApiUrl)
+                    .then(res => res.ok ? res.json() : null)
+                    .then(data => data && bottomOfConservationMap.set(locationId, data))
                     .catch(err => console.error(`TSID fetch failed for ${locationId}:`, err))
             );
         }
@@ -1123,7 +1196,7 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
                 row.appendChild(deltaTd);
             })();
 
-            // 04 and 05 - Consr and Flood Storage
+            // 04-Consr and 05-Flood Storage
             (() => {
                 const ConsrTd = document.createElement('td');
                 const FloodTd = document.createElement('td');
