@@ -75,15 +75,17 @@ document.addEventListener('DOMContentLoaded', async function () {
         const setLocationGroupOwner = "River-Reservoir";
         const setTimeseriesGroup1 = "Stage";
         const setTimeseriesGroup4 = "Precip-Lake-Test";
+        const setTimeseriesGroup5 = "Inflow-Yesterday-Lake";
 
         const categoryApiUrl = `${setBaseUrl}location/group?office=${office}&group-office-id=${office}&category-office-id=${office}&category-id=${setLocationCategory}`;
 
-        // Maps to hold data
+        // Maps
         const stageTsidMap = new Map();
         const metadataMap = new Map();
         const floodMap = new Map();
         const riverMileMap = new Map();
         const precipLakeTsidMap = new Map();
+        const inflowYesterdayLakeTsidMap = new Map();
 
         // Promises
         const stageTsidPromises = [];
@@ -91,6 +93,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const floodPromises = [];
         const riverMilePromises = [];
         const precipLakeTsidPromises = [];
+        const inflowYesterdayLakeTsidPromises = [];
         const apiPromises = [];
 
         // Set empty data array to store gage_data.json
@@ -136,9 +139,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
                                         combinedData.push(getBasin);
 
-                                        // console.log(getBasin['assigned-locations']);
-                                        // console.log(lakeLocs);
-
                                         for (const location of getBasin['assigned-locations']) {
                                             if (lakeLocs.includes(location['location-id'])) {
                                                 // For Lake Only
@@ -166,6 +166,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         loc['tsid-stage'] = stageTsidMap.get(loc['location-id']);
                         loc['river-mile'] = riverMileMap.get(loc['location-id']);
                         loc['tsid-lake-precip'] = precipLakeTsidMap.get(loc['location-id']);
+                        loc['tsid-lake-inflow-yesterday'] = inflowYesterdayLakeTsidMap.get(loc['location-id']);
                     });
                 });
 
@@ -283,6 +284,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                 fetch(precipLakeApiUrl)
                     .then(res => res.ok ? res.json() : null)
                     .then(data => data && precipLakeTsidMap.set(locationId, data))
+                    .catch(err => console.error(`TSID fetch failed for ${locationId}:`, err))
+            );
+
+            const inflowYesterdayLakeApiUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup5}?office=${office}&category-id=${loc['location-id']}`;
+            inflowYesterdayLakeTsidPromises.push(
+                fetch(inflowYesterdayLakeApiUrl)
+                    .then(res => res.ok ? res.json() : null)
+                    .then(data => data && inflowYesterdayLakeTsidMap.set(locationId, data))
                     .catch(err => console.error(`TSID fetch failed for ${locationId}:`, err))
             );
         }
@@ -816,7 +825,7 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                             setBaseUrl
                         )
                             .then(({ nwsDay1Td: val1, nwsDay2Td: val2, nwsDay3Td: val3 }) => {
-                                console.log("NWS forecast values:", val1, val2, val3);
+                                // console.log("NWS forecast values:", val1, val2, val3);
                                 nwsDay1Td.textContent = val1 && !isNaN(parseFloat(val1)) ? parseFloat(val1).toFixed(2) : "--";
                                 nwsDay2Td.textContent = val2 && !isNaN(parseFloat(val2)) ? parseFloat(val2).toFixed(2) : "--";
                                 nwsDay3Td.textContent = val3 && !isNaN(parseFloat(val3)) ? parseFloat(val3).toFixed(2) : "--";
