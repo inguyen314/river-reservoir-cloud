@@ -92,6 +92,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const topOfConservationMap = new Map();
         const bottomOfFloodMap = new Map();
         const bottomOfConservationMap = new Map();
+        const seasonalRuleCurveMap = new Map();
 
         // Promises
         const stageTsidPromises = [];
@@ -105,6 +106,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const topOfConservationPromises = [];
         const bottomOfFloodPromises = [];
         const bottomOfConservationPromises = [];
+        const seasonalRuleCurvePromises = [];
 
         const apiPromises = [];
 
@@ -179,6 +181,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 ...topOfConservationPromises,
                 ...bottomOfFloodPromises,
                 ...bottomOfConservationPromises,
+                ...seasonalRuleCurvePromises,
             ]))
             .then(() => {
                 // Merge fetched data into locations
@@ -195,6 +198,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         loc['top-of-conservation'] = topOfConservationMap.get(loc['location-id']);
                         loc['bottom-of-flood'] = bottomOfFloodMap.get(loc['location-id']);
                         loc['bottom-of-conservation'] = bottomOfConservationMap.get(loc['location-id']);
+                        loc['seasonal-rule-curve'] = seasonalRuleCurveMap.get(loc['location-id']);
                     });
                 });
 
@@ -283,7 +287,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         function fetchAndStoreDataForLakeLocation(loc) {
             const locationId = loc['location-id'];
-            const levelIdEffectiveDate = "2024-01-01T08:00:00";
+            const levelIdEffectiveDate = "2025-04-01T06:00:00Z";
 
             metadataPromises.push(
                 fetch(`${setBaseUrl}locations/${locationId}?office=${office}`)
@@ -365,6 +369,15 @@ document.addEventListener('DOMContentLoaded', async function () {
                 fetch(bottomOfConservationApiUrl)
                     .then(res => res.ok ? res.json() : null)
                     .then(data => data && bottomOfConservationMap.set(locationId, data))
+                    .catch(err => console.error(`TSID fetch failed for ${locationId}:`, err))
+            );
+
+            const levelIdSeasonalRuleCurve = `${loc['location-id']}.Elev.Inst.0.Seasonal Rule Curve Production`;
+            const seasonalRuleCurveApiUrl = `${setBaseUrl}levels/${levelIdSeasonalRuleCurve}?office=${office}&effective-date=${levelIdEffectiveDate}&unit=ft`;
+            seasonalRuleCurvePromises.push(
+                fetch(seasonalRuleCurveApiUrl)
+                    .then(res => res.ok ? res.json() : null)
+                    .then(data => data && seasonalRuleCurveMap.set(locationId, data))
                     .catch(err => console.error(`TSID fetch failed for ${locationId}:`, err))
             );
         }
@@ -1273,12 +1286,16 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
                 row.appendChild(eveningControlledOutflowTd);
             })();
 
-            // 10 - Seasonal Rule Curve
+            // 10-Seasonal Rule Curve
             (() => {
                 const seasonalRuleCurveTd = document.createElement('td');
-                const seasonalRuleCurveValue = "--";
                 // fetchAndLogSeasonalRuleCurveDataTd(location['location-id'], seasonalRuleCurveTd, setJsonFileBaseUrl);
-                seasonalRuleCurveTd.textContent = seasonalRuleCurveValue;
+                const seasonalRuleCurveValue = location['seasonal-rule-curve'][`constant-value`];
+                if (seasonalRuleCurveValue) {
+                    seasonalRuleCurveTd.textContent = seasonalRuleCurveValue.toFixed(2);
+                } else {
+                    seasonalRuleCurveTd.textContent = "--";
+                }
                 row.appendChild(seasonalRuleCurveTd);
             })();
 
