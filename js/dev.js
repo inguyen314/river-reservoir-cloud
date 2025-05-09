@@ -1202,6 +1202,7 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
     const isoDatePlus7 = new Date(today); isoDatePlus7.setDate(today.getDate() + 7);
 
     // Add this to minus one hour. isoDatePlus1.setHours(isoDatePlus1.getHours() - 1);
+    const isoDateTodayPlus6Hour = new Date(new Date(new Date().setHours(0, 0, 0, 0)).setHours(6));
 
     // Convert to ISO strings (UTC-based)
     const isoDateMinus7Str = isoDateMinus7.toISOString();
@@ -1219,6 +1220,9 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
     const isoDatePlus5Str = isoDatePlus5.toISOString();
     const isoDatePlus6Str = isoDatePlus6.toISOString();
     const isoDatePlus7Str = isoDatePlus7.toISOString();
+
+    const isoDateTodayPlus1HourStr = isoDateTodayPlus6Hour.toISOString();
+    console.log("isoDateTodayPlus1HourStr: ", isoDateTodayPlus1HourStr);
 
     console.log("isoDateTodayStr: ", isoDateTodayStr);
 
@@ -1440,7 +1444,7 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
                     if (outflowTotalLakeTsid) {
                         fetchAndUpdateControlledOutflowTd(outflowTotalLakeTsid, isoDateTodayStr, isoDatePlus1Str, setBaseUrl)
                             .then(data => {
-                                console.log("Fetched outflowTotalLakeTsid data:", data);
+                                // console.log("Fetched outflowTotalLakeTsid data:", data);
                                 const value = data?.values?.[0]?.[1];
                                 midnightControlledOutflowTd.textContent = value !== null && value !== undefined ? value.toFixed(0) : "--";
                             })
@@ -1454,7 +1458,7 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
                     if (gateTotalLakeTsid) {
                         fetchAndUpdateControlledOutflowTd(gateTotalLakeTsid, isoDateTodayStr, isoDatePlus1Str, setBaseUrl)
                             .then(data => {
-                                console.log("Fetched gateTotalLakeTsid data:", data);
+                                // console.log("Fetched gateTotalLakeTsid data:", data);
                                 const value = data?.values?.[0]?.[1];
                                 midnightControlledOutflowTd.textContent = value !== null && value !== undefined ? value.toFixed(0) : "--";
                             })
@@ -1464,13 +1468,15 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
                     }
                 }
 
+
                 if (forecastLakeTsid) {
-                    fetchAndUpdateControlledOutflowTd(forecastLakeTsid, isoDateTodayStr, isoDatePlus1Str, setBaseUrl)
+                    fetchAndUpdateForecastTd(forecastLakeTsid, isoDateTodayStr, isoDatePlus1Str, isoDateTodayPlus1HourStr, setBaseUrl)
                         .then(data => {
-                            console.log("Fetched forecastLakeTsid data:", data);
+                            // console.log("Fetched forecastLakeTsid data:", data);
                             const value = data?.values?.[0]?.[1];
                             eveningControlledOutflowTd.textContent = value !== null && value !== undefined ? value.toFixed(0) : "--";
                             if (location['metadata'][`public-name`] === "Rend Pool") {
+                                // TODO: what is the midnight outflow for Rend?
                                 midnightControlledOutflowTd.textContent = value !== null && value !== undefined ? value.toFixed(0) : "--";
                             }
                         })
@@ -2234,6 +2240,41 @@ function fetchAndUpdateControlledOutflowTd(tsid, isoDateTodayStr, isoDatePlus1St
     return new Promise((resolve, reject) => {
         if (tsid !== null) {
             const urlForecast = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateTodayStr}&end=${isoDatePlus1Str}&office=${office}`;
+
+            fetch(urlForecast, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json;version=2'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data?.values?.length) {
+                        data.values.forEach(entry => {
+                            entry[0] = formatNWSDate(entry[0]);
+                        });
+                    }
+                    resolve(data);
+                })
+                .catch(error => {
+                    console.error("Error fetching or processing data:", error);
+                    reject(error);
+                });
+        } else {
+            resolve(null);
+        }
+    });
+}
+
+function fetchAndUpdateForecastTd(tsid, isoDateTodayStr, isoDatePlus1Str, isoDateTodayPlus1HourStr, setBaseUrl) {
+    return new Promise((resolve, reject) => {
+        if (tsid !== null) {
+            const urlForecast = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateTodayStr}&end=${isoDatePlus1Str}&office=${office}&version-date=${isoDateTodayPlus1HourStr}`;
 
             fetch(urlForecast, {
                 method: 'GET',
