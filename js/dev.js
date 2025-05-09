@@ -74,10 +74,13 @@ document.addEventListener('DOMContentLoaded', async function () {
         const setLocationCategory = "Basins";
         const setLocationGroupOwner = "River-Reservoir";
         const setTimeseriesGroup1 = "Stage";
-        const setTimeseriesGroup4 = "Precip-Lake-Test";
-        const setTimeseriesGroup5 = "Inflow-Yesterday-Lake";
+        const setTimeseriesGroup4 = "Precip-Lake-Test"; // Precip
+        const setTimeseriesGroup5 = "Consensus-Test"; // Yesterdays Inflow
         const setTimeseriesGroup6 = "Storage";
-        const setTimeseriesGroup7 = "Crest-Forecast-Lake"
+        const setTimeseriesGroup7 = "Crest-Forecast-Lake"; //Pool Forecast
+        const setTimeseriesGroup8 = "Outflow-Total-Lake-Test"; // Controlled Outflow
+        const setTimeseriesGroup9 = "Gate-Total-Lake-Test"; // Controlled Outflow
+        const setTimeseriesGroup10 = "Forecast-Lake"; // Lake Forecast
 
         const categoryApiUrl = `${setBaseUrl}location/group?office=${office}&group-office-id=${office}&category-office-id=${office}&category-id=${setLocationCategory}`;
 
@@ -95,6 +98,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         const bottomOfConservationMap = new Map();
         const seasonalRuleCurveMap = new Map();
         const crestForecastLakeMap = new Map();
+        const controlledOutflowLakeMap = new Map();
+        const forecastLakeMap = new Map();
 
         // Promises
         const stageTsidPromises = [];
@@ -110,6 +115,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         const bottomOfConservationPromises = [];
         const seasonalRuleCurvePromises = [];
         const crestForecastLakePromises = [];
+        const controlledOutflowLakePromises = [];
+        const forecastLakePromises = [];
 
         const apiPromises = [];
 
@@ -185,7 +192,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                 ...bottomOfFloodPromises,
                 ...bottomOfConservationPromises,
                 ...seasonalRuleCurvePromises,
-                ...crestForecastLakePromises
+                ...crestForecastLakePromises,
+                ...controlledOutflowLakePromises,
+                ...forecastLakePromises
             ]))
             .then(() => {
                 // Merge fetched data into locations
@@ -204,6 +213,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                         loc['bottom-of-conservation'] = bottomOfConservationMap.get(loc['location-id']);
                         loc['seasonal-rule-curve'] = seasonalRuleCurveMap.get(loc['location-id']);
                         loc['tsid-crest-forecast-lake'] = crestForecastLakeMap.get(loc['location-id']);
+                        loc['tsid-controlled-outflow-lake'] = controlledOutflowLakeMap.get(loc['location-id']);
+                        loc['tsid-forecast-lake'] = forecastLakeMap.get(loc['location-id']);
                     });
                 });
 
@@ -329,7 +340,14 @@ document.addEventListener('DOMContentLoaded', async function () {
             inflowYesterdayLakeTsidPromises.push(
                 fetch(inflowYesterdayLakeApiUrl)
                     .then(res => res.ok ? res.json() : null)
-                    .then(data => data && inflowYesterdayLakeTsidMap.set(locationId, data))
+                    .then(data => {
+                        if (data) {
+                            // console.log(`Fetched inflow data for ${locationId}:`, data);  // Log fetched data
+                            inflowYesterdayLakeTsidMap.set(locationId, data);
+                        } else {
+                            // console.warn(`No inflow data returned for ${locationId}`);
+                        }
+                    })
                     .catch(err => console.error(`TSID fetch failed for ${locationId}:`, err))
             );
 
@@ -390,9 +408,64 @@ document.addEventListener('DOMContentLoaded', async function () {
             crestForecastLakePromises.push(
                 fetch(crestForecastLakeUrl)
                     .then(res => res.ok ? res.json() : null)
-                    .then(data => data && crestForecastLakeMap.set(locationId, data))
+                    .then(data => {
+                        if (data) {
+                            // console.log(`Fetched data for ${locationId}:`, data);  // Log fetched data
+                            crestForecastLakeMap.set(locationId, data);
+                        } else {
+                            // console.warn(`No data returned for ${locationId}`);
+                        }
+                    })
                     .catch(err => console.error(`TSID fetch failed for ${locationId}:`, err))
             );
+
+            if (loc['location-id'] === "Lk Shelbyville-Kaskaskia" || loc['location-id'] === "Carlyle Lk-Kaskaskia") {
+                const controlledOutflowLakeUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup8}?office=${office}&category-id=${loc['location-id']}`;
+                controlledOutflowLakePromises.push(
+                    fetch(controlledOutflowLakeUrl)
+                        .then(res => res.ok ? res.json() : null)
+                        .then(data => {
+                            if (data) {
+                                // console.log(`Fetched data for ${locationId}:`, data);  // Log fetched data
+                                controlledOutflowLakeMap.set(locationId, data);
+                            } else {
+                                // console.warn(`No data returned for ${locationId}`);
+                            }
+                        })
+                        .catch(err => console.error(`TSID fetch failed for ${locationId}:`, err))
+                );
+            } else if (loc['location-id'] === "Rend Lk-Big Muddy") {
+                const controlledOutflowLakeUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup10}?office=${office}&category-id=${loc['location-id']}`;
+                controlledOutflowLakePromises.push(
+                    fetch(controlledOutflowLakeUrl)
+                        .then(res => res.ok ? res.json() : null)
+                        .then(data => {
+                            if (data) {
+                                // console.log(`Fetched data for ${locationId}:`, data);  // Log fetched data
+                                controlledOutflowLakeMap.set(locationId, data);
+                            } else {
+                                // console.warn(`No data returned for ${locationId}`);
+                            }
+                        })
+                        .catch(err => console.error(`TSID fetch failed for ${locationId}:`, err))
+                );
+            } else {
+                const controlledOutflowLakeUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup9}?office=${office}&category-id=${loc['location-id']}`;
+                controlledOutflowLakePromises.push(
+                    fetch(controlledOutflowLakeUrl)
+                        .then(res => res.ok ? res.json() : null)
+                        .then(data => {
+                            if (data) {
+                                // console.log(`Fetched data for ${locationId}:`, data);  // Log fetched data
+                                controlledOutflowLakeMap.set(locationId, data);
+                            } else {
+                                // console.warn(`No data returned for ${locationId}`);
+                            }
+                        })
+                        .catch(err => console.error(`TSID fetch failed for ${locationId}:`, err))
+                );
+            }
+
         }
     }
 });
@@ -1107,12 +1180,22 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
     // console.log('currentDateTimePlus30Hours :', currentDateTimePlus30Hours);
 
     // Add four days to current date and time
+    const currentDateTimePlus1Day = addDaysToDate(currentDateTime, 1);
+    // console.log('currentDateTimePlus1Day :', currentDateTimePlus1Day);
+    // console.log('currentDateTimePlus1Day :', typeof(currentDateTimePlus1Day));
+
+    // Add four days to current date and time
     const currentDateTimePlus4Days = addDaysToDate(currentDateTime, 4);
     // console.log('currentDateTimePlus4Days :', currentDateTimePlus4Days);
     // console.log('currentDateTimePlus4Days :', typeof(currentDateTimePlus4Days));
 
     // Add four days to current date and time
     const currentDateTimePlus7Days = addDaysToDate(currentDateTime, 7);
+
+    // Minus 2 days to current date and time
+    const currentDateTimeMinus1Day = minusDaysToDate(currentDateTime, 1);
+    // console.log('currentDateTimeMinus1Day :', currentDateTimeMinus1Day);
+    // console.log('currentDateTimeMinus1Day :', typeof(currentDateTimeMinus1Day));
 
     // Filter out locations not in lakeLocs, and remove basins without assigned-locations
     combinedDataReservoir = combinedDataReservoir.filter((basin) => {
@@ -1284,21 +1367,22 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
                 row.appendChild(yesterdayInflowTd);
             })();
 
-            // 08 - Midnight - Controlled Outflow
+            // 08-Midnight Controlled Outflow and 09-Evening Controlled Outflow
             (() => {
                 const midnightControlledOutflowTd = document.createElement('td');
-                const midnightControlledOutflowValue = "--";
-                // fetchAndLogMidnightFlowDataTd(location['location-id'], midnightControlledOutflowTd, setJsonFileBaseUrl);
-                midnightControlledOutflowTd.textContent = midnightControlledOutflowValue;
-                row.appendChild(midnightControlledOutflowTd);
-            })();
-
-            // 09 - Evening - Controlled Outflow
-            (() => {
                 const eveningControlledOutflowTd = document.createElement('td');
-                const eveningControlledOutflowValue = "--";
-                // fetchAndLogEveningFlowDataTd(location['location-id'], eveningControlledOutflowTd, setJsonFileBaseUrl);
-                eveningControlledOutflowTd.textContent = eveningControlledOutflowValue;
+
+                const controlledOutflowTsid = location?.['tsid-controlled-outflow-lake']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
+                const floodValue = null;
+
+                if (controlledOutflowTsid) {
+                    fetchAndUpdateControlledOutflowTd(midnightControlledOutflowTd, eveningControlledOutflowTd, controlledOutflowTsid, floodValue, currentDateTimePlus1Day, currentDateTime, setBaseUrl);
+                } else {
+                    midnightControlledOutflowTd.textContent = "--";
+                    eveningControlledOutflowTd.textContent = "--";
+                }
+
+                row.appendChild(midnightControlledOutflowTd);
                 row.appendChild(eveningControlledOutflowTd);
             })();
 
@@ -1650,7 +1734,7 @@ function fetchAndUpdateCrestPoolForecastTd(stageTd, DeltaTd, tsidStage, currentD
     }
 
     const dateAtSixCentral = getTodayAtSixCentral();
-    console.log(dateAtSixCentral);
+    // console.log(dateAtSixCentral);
 
     return new Promise((resolve, reject) => {
         if (tsidStage !== null) {
@@ -2243,6 +2327,62 @@ function fetchAndUpdateStorageTd(stageTd, DeltaTd, tsidStorage, flood_level, cur
     });
 }
 
+function fetchAndUpdateControlledOutflowTd(stageTd, DeltaTd, tsidStorage, flood_level, end, begin, setBaseUrl) {
+    const { currentDateTimeMidNightISO, currentDateTimePlus4DaysMidNightISO } = generateDateTimeMidNightStringsISO(end, begin);
+    console.log("currentDateTimeMidNightISO: ", currentDateTimeMidNightISO);
+    console.log("currentDateTimePlus4DaysMidNightISO: ", currentDateTimePlus4DaysMidNightISO);
+
+    return new Promise((resolve, reject) => {
+        if (tsidStorage !== null) {
+            const urlStorage = `${setBaseUrl}timeseries?name=${tsidStorage}&begin=${currentDateTimePlus4DaysMidNightISO}&end=${currentDateTimeMidNightISO}&office=${office}`;
+
+            // console.log("urlStorage = ", urlStorage);
+            fetch(urlStorage, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json;version=2'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(stage => {
+                    stage.values.forEach(entry => {
+                        entry[0] = formatNWSDate(entry[0]);
+                    });
+
+                    console.log("stage: ", stage);
+
+                    let midnightValue = null;
+                    let eveningValue = null;
+
+                    // Ensure values array exists and has at least one entry
+                    if (stage.values && stage.values.length > 0) {
+                        const firstValue = stage.values[0][1];
+                        const lastValue = stage.values.at(-1)[1];
+
+                        midnightValue = firstValue !== null ? Number(firstValue).toFixed(0) : null;
+                        eveningValue = lastValue !== null ? Number(lastValue).toFixed(0) : null;
+                    }
+
+                    stageTd.innerHTML = midnightValue !== null ? midnightValue : "--";
+                    DeltaTd.innerHTML = eveningValue !== null ? eveningValue : "--";
+
+                    resolve({ stageTd: midnightValue, deltaTd: eveningValue });
+                })
+                .catch(error => {
+                    console.error("Error fetching or processing data:", error);
+                    reject(error);
+                });
+        } else {
+            resolve({ stageTd: null, deltaTd: null });
+        }
+    });
+}
+
 /****************************************************************************** NWS CREST OUTPUT FUNCTIONS ******/
 function filterDataByTsidCrest(NwsCrestOutput, cwms_ts_id) {
     const filteredData = NwsCrestOutput.filter(item => {
@@ -2339,6 +2479,10 @@ function plusHoursFromDate(date, hoursToSubtract) {
 
 function addDaysToDate(date, days) {
     return new Date(date.getTime() + (days * 24 * 60 * 60 * 1000));
+}
+
+function minusDaysToDate(date, days) {
+    return new Date(date.getTime() - (days * 24 * 60 * 60 * 1000));
 }
 
 function formatTimestampToString(timestampLast) {
