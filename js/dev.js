@@ -74,6 +74,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         const setLocationCategory = "Basins";
         const setLocationGroupOwner = "River-Reservoir";
         const setTimeseriesGroup1 = "Stage";
+        const setTimeseriesGroup2 = "Forecast-NWS";
+        const setTimeseriesGroup3 = "Crest"; // NWS Crest
         const setTimeseriesGroup4 = "Precip-Lake-Test"; // Precip
         const setTimeseriesGroup5 = "Consensus-Test"; // Yesterdays Inflow
         const setTimeseriesGroup6 = "Storage";
@@ -101,6 +103,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         const controlledOutflowLakeMap = new Map();
         const forecastLakeMap = new Map();
         const recordStageMap = new Map();
+        const forecastNwsTsidMap = new Map();
+        const crestNwsTsidMap = new Map();
 
         // Promises
         const stageTsidPromises = [];
@@ -119,6 +123,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         const controlledOutflowLakePromises = [];
         const forecastLakePromises = [];
         const recordStagePromises = [];
+        const forecastNwsTsidPromises = [];
+        const crestNwsTsidPromises = [];
 
         const apiPromises = [];
 
@@ -197,7 +203,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                 ...crestForecastLakePromises,
                 ...controlledOutflowLakePromises,
                 ...forecastLakePromises,
-                ...recordStagePromises
+                ...recordStagePromises,
+                ...forecastNwsTsidMap,
+                ...crestNwsTsidPromises
             ]))
             .then(() => {
                 // Merge fetched data into locations
@@ -219,6 +227,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                         loc['tsid-controlled-outflow-lake'] = controlledOutflowLakeMap.get(loc['location-id']);
                         loc['tsid-forecast-lake'] = forecastLakeMap.get(loc['location-id']);
                         loc['record-stage'] = recordStageMap.get(loc['location-id']);
+                        loc['tsid-nws-forecast'] = forecastNwsTsidMap.get(loc['location-id']);
+                        loc['tsid-nws-crest'] = crestNwsTsidMap.get(loc['location-id']);
                     });
                 });
 
@@ -311,6 +321,22 @@ document.addEventListener('DOMContentLoaded', async function () {
                 fetch(recordStageApiUrl)
                     .then(res => res.ok ? res.json() : null)
                     .then(data => data && recordStageMap.set(locationId, data))
+                    .catch(err => console.error(`TSID fetch failed for ${locationId}:`, err))
+            );
+
+            const tsidNwsForecastUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup2}?office=${office}&category-id=${locationId}`;
+            forecastNwsTsidPromises.push(
+                fetch(tsidNwsForecastUrl)
+                    .then(res => res.ok ? res.json() : null)
+                    .then(data => data && forecastNwsTsidMap.set(locationId, data))
+                    .catch(err => console.error(`TSID fetch failed for ${locationId}:`, err))
+            );
+
+            const tsidNwsCrestUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup3}?office=${office}&category-id=${locationId}`;
+            crestNwsTsidPromises.push(
+                fetch(tsidNwsCrestUrl)
+                    .then(res => res.ok ? res.json() : null)
+                    .then(data => data && crestNwsTsidMap.set(locationId, data))
                     .catch(err => console.error(`TSID fetch failed for ${locationId}:`, err))
             );
         }
@@ -1026,9 +1052,9 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                             })
                             .catch(error => console.error("Failed to fetch NWS data:", error));
                     } else {
-                        nwsDay1Td.textContent = "--";
-                        nwsDay2Td.textContent = "--";
-                        nwsDay3Td.textContent = "--";
+                        nwsDay1Td.textContent = "";
+                        nwsDay2Td.textContent = "";
+                        nwsDay3Td.textContent = "";
                     }
 
                     row.appendChild(nwsDay1Td);
@@ -1036,14 +1062,14 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                     row.appendChild(nwsDay3Td);
                 })();
 
-                // 08-Nws Forecast Time PHP
+                // 08-Nws Forecast Time
                 (() => {
                     const nwsForecastTimeTd = document.createElement('td');
                     const nwsForecastTsid = location['tsid-nws-forecast']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
 
                     if (nwsForecastTsid !== null) {
                         nwsForecastTimeTd.textContent = '--';
-                        // fetchAndLogNwsData(nwsForecastTsid, nwsForecastTimeTd, setJsonFileBaseUrl, isMobile);
+                        nwsForecastTimeTd.style.background = 'pink';
                     } else {
                         nwsForecastTimeTd.textContent = '--';
                     }
@@ -1059,25 +1085,9 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                     const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
                     const crestTsid = location?.['tsid-nws-crest']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
 
-                    if (floodValue !== null && crestTsid !== null) {
-                        crestTd.textContent = '--';
-                    } else {
-                        crestTd.textContent = '--';
+                    if (crestTsid) {
+                        fetchAndUpdateCrestTd(crestTd, crestDateTd, crestTsid, floodValue, currentDateTimeMinus2Hours, currentDateTimePlus14Days, currentDateTimeMinus30Hours, setBaseUrl);
                     }
-
-                    if (floodValue !== null && crestTsid !== null) {
-                        crestDateTd.textContent = '--';
-                    } else {
-                        crestDateTd.textContent = '--';
-                    }
-
-                    // Use PHP
-                    // fetchAndLogNwsCrestData(crestTsid, crestTd, crestDateTd);
-
-                    // Use CDA
-                    // if (crestTsid) {
-                    //     fetchAndUpdateCrestTd(crestTd, crestDateTd, crestTsid, floodValue, currentDateTimeMinus2Hours, currentDateTimePlus14Days, currentDateTimeMinus30Hours, setBaseUrl);
-                    // }
 
                     row.appendChild(crestTd);
                     row.appendChild(crestDateTd);
@@ -1097,7 +1107,7 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                     row.appendChild(floodLevelCell);
                 })();
 
-                // 12 - Gage Zero
+                // 12-Gage Zero
                 (() => {
                     // Create a new table cell for gage zero elevation
                     const gageZeroCell = document.createElement('td');
@@ -1625,11 +1635,15 @@ function fetchAndUpdateStageTd(stageTd, DeltaTd, tsidStage, flood_level, current
                     let value24HoursLast = null;
                     let timestamp24HoursLast = null;
 
-                    if (lastNonNullValue !== null) {
+                    if (lastNonNullValue?.valueCountRowsBefore) {
                         timestamp24HoursLast = lastNonNullValue.valueCountRowsBefore.timestamp;
                         value24HoursLast = parseFloat(lastNonNullValue.valueCountRowsBefore.value).toFixed(2);
+                    } else {
+                        console.warn("valueCountRowsBefore is null or undefined");
+                        timestamp24HoursLast = null;
+                        value24HoursLast = null;
                     }
-
+                    
                     // console.log("value24HoursLast:", value24HoursLast);
                     // console.log("timestamp24HoursLast:", timestamp24HoursLast);
 
@@ -1863,13 +1877,13 @@ function fetchAndUpdateNwsForecastTd(tsidStage, nwsForecastTsid, flood_level, cu
                     return response.json();
                 })
                 .then(nws3Days => {
-                    // console.log("Raw nws3Days data:", nws3Days);
+                    // console.log("nws3Days:", nws3Days);
 
                     nws3Days.values.forEach(entry => {
                         entry[0] = formatNWSDate(entry[0]);
                     });
 
-                    // console.log("Formatted nws3Days.values:", nws3Days.values);
+                    // console.log("Formatted nws3Days:", nws3Days.values);
 
                     const valuesWithTimeNoon = extractValuesWithTimeNoon(nws3Days.values);
                     // console.log("Values at noon:", valuesWithTimeNoon);
@@ -1961,6 +1975,8 @@ function fetchAndUpdateCrestTd(stageTd, DeltaTd, tsidStage, flood_level, current
                         DeltaTd.innerHTML = timestampLast !== null ? timestampLast : '';
                         // console.log("Regular timestamp displayed:", timestampLast);
                     }
+
+                    DeltaTd.style.background = 'pink';
 
                     stageTd.innerHTML = innerHTMLStage;
                     DeltaTd.innerHTML = isMobile && timestampLast !== null
