@@ -616,7 +616,7 @@ function getLastNonNullValue(data, tsid) {
     return null;
 }
 
-function getLastNonNull6amValue(data, tsid, dstOffsetHours, c_count) {
+function getLastNonNull6amValue(data, tsid, c_count) {
     // console.log(data);
 
     if (!data || !Array.isArray(data.values)) {
@@ -1221,8 +1221,8 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
     const isoDatePlus6Str = isoDatePlus6.toISOString();
     const isoDatePlus7Str = isoDatePlus7.toISOString();
 
-    const isoDateTodayPlus1HourStr = isoDateTodayPlus6Hour.toISOString();
-    console.log("isoDateTodayPlus1HourStr: ", isoDateTodayPlus1HourStr);
+    const isoDateTodayPlus6HoursStr = isoDateTodayPlus6Hour.toISOString();
+    console.log("isoDateTodayPlus6HoursStr: ", isoDateTodayPlus6HoursStr);
 
     console.log("isoDateTodayStr: ", isoDateTodayStr);
 
@@ -1470,7 +1470,7 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
 
 
                 if (forecastLakeTsid) {
-                    fetchAndUpdateForecastTd(forecastLakeTsid, isoDateTodayStr, isoDatePlus1Str, isoDateTodayPlus1HourStr, setBaseUrl)
+                    fetchAndUpdateForecastTd(forecastLakeTsid, isoDateTodayStr, isoDatePlus1Str, isoDateTodayPlus6HoursStr, setBaseUrl)
                         .then(data => {
                             // console.log("Fetched forecastLakeTsid data:", data);
                             const value = data?.values?.[0]?.[1];
@@ -1617,99 +1617,74 @@ function fetchAdditionalLocationGroupOwnerData(locationId, setBaseUrl, setLocati
 
 function fetchAndUpdateStageTd(stageTd, DeltaTd, tsidStage, flood_level, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl) {
     return new Promise((resolve, reject) => {
-        if (tsidStage !== null) {
-            const urlStage = `${setBaseUrl}timeseries?name=${tsidStage}&begin=${currentDateTimeMinus30Hours.toISOString()}&end=${currentDateTime.toISOString()}&office=${office}`;
-
-            // console.log("urlStage = ", urlStage);
-            fetch(urlStage, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json;version=2'
-                }
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(stage => {
-                    stage.values.forEach(entry => {
-                        entry[0] = formatNWSDate(entry[0]);
-                    });
-                    // console.log("stage:", stage);
-
-                    let dstOffsetHours = getDSTOffsetInHours();
-                    // console.log("dstOffsetHours:", dstOffsetHours);
-
-                    const c_count = calculateCCount(tsidStage);
-
-                    const lastNonNullValue = getLastNonNull6amValue(stage, stage.name, dstOffsetHours, c_count);
-                    // console.log("lastNonNullValue:", lastNonNullValue);
-
-                    let valueLast = null;
-                    let timestampLast = null;
-
-                    if (lastNonNullValue !== null) {
-                        timestampLast = lastNonNullValue.current6am.timestamp;
-                        valueLast = parseFloat(lastNonNullValue.current6am.value).toFixed(2);
-                    }
-                    // console.log("valueLast:", valueLast);
-                    // console.log("timestampLast:", timestampLast);
-
-                    let value24HoursLast = null;
-                    let timestamp24HoursLast = null;
-
-                    if (lastNonNullValue?.valueCountRowsBefore) {
-                        timestamp24HoursLast = lastNonNullValue.valueCountRowsBefore.timestamp;
-                        value24HoursLast = parseFloat(lastNonNullValue.valueCountRowsBefore.value).toFixed(2);
-                    } else {
-                        timestamp24HoursLast = null;
-                        value24HoursLast = null;
-                    }
-
-                    // console.log("value24HoursLast:", value24HoursLast);
-                    // console.log("timestamp24HoursLast:", timestamp24HoursLast);
-
-                    let delta_24 = null;
-
-                    // Check if the values are numbers and not null/undefined
-                    if (valueLast !== null && value24HoursLast !== null && !isNaN(valueLast) && !isNaN(value24HoursLast)) {
-                        delta_24 = (valueLast - value24HoursLast).toFixed(2);
-                    } else {
-                        delta_24 = "";  // or set to "-1" or something else if you prefer
-                    }
-
-                    // console.log("delta_24:", delta_24);
-
-                    // Make sure delta_24 is a valid number before calling parseFloat
-                    if (delta_24 !== "" && delta_24 !== null && delta_24 !== undefined) {
-                        delta_24 = parseFloat(delta_24).toFixed(2);
-                    } else {
-                        delta_24 = "-";
-                    }
-
-                    let innerHTMLStage;
-                    if (valueLast === null) {
-                        innerHTMLStage = "<span class='missing'>-M-</span>";
-                    } else {
-                        const floodClass = determineStageClass(valueLast, flood_level);
-                        innerHTMLStage = `<span class='${floodClass}' title='${timestampLast}'>${valueLast}</span>`;
-                    }
-
-                    stageTd.innerHTML = innerHTMLStage;
-                    DeltaTd.innerHTML = delta_24;
-
-                    resolve({ stageTd: valueLast, deltaTd: delta_24 });
-
-                })
-                .catch(error => {
-                    console.error("Error fetching or processing data:", error);
-                    reject(error);
-                });
-        } else {
-            resolve({ stageTd: null, deltaTd: null });
+        if (!tsidStage) {
+            stageTd.innerHTML = "<span class='missing'>-M-</span>";
+            DeltaTd.innerHTML = "-";
+            return resolve({ stageTd: null, deltaTd: null });
         }
+
+        const urlStage = `${setBaseUrl}timeseries?name=${tsidStage}&begin=${currentDateTimeMinus30Hours.toISOString()}&end=${currentDateTime.toISOString()}&office=${office}`;
+
+        fetch(urlStage, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json;version=2'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(stage => {
+                if (!stage || !Array.isArray(stage.values) || stage.values.length === 0) {
+                    throw new Error("Invalid or empty stage data");
+                }
+
+                stage.values.forEach(entry => {
+                    entry[0] = formatNWSDate(entry[0]);
+                });
+
+                const c_count = calculateCCount(tsidStage);
+                const lastNonNullValue = getLastNonNull6amValue(stage, stage.name, c_count);
+
+                let valueLast = null, timestampLast = null;
+                if (lastNonNullValue?.current6am?.value != null) {
+                    valueLast = parseFloat(lastNonNullValue.current6am.value).toFixed(2);
+                    timestampLast = lastNonNullValue.current6am.timestamp;
+                }
+
+                let value24HoursLast = null, timestamp24HoursLast = null;
+                if (lastNonNullValue?.valueCountRowsBefore?.value != null) {
+                    value24HoursLast = parseFloat(lastNonNullValue.valueCountRowsBefore.value).toFixed(2);
+                    timestamp24HoursLast = lastNonNullValue.valueCountRowsBefore.timestamp;
+                }
+
+                let delta_24 = "-";
+                if (valueLast != null && value24HoursLast != null && !isNaN(valueLast) && !isNaN(value24HoursLast)) {
+                    delta_24 = parseFloat(valueLast - value24HoursLast).toFixed(2);
+                }
+
+                let innerHTMLStage;
+                if (valueLast == null || isNaN(valueLast)) {
+                    innerHTMLStage = "<span class='missing'>-M-</span>";
+                } else {
+                    const floodClass = determineStageClass(valueLast, flood_level);
+                    innerHTMLStage = `<span class='${floodClass}' title='${timestampLast}'>${valueLast}</span>`;
+                }
+
+                stageTd.innerHTML = innerHTMLStage;
+                DeltaTd.innerHTML = delta_24;
+
+                resolve({ stageTd: valueLast, deltaTd: delta_24 });
+            })
+            .catch(error => {
+                console.error("Error fetching or processing stage data:", error);
+                stageTd.innerHTML = "<span class='missing'>-M-</span>";
+                DeltaTd.innerHTML = "-";
+                reject(error);
+            });
     });
 }
 
@@ -2271,10 +2246,10 @@ function fetchAndUpdateControlledOutflowTd(tsid, isoDateTodayStr, isoDatePlus1St
     });
 }
 
-function fetchAndUpdateForecastTd(tsid, isoDateTodayStr, isoDatePlus1Str, isoDateTodayPlus1HourStr, setBaseUrl) {
+function fetchAndUpdateForecastTd(tsid, isoDateTodayStr, isoDatePlus1Str, isoDateTodayPlus6HoursStr, setBaseUrl) {
     return new Promise((resolve, reject) => {
         if (tsid !== null) {
-            const urlForecast = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateTodayStr}&end=${isoDatePlus1Str}&office=${office}&version-date=${isoDateTodayPlus1HourStr}`;
+            const urlForecast = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateTodayStr}&end=${isoDatePlus1Str}&office=${office}&version-date=${isoDateTodayPlus6HoursStr}`;
 
             fetch(urlForecast, {
                 method: 'GET',
