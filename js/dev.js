@@ -1059,7 +1059,7 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                         nwsForecastTimeTd.textContent = '--';
                         nwsForecastTimeTd.style.background = 'pink';
                     } else {
-                        nwsForecastTimeTd.textContent = '--';
+                        nwsForecastTimeTd.textContent = '';
                     }
 
                     row.appendChild(nwsForecastTimeTd);
@@ -1139,7 +1139,7 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                     const recordStageValue = Number(rawValue);
 
                     // Check if recordStageValue is a valid number and within the required range
-                    if (!isNaN(recordStageValue) && (recordStageValue*3.28084) <= 900) {
+                    if (!isNaN(recordStageValue) && (recordStageValue*3.28084) <= 900 && (recordStageValue*3.28084) > 0) {
                         recordStageCell.textContent = (recordStageValue*3.28084).toFixed(2);
                     } else {
                         recordStageCell.textContent = '';
