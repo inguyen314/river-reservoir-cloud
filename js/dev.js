@@ -74,11 +74,11 @@ document.addEventListener('DOMContentLoaded', async function () {
         const setLocationCategory = "Basins";
         const setLocationGroupOwner = "River-Reservoir";
         const setTimeseriesGroup1 = "Stage";
-        const setTimeseriesGroup2 = "Forecast-NWS";
+        const setTimeseriesGroup2 = "Forecast-NWS"; // NWS next 3 days forecast
         const setTimeseriesGroup3 = "Crest"; // NWS Crest
         const setTimeseriesGroup4 = "Precip-Lake-Test"; // Precip
         const setTimeseriesGroup5 = "Consensus-Test"; // Yesterdays Inflow
-        const setTimeseriesGroup6 = "Storage";
+        const setTimeseriesGroup6 = "Storage"; // Storage Utilized
         const setTimeseriesGroup7 = "Crest-Forecast-Lake"; //Pool Forecast
         const setTimeseriesGroup8 = "Outflow-Total-Lake-Test"; // Controlled Outflow
         const setTimeseriesGroup9 = "Gate-Total-Lake-Test"; // Controlled Outflow
@@ -875,6 +875,7 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
     const currentDateTimeMinus2Hours = subtractHoursFromDate(currentDateTime, 2);
     const currentDateTimeMinus8Hours = subtractHoursFromDate(currentDateTime, 8);
     const currentDateTimeMinus30Hours = subtractHoursFromDate(currentDateTime, 30);
+    const currentDateTimeMinus24Hours = subtractHoursFromDate(currentDateTime, 24);
     const currentDateTimeMinus60Hours = subtractHoursFromDate(currentDateTime, 60);
     const currentDateTimePlus30Hours = plusHoursFromDate(currentDateTime, 30);
     const currentDateTimePlus4Days = addDaysToDate(currentDateTime, 4);
@@ -1005,7 +1006,7 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                 const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
                 const stageTsid = location?.['tsid-stage']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
                 if (stageTsid) {
-                    fetchAndUpdateStageTd(stageTd, deltaTd, stageTsid, floodValue, currentDateTime, currentDateTimeMinus60Hours, setBaseUrl);
+                    fetchAndUpdateStageTd(stageTd, deltaTd, stageTsid, floodValue, currentDateTime, currentDateTimeMinus24Hours, setBaseUrl);
                 }
                 row.appendChild(stageTd);
                 row.appendChild(deltaTd);
@@ -1245,6 +1246,9 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
     const currentDateTimePlus30Hours = plusHoursFromDate(currentDateTime, 30);
     const currentDateTimePlus30HoursIso = currentDateTimePlus30Hours.toISOString();
 
+    const currentDateTimeMinus24Hours = subtractHoursFromDate(currentDateTime, 24);
+    const currentDateTimeMinus24HoursIso = currentDateTimeMinus24Hours.toISOString();
+
     const currentDateTimePlus1Day = addDaysToDate(currentDateTime, 1);
     const currentDateTimePlus1DayIso = currentDateTimePlus1Day.toISOString();
 
@@ -1363,7 +1367,7 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
                 const stageTsid = location?.['tsid-stage']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
 
                 if (stageTsid) {
-                    fetchAndUpdateStageMidnightTd(stageTd, deltaTd, stageTsid, floodValue, currentDateTimeIso, currentDateTimeMinus60HoursIso, setBaseUrl);
+                    fetchAndUpdateStageMidnightTd(stageTd, deltaTd, stageTsid, floodValue, currentDateTimeIso, currentDateTimeMinus24HoursIso, setBaseUrl);
                 }
 
                 row.appendChild(stageTd);
@@ -1446,7 +1450,7 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
                             .then(data => {
                                 // console.log("Fetched outflowTotalLakeTsid data:", data);
                                 const value = data?.values?.[0]?.[1];
-                                midnightControlledOutflowTd.textContent = value !== null && value !== undefined ? value.toFixed(0) : "--";
+                                midnightControlledOutflowTd.textContent = value !== null && value !== undefined ? value.toFixed(0) : "-M-";
                             })
                             .catch(error => {
                                 console.error("Error during fetch:", error);
@@ -1460,7 +1464,7 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
                             .then(data => {
                                 // console.log("Fetched gateTotalLakeTsid data:", data);
                                 const value = data?.values?.[0]?.[1];
-                                midnightControlledOutflowTd.textContent = value !== null && value !== undefined ? value.toFixed(0) : "--";
+                                midnightControlledOutflowTd.textContent = value !== null && value !== undefined ? value.toFixed(0) : "-M-";
                             })
                             .catch(error => {
                                 console.error("Error during fetch:", error);
@@ -1474,10 +1478,10 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
                         .then(data => {
                             // console.log("Fetched forecastLakeTsid data:", data);
                             const value = data?.values?.[0]?.[1];
-                            eveningControlledOutflowTd.textContent = value !== null && value !== undefined ? value.toFixed(0) : "--";
+                            eveningControlledOutflowTd.textContent = value !== null && value !== undefined ? value.toFixed(0) : "-M-";
                             if (location['metadata'][`public-name`] === "Rend Pool") {
                                 // TODO: what is the midnight outflow for Rend?
-                                midnightControlledOutflowTd.textContent = value !== null && value !== undefined ? value.toFixed(0) : "--";
+                                midnightControlledOutflowTd.textContent = value !== null && value !== undefined ? value.toFixed(0) : "-M-";
                             }
                         })
                         .catch(error => {
@@ -1579,18 +1583,13 @@ function getRiverMileForLocation(locationId, riverMileObject) {
     return null; // Return null if no match is found
 }
 
-function fetchAdditionalLocationGroupOwnerData(locationId, setBaseUrl, setLocationGroupOwner, office) {
-    // Construct the URL
-    const additionalDataUrl = `${setBaseUrl}location/group/${setLocationGroupOwner}?office=${office}&category-id=${office}`;
-
-    // Log the URL to ensure it's correctly formatted
-    // console.log(`Requesting additional data from URL: ${additionalDataUrl}`);
+async function fetchAdditionalLocationGroupOwnerData(locationId, baseUrl, locationGroupOwner, office) {
+    const additionalDataUrl = `${baseUrl}location/group/${locationGroupOwner}?office=${office}&category-id=${office}`;
 
     return fetch(additionalDataUrl, {
         method: 'GET'
     })
         .then(response => {
-            // If response is not OK, log the status and return null
             if (!response.ok) {
                 console.warn(`Response not ok for ${locationId}: Status ${response.status}`);
                 return null;
@@ -1598,16 +1597,14 @@ function fetchAdditionalLocationGroupOwnerData(locationId, setBaseUrl, setLocati
             return response.json();
         })
         .then(data => {
-            // If data is not null, log the fetched data
             if (data) {
                 // console.log(`Fetched additional data for ${locationId}:`, data);
             }
             return data;
         })
         .catch(error => {
-            // Catch any errors and log them
             console.error(`Error fetching additional data for ${locationId}:`, error);
-            return null; // Return null in case of error
+            return null;
         });
 }
 
@@ -1792,12 +1789,12 @@ function fetchAndUpdateStageMidnightTd(stageTd, DeltaTd, tsidStage, flood_level,
                     const c_count = calculateCCount(tsidStage);
 
                     const lastNonNullValue = getLastNonNullMidnightValue(stage, stage.name, c_count);
-                    // console.log("lastNonNullValue:", lastNonNullValue);
+                    console.log("lastNonNullValue:", lastNonNullValue);
 
                     let valueLast = null;
                     let timestampLast = null;
 
-                    if (lastNonNullValue !== null) {
+                    if (lastNonNullValue.current6am !== null && lastNonNullValue.valueCountRowsBefore !== null) {
                         timestampLast = lastNonNullValue.current6am.timestamp;
                         valueLast = parseFloat(lastNonNullValue.current6am.value).toFixed(2);
                     }
@@ -1807,7 +1804,7 @@ function fetchAndUpdateStageMidnightTd(stageTd, DeltaTd, tsidStage, flood_level,
                     let value24HoursLast = null;
                     let timestamp24HoursLast = null;
 
-                    if (lastNonNullValue !== null) {
+                    if (lastNonNullValue.current6am !== null && lastNonNullValue.valueCountRowsBefore !== null) {
                         timestamp24HoursLast = lastNonNullValue.valueCountRowsBefore.timestamp;
                         value24HoursLast = parseFloat(lastNonNullValue.valueCountRowsBefore.value).toFixed(2);
                     }
@@ -1821,16 +1818,16 @@ function fetchAndUpdateStageMidnightTd(stageTd, DeltaTd, tsidStage, flood_level,
                     if (valueLast !== null && value24HoursLast !== null && !isNaN(valueLast) && !isNaN(value24HoursLast)) {
                         delta_24 = (valueLast - value24HoursLast).toFixed(2);
                     } else {
-                        delta_24 = "";  // or set to "-1" or something else if you prefer
+                        delta_24 = "--";  // or set to "-1" or something else if you prefer
                     }
 
                     // console.log("delta_24:", delta_24);
 
                     // Make sure delta_24 is a valid number before calling parseFloat
-                    if (delta_24 !== "" && delta_24 !== null && delta_24 !== undefined) {
+                    if (delta_24 !== "--" && delta_24 !== null && delta_24 !== undefined) {
                         delta_24 = parseFloat(delta_24).toFixed(2);
                     } else {
-                        delta_24 = "-";
+                        delta_24 = "--";
                     }
 
                     let innerHTMLStage;
@@ -2108,20 +2105,19 @@ function fetchAndUpdateYesterdayInflowTd(precipCell, tsid, currentDateTimeMinus2
 
                 if (lastNonNullPrecipValue === null) {
                     innerHTMLPrecip = "<table id='precip'>"
-                        + "<tr>"
-                        + "<td class='precip_missing' title='24 hr delta'>"
+                        + "<span class='precip_missing'>"
                         + "-M-"
-                        + "</td>"
-                        + "</tr>"
+                        + "</span>";
                         + "</table>";
                 } else {
-                    innerHTMLPrecip = "</table>"
+                    innerHTMLPrecip = "<table id='precip'>"
                         // + "<span class='last_max_value' title='" + precip.name + ", Value = " + valuePrecipLast + ", Date Time = " + timestampPrecipLast + "'>"
                         + "<span class='last_max_value'>"
                         // + "<a href='../chart?office=" + office + "&cwms_ts_id=" + precip.name + "&lookback=4' target='_blank'>"
                         + valuePrecipLast
                         // + "</a>"
                         + "</span>";
+                        + "</table>";
                 }
                 return precipCell.innerHTML += innerHTMLPrecip;
             })
