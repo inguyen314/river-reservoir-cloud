@@ -9,9 +9,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     let setBaseUrl = null;
     if (cda === "internal") {
-        setBaseUrl = `https://wm.${office.toLowerCase()}.ds.usace.army.mil:8243/${office.toLowerCase()}-data/`;
+        setBaseUrl = `https://wm.${office.toLowerCase()}.ds.usace.army.mil/${office.toLowerCase()}-data/`;
     } else if (cda === "internal-coop") {
-        setBaseUrl = `https://wm-${office.toLowerCase()}coop.mvk.ds.usace.army.mil:8243/${office.toLowerCase()}-data/`;
+        setBaseUrl = `https://wm-${office.toLowerCase()}coop.mvk.ds.usace.army.mil/${office.toLowerCase()}-data/`;
     } else if (cda === "public") {
         setBaseUrl = `https://cwms-data.usace.army.mil/cwms-data/`;
     }
@@ -1139,8 +1139,8 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                     const recordStageValue = Number(rawValue);
 
                     // Check if recordStageValue is a valid number and within the required range
-                    if (!isNaN(recordStageValue) && (recordStageValue*3.28084) <= 900 && (recordStageValue*3.28084) > 0) {
-                        recordStageCell.textContent = (recordStageValue*3.28084).toFixed(2);
+                    if (!isNaN(recordStageValue) && (recordStageValue * 3.28084) <= 900 && (recordStageValue * 3.28084) > 0) {
+                        recordStageCell.textContent = (recordStageValue * 3.28084).toFixed(2);
                     } else {
                         recordStageCell.textContent = '';
                     }
@@ -1410,7 +1410,7 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
                 const precipLakeTsid = location?.['tsid-lake-precip']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
 
                 if (precipLakeTsid) {
-                    fetchAndUpdatePrecipTd(precipTd, precipLakeTsid, currentDateTimeIso, currentDateTimeMinus60HoursIso, setBaseUrl);
+                    fetchAndUpdatePrecipTd(precipTd, precipLakeTsid, currentDateTimeIso, currentDateTimeMinus24HoursIso, setBaseUrl);
                 } else {
                     precipTd.textContent = "--";
                 }
@@ -1536,8 +1536,8 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
                 const recordStageValue = location['record-stage']?.['levels'][0][`constant-value`];
 
                 // Set the cell text content if the value is valid and less than or equal to 900
-                recordStageTd.textContent = recordStageValue != null && (recordStageValue*3.28084) <= 900
-                    ? (recordStageValue*3.28084).toFixed(2)
+                recordStageTd.textContent = recordStageValue != null && (recordStageValue * 3.28084) <= 900
+                    ? (recordStageValue * 3.28084).toFixed(2)
                     : '--';
 
                 // Append the cell to the current row
@@ -1771,7 +1771,8 @@ function fetchAndUpdateStageMidnightTd(stageTd, DeltaTd, tsidStage, flood_level,
             fetch(urlStage, {
                 method: 'GET',
                 headers: {
-                    'Accept': 'application/json;version=2'
+                    "Accept": "application/json;version=2", // Ensuring the correct version is used
+                    "cache-control": "no-cache"
                 }
             })
                 .then(response => {
@@ -1789,12 +1790,12 @@ function fetchAndUpdateStageMidnightTd(stageTd, DeltaTd, tsidStage, flood_level,
                     const c_count = calculateCCount(tsidStage);
 
                     const lastNonNullValue = getLastNonNullMidnightValue(stage, stage.name, c_count);
-                    console.log("lastNonNullValue:", lastNonNullValue);
+                    // console.log("lastNonNullValue:", lastNonNullValue);
 
                     let valueLast = null;
                     let timestampLast = null;
 
-                    if (lastNonNullValue.current6am !== null && lastNonNullValue.valueCountRowsBefore !== null) {
+                    if (lastNonNullValue.current6am !== null) {
                         timestampLast = lastNonNullValue.current6am.timestamp;
                         valueLast = parseFloat(lastNonNullValue.current6am.value).toFixed(2);
                     }
@@ -1804,7 +1805,7 @@ function fetchAndUpdateStageMidnightTd(stageTd, DeltaTd, tsidStage, flood_level,
                     let value24HoursLast = null;
                     let timestamp24HoursLast = null;
 
-                    if (lastNonNullValue.current6am !== null && lastNonNullValue.valueCountRowsBefore !== null) {
+                    if (lastNonNullValue.valueCountRowsBefore !== null) {
                         timestamp24HoursLast = lastNonNullValue.valueCountRowsBefore.timestamp;
                         value24HoursLast = parseFloat(lastNonNullValue.valueCountRowsBefore.value).toFixed(2);
                     }
@@ -2025,16 +2026,9 @@ function fetchAndUpdatePrecipTd(precipTd, tsid, currentDateTimeIso, currentDateT
 
                 let innerHTMLPrecip;
                 if (lastNonNullPrecipValue === null) {
-                    innerHTMLPrecip = "<table id='precip'>"
-                        + "<tr>"
-                        + "<td class='precip_missing' title='24 hr delta'>"
-                        + "-M-"
-                        + "</td>"
-                        + "</tr>"
-                        + "</table>";
+                    innerHTMLPrecip = "<span class='missing'>" + "-M-" + "</span>";
                 } else {
-                    innerHTMLPrecip = "</table>"
-                        + "<span class='last_max_value'>"
+                    innerHTMLPrecip = "<span class='last_max_value'>"
                         + valuePrecipLast
                         + "</span>";
                 }
@@ -2108,7 +2102,7 @@ function fetchAndUpdateYesterdayInflowTd(precipCell, tsid, currentDateTimeMinus2
                         + "<span class='precip_missing'>"
                         + "-M-"
                         + "</span>";
-                        + "</table>";
+                    + "</table>";
                 } else {
                     innerHTMLPrecip = "<table id='precip'>"
                         // + "<span class='last_max_value' title='" + precip.name + ", Value = " + valuePrecipLast + ", Date Time = " + timestampPrecipLast + "'>"
@@ -2117,7 +2111,7 @@ function fetchAndUpdateYesterdayInflowTd(precipCell, tsid, currentDateTimeMinus2
                         + valuePrecipLast
                         // + "</a>"
                         + "</span>";
-                        + "</table>";
+                    + "</table>";
                 }
                 return precipCell.innerHTML += innerHTMLPrecip;
             })
@@ -2250,7 +2244,8 @@ function fetchAndUpdateForecastTd(tsid, isoDateTodayStr, isoDatePlus1Str, isoDat
             fetch(urlForecast, {
                 method: 'GET',
                 headers: {
-                    'Accept': 'application/json;version=2'
+                    "Accept": "application/json;version=2", // Ensuring the correct version is used
+                    "cache-control": "no-cache"
                 }
             })
                 .then(response => {
