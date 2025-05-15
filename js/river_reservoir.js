@@ -672,7 +672,7 @@ function getLastNonNullValue(data, tsid) {
     return null;
 }
 
-function getLastNonNull6amValue(data, tsid, dstOffsetHours, c_count) {
+function getLastNonNull6amValue(data, tsid, c_count) {
     // console.log(data);
 
     if (!data || !Array.isArray(data.values)) {
@@ -729,7 +729,7 @@ function getLastNonNull6amValue(data, tsid, dstOffsetHours, c_count) {
     };
 }
 
-function getLastNonNullMidnightValue(data, tsid, dstOffsetHours, c_count) {
+function getLastNonNullMidnightValue(data, tsid, c_count) {
     if (!data || !Array.isArray(data.values)) {
         return {
             current6am: null,
@@ -937,8 +937,8 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
     // console.log('currentDateTimeMinus8Hours :', currentDateTimeMinus8Hours);
 
     // Subtract thirty hours from current date and time
-    const currentDateTimeMinus30Hours = subtractHoursFromDate(currentDateTime, 64);
-    // console.log('currentDateTimeMinus30Hours :', currentDateTimeMinus30Hours);
+    const currentDateTimeMinus60Hours = subtractHoursFromDate(currentDateTime, 60);
+    // console.log('currentDateTimeMinus60Hours :', currentDateTimeMinus60Hours);
 
     const currentDateTimeMinus24Hours = subtractHoursFromDate(currentDateTime, 24);
 
@@ -1095,7 +1095,7 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                 const stageTsid = location?.['tsid-stage']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
 
                 if (stageTsid) {
-                    fetchAndUpdateStageTd(stageTd, deltaTd, stageTsid, floodValue, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus24Hours, setBaseUrl);
+                    fetchAndUpdateStageTd(stageTd, deltaTd, stageTsid, floodValue, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus60Hours, setBaseUrl);
                 }
 
                 row.appendChild(stageTd);
@@ -1976,6 +1976,7 @@ function fetchAndUpdateStageTd(stageTd, DeltaTd, tsidStage, flood_level, current
 
                     const c_count = calculateCCount(tsidStage);
                     const lastNonNullValue = getLastNonNull6amValue(stage, stage.name, c_count);
+                    // console.log("lastNonNullValue: ", lastNonNullValue);
 
                     let valueLast = null, timestampLast = null;
                     if (lastNonNullValue?.current6am?.value != null) {
@@ -1988,6 +1989,9 @@ function fetchAndUpdateStageTd(stageTd, DeltaTd, tsidStage, flood_level, current
                         value24HoursLast = parseFloat(lastNonNullValue.valueCountRowsBefore.value).toFixed(2);
                         timestamp24HoursLast = lastNonNullValue.valueCountRowsBefore.timestamp;
                     }
+
+                    // console.log("valueLast: ", valueLast);
+                    // console.log("value24HoursLast: ", value24HoursLast);
 
                     let delta_24 = "-";
                     if (valueLast != null && value24HoursLast != null && !isNaN(valueLast) && !isNaN(value24HoursLast)) {
@@ -2046,7 +2050,7 @@ function fetchAndUpdateStageMidnightTd(stageTd, DeltaTd, tsidStage, flood_level,
 
                     const c_count = calculateCCount(tsidStage);
 
-                    const lastNonNullValue = getLastNonNullMidnightValue(stage, stage.name, dstOffsetHours, c_count);
+                    const lastNonNullValue = getLastNonNullMidnightValue(stage, stage.name, c_count);
                     // console.log("lastNonNullValue:", lastNonNullValue);
 
                     let valueLast = null;
@@ -2503,7 +2507,7 @@ function fetchAndUpdateStorageTd(stageTd, DeltaTd, tsidStorage, flood_level, cur
 
                     const c_count = calculateCCount(tsidStorage);
 
-                    const lastNonNullValue = getLastNonNullMidnightValue(stage, stage.name, dstOffsetHours, c_count);
+                    const lastNonNullValue = getLastNonNullMidnightValue(stage, stage.name, c_count);
                     // console.log("lastNonNullValue:", lastNonNullValue);
 
                     let valueLast = null;

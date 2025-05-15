@@ -1006,7 +1006,7 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                 const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
                 const stageTsid = location?.['tsid-stage']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
                 if (stageTsid) {
-                    fetchAndUpdateStageTd(stageTd, deltaTd, stageTsid, floodValue, currentDateTime, currentDateTimeMinus24Hours, setBaseUrl);
+                    fetchAndUpdateStageTd(stageTd, deltaTd, stageTsid, floodValue, currentDateTime, currentDateTimeMinus60Hours, setBaseUrl);
                 }
                 row.appendChild(stageTd);
                 row.appendChild(deltaTd);
@@ -1367,7 +1367,7 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
                 const stageTsid = location?.['tsid-stage']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
 
                 if (stageTsid) {
-                    fetchAndUpdateStageMidnightTd(stageTd, deltaTd, stageTsid, floodValue, currentDateTimeIso, currentDateTimeMinus24HoursIso, setBaseUrl);
+                    fetchAndUpdateStageMidnightTd(stageTd, deltaTd, stageTsid, floodValue, currentDateTimeIso, currentDateTimeMinus60HoursIso, setBaseUrl);
                 }
 
                 row.appendChild(stageTd);
@@ -1424,7 +1424,7 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
                 const yesterdayInflowTsid = location?.['tsid-lake-inflow-yesterday']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
 
                 if (yesterdayInflowTsid) {
-                    fetchAndUpdateYesterdayInflowTd(yesterdayInflowTd, yesterdayInflowTsid, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus60Hours, setBaseUrl);
+                    fetchAndUpdateYesterdayInflowTd(yesterdayInflowTd, yesterdayInflowTsid, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus24Hours, setBaseUrl);
                 } else {
                     yesterdayInflowTd.textContent = "--";
                 }
@@ -1639,12 +1639,15 @@ function fetchAndUpdateStageTd(stageTd, DeltaTd, tsidStage, flood_level, current
                     throw new Error("Invalid or empty stage data");
                 }
 
+                // console.log("stage: ", stage);
+
                 stage.values.forEach(entry => {
                     entry[0] = formatNWSDate(entry[0]);
                 });
 
                 const c_count = calculateCCount(tsidStage);
                 const lastNonNullValue = getLastNonNull6amValue(stage, stage.name, c_count);
+                // console.log("lastNonNullValue: ", lastNonNullValue);
 
                 let valueLast = null, timestampLast = null;
                 if (lastNonNullValue?.current6am?.value != null) {
