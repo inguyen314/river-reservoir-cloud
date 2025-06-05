@@ -1024,19 +1024,21 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                     const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
 
                     if (nwsForecastTsid) {
-                        fetchAndUpdateNwsForecastTd(
-                            stageTsid,
-                            nwsForecastTsid,
-                            floodValue,
-                            currentDateTime,
-                            currentDateTimePlus4Days,
-                            setBaseUrl
-                        )
+                        fetchAndUpdateNwsForecastTd(stageTsid, nwsForecastTsid, floodValue, currentDateTime, currentDateTimePlus4Days, setBaseUrl)
                             .then(({ nwsDay1Td: val1, nwsDay2Td: val2, nwsDay3Td: val3 }) => {
-                                // console.log("NWS forecast values:", val1, val2, val3);
-                                nwsDay1Td.textContent = val1 && !isNaN(parseFloat(val1)) ? parseFloat(val1).toFixed(2) : "--";
-                                nwsDay2Td.textContent = val2 && !isNaN(parseFloat(val2)) ? parseFloat(val2).toFixed(2) : "--";
-                                nwsDay3Td.textContent = val3 && !isNaN(parseFloat(val3)) ? parseFloat(val3).toFixed(2) : "--";
+                                const isValid1 = !isNaN(parseFloat(val1));
+                                const isValid2 = !isNaN(parseFloat(val2));
+                                const isValid3 = !isNaN(parseFloat(val3));
+
+                                if (isValid1 && isValid2 && isValid3) {
+                                    nwsDay1Td.textContent = parseFloat(val1).toFixed(2);
+                                    nwsDay2Td.textContent = parseFloat(val2).toFixed(2);
+                                    nwsDay3Td.textContent = parseFloat(val3).toFixed(2);
+                                } else {
+                                    nwsDay1Td.textContent = "--";
+                                    nwsDay2Td.textContent = "--";
+                                    nwsDay3Td.textContent = "--";
+                                }
                             })
                             .catch(error => console.error("Failed to fetch NWS data:", error));
                     } else {
@@ -1240,6 +1242,9 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
     const currentDateTimeMinus30Hours = subtractHoursFromDate(currentDateTime, 30);
     const currentDateTimeMinus30HoursIso = currentDateTimeMinus30Hours.toISOString();
 
+    const currentDateTimeMinus48Hours = subtractHoursFromDate(currentDateTime, 48);
+    const currentDateTimeMinus48HoursIso = currentDateTimeMinus48Hours.toISOString();
+
     const currentDateTimeMinus60Hours = subtractHoursFromDate(currentDateTime, 60);
     const currentDateTimeMinus60HoursIso = currentDateTimeMinus60Hours.toISOString();
 
@@ -1424,7 +1429,7 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
                 const yesterdayInflowTsid = location?.['tsid-lake-inflow-yesterday']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
 
                 if (yesterdayInflowTsid) {
-                    fetchAndUpdateYesterdayInflowTd(yesterdayInflowTd, yesterdayInflowTsid, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus24Hours, setBaseUrl);
+                    fetchAndUpdateYesterdayInflowTd(yesterdayInflowTd, yesterdayInflowTsid, currentDateTimeMinus48Hours, currentDateTime, setBaseUrl);
                 } else {
                     yesterdayInflowTd.textContent = "--";
                 }
@@ -2045,10 +2050,10 @@ function fetchAndUpdatePrecipTd(precipTd, tsid, currentDateTimeIso, currentDateT
     }
 }
 
-function fetchAndUpdateYesterdayInflowTd(precipCell, tsid, currentDateTimeMinus2Hours, currentDateTime, currentDateTimeMinus30Hours, setBaseUrl) {
+function fetchAndUpdateYesterdayInflowTd(precipCell, tsid, begin, end, setBaseUrl) {
     if (tsid !== null) {
         // Fetch the time series data from the API using the determined query string
-        const urlPrecip = `${setBaseUrl}timeseries?name=${tsid}&begin=${currentDateTimeMinus30Hours.toISOString()}&end=${currentDateTime.toISOString()}&office=${office}`;
+        const urlPrecip = `${setBaseUrl}timeseries?name=${tsid}&begin=${begin.toISOString()}&end=${end.toISOString()}&office=${office}`;
         // console.log("urlPrecip = ", urlPrecip);
 
         fetch(urlPrecip, {
@@ -2068,7 +2073,7 @@ function fetchAndUpdateYesterdayInflowTd(precipCell, tsid, currentDateTimeMinus2
             })
             .then(precip => {
                 // Once data is fetched, log the fetched data structure
-                // console.log("precip: ", precip);
+                console.log("precip: ", precip);
 
                 // Convert timestamps in the JSON object
                 precip.values.forEach(entry => {

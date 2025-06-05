@@ -1108,31 +1108,34 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                     const nwsDay1Td = document.createElement('td');
                     const nwsDay2Td = document.createElement('td');
                     const nwsDay3Td = document.createElement('td');
+                    const testTd = document.createElement('td');
 
                     const stageTsid = location?.['tsid-stage']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
                     const nwsForecastTsid = location?.['tsid-nws-forecast']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
                     const floodValue = location['flood'] ? location['flood']['constant-value'] : null;
 
                     if (nwsForecastTsid) {
-                        fetchAndUpdateNwsForecastTd(
-                            stageTsid,
-                            nwsForecastTsid,
-                            floodValue,
-                            currentDateTime,
-                            currentDateTimePlus4Days,
-                            setBaseUrl
-                        )
+                        fetchAndUpdateNwsForecastTd(stageTsid, nwsForecastTsid, floodValue, currentDateTime, currentDateTimePlus4Days, setBaseUrl, setJsonFileBaseUrl)
                             .then(({ nwsDay1Td: val1, nwsDay2Td: val2, nwsDay3Td: val3 }) => {
-                                const parseValue = (value) => {
-                                    const parsed = parseFloat(value);
-                                    return !isNaN(parsed) ? parsed.toFixed(2) : "-";
-                                };
+                                const isValid1 = !isNaN(parseFloat(val1));
+                                const isValid2 = !isNaN(parseFloat(val2));
+                                const isValid3 = !isNaN(parseFloat(val3));
 
-                                nwsDay1Td.textContent = parseValue(val1);
-                                nwsDay2Td.textContent = parseValue(val2);
-                                nwsDay3Td.textContent = parseValue(val3);
+                                if (isValid1 && isValid2 && isValid3) {
+                                    nwsDay1Td.textContent = parseFloat(val1).toFixed(2);
+                                    nwsDay2Td.textContent = parseFloat(val2).toFixed(2);
+                                    nwsDay3Td.textContent = parseFloat(val3).toFixed(2);
+                                } else {
+                                    nwsDay1Td.textContent = "--";
+                                    nwsDay2Td.textContent = "--";
+                                    nwsDay3Td.textContent = "--";
+                                }
                             })
                             .catch(error => console.error("Failed to fetch NWS data:", error));
+                    } else {
+                        nwsDay1Td.textContent = "";
+                        nwsDay2Td.textContent = "";
+                        nwsDay3Td.textContent = "";
                     }
 
                     row.appendChild(nwsDay1Td);
@@ -1681,10 +1684,10 @@ function updateNwsForecastTimeHTML(filteredData, forecastTimeCell, isMobile) {
     const entryDate = locationData.data_entry_date_cst1;
 
     // Parse the entry date string
-    const dateParts = entryDate.split('-'); // Split by hyphen
-    const day = dateParts[0]; // Day part
-    const monthAbbreviation = dateParts[1]; // Month abbreviation (e.g., JUL)
-    const year = dateParts[2].substring(0, 2); // Last two digits of the year (e.g., 24)
+    const [day, monthAbbreviation, yearWithTime] = entryDate.split('-');
+    const year = '20' + yearWithTime.substring(0, 2); // Convert to full year
+    const timePart = yearWithTime.split(' ')[1];
+    const [hours, minutes, seconds, period] = timePart.split('.');
 
     // Map month abbreviation to month number
     const months = {
@@ -1692,26 +1695,39 @@ function updateNwsForecastTimeHTML(filteredData, forecastTimeCell, isMobile) {
         'MAY': '05', 'JUN': '06', 'JUL': '07', 'AUG': '08',
         'SEP': '09', 'OCT': '10', 'NOV': '11', 'DEC': '12'
     };
+    const month = months[monthAbbreviation];
 
-    const month = months[monthAbbreviation]; // Get numeric month
+    // Convert to 24-hour format
+    let hour24 = parseInt(hours, 10);
+    if (period === 'PM' && hour24 !== 12) {
+        hour24 += 12;
+    } else if (period === 'AM' && hour24 === 12) {
+        hour24 = 0;
+    }
 
-    // Parse time parts
-    const timeParts = entryDate.split(' ')[1].split('.'); // Split time part by period
-    const hours = timeParts[0]; // Hours part
-    const minutes = timeParts[1]; // Minutes part
+    // Create a Date object from the entry
+    const entryDateObj = new Date(`${year}-${month}-${day}T${hour24.toString().padStart(2, '0')}:${minutes}:00`);
 
-    // Determine period (AM/PM)
-    const period = timeParts[3] === 'PM' ? 'PM' : 'AM';
+    // Get today's date and the cutoff date (3 days ago)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-    // Construct formatted date and time
-    const formattedDateTime = `${month}-${day}-${year} ${hours}:${minutes} ${period}`;
+    const threeDaysAgo = new Date(today);
+    threeDaysAgo.setDate(today.getDate() - 3);
+
+    // Compare dates
+    if (entryDateObj < threeDaysAgo) {
+        forecastTimeCell.innerHTML = '--'; // Do not display if older than 3 days
+        return;
+    }
+
+    // Construct display format
+    // const formattedDateTime = `${month}-${day}-${year.slice(2)} ${hours}:${minutes} ${period}`;
+    const formattedDateTime = `${month}-${day}-${year.slice(2)} ${hours}:${minutes}`;
     const displayDateTime = isMobile ? formattedDateTime.slice(0, 8) : formattedDateTime;
 
     forecastTimeCell.style.whiteSpace = 'nowrap';
-
-    // Update the HTML content
     forecastTimeCell.innerHTML = `<div class="hard_coded_php" title="Uses PHP exportNwsForecasts2Json.json Output, No Cloud Option Yet">${displayDateTime}</div>`;
-
 }
 
 async function fetchInBatches(urls) {
@@ -2116,63 +2132,68 @@ function fetchAndUpdateStageMidnightTd(stageTd, DeltaTd, tsidStage, flood_level,
     });
 }
 
-function fetchAndUpdateNwsForecastTd(tsidStage, nwsForecastTsid, flood_level, currentDateTime, currentDateTimePlus4Days, setBaseUrl) {
-    return new Promise((resolve, reject) => {
-        const { currentDateTimeMidNightISO, currentDateTimePlus4DaysMidNightISO } = generateDateTimeMidNightStringsISO(currentDateTime, currentDateTimePlus4Days);
+async function fetchAndUpdateNwsForecastTd(tsidStage, nwsForecastTsid, flood_level, currentDateTime, currentDateTimePlus4Days, setBaseUrl, setJsonFileBaseUrl) {
+    const { currentDateTimeMidNightISO, currentDateTimePlus4DaysMidNightISO } =
+        generateDateTimeMidNightStringsISO(currentDateTime, currentDateTimePlus4Days);
 
-        if (tsidStage !== null && tsidStage.slice(-2) !== "29" && nwsForecastTsid !== null) {
-            const urlNWS = `${setBaseUrl}timeseries?name=${nwsForecastTsid}&begin=${currentDateTimeMidNightISO}&end=${currentDateTimePlus4DaysMidNightISO}&office=${office}`;
+    if (tsidStage !== null && tsidStage.slice(-2) !== "29" && nwsForecastTsid !== null) {
+        const preUrl = setJsonFileBaseUrl + 'php_data_api/public/json/exportNwsForecasts2Json.json';
+        let match = null;
 
-            fetch(urlNWS, {
+        try {
+            const preResponse = await fetch(preUrl, {
+                method: 'GET',
+                headers: { 'Accept': 'application/json' }
+            });
+            if (!preResponse.ok) throw new Error('Pre-fetch failed');
+
+            const preFetchData = await preResponse.json();
+            match = preFetchData.find(entry => entry?.cwms_ts_id_day1 === nwsForecastTsid) || null;
+
+            if (!match) {
+                console.log("No matching entry found for", nwsForecastTsid);
+                return { nwsDay1Td: "", nwsDay2Td: "", nwsDay3Td: "" };
+            }
+
+        } catch (error) {
+            console.error("Pre-fetch error:", error);
+            return { nwsDay1Td: "", nwsDay2Td: "", nwsDay3Td: "" };
+        }
+
+        const urlNWS = `${setBaseUrl}timeseries?name=${nwsForecastTsid}&begin=${currentDateTimeMidNightISO}&end=${currentDateTimePlus4DaysMidNightISO}&office=${office}`;
+
+        try {
+            const response = await fetch(urlNWS, {
                 method: 'GET',
                 headers: { 'Accept': 'application/json;version=2' }
-            })
-                .then(response => {
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    return response.json();
-                })
-                .then(nws3Days => {
-                    // console.log("Raw nws3Days data:", nws3Days);
+            });
 
-                    nws3Days.values.forEach(entry => {
-                        entry[0] = formatNWSDate(entry[0]);
-                    });
+            if (!response.ok) throw new Error('Network response was not ok');
 
-                    // console.log("Formatted nws3Days.values:", nws3Days.values);
+            const nws3Days = await response.json();
+            nws3Days.values.forEach(entry => {
+                entry[0] = formatNWSDate(entry[0]);
+            });
 
-                    const valuesWithTimeNoon = extractValuesWithTimeNoon(nws3Days.values);
-                    // console.log("Values at noon:", valuesWithTimeNoon);
+            const valuesWithTimeNoon = extractValuesWithTimeNoon(nws3Days.values);
+            const getFormattedValue = (arr, index) => {
+                const rawValue = arr?.[index]?.[1];
+                const parsedValue = parseFloat(rawValue);
+                return !isNaN(parsedValue) ? parsedValue.toFixed(2) : "-";
+            };
 
-                    const getFormattedValue = (arr, index) => {
-                        const rawValue = arr?.[index]?.[1];
-                        const parsedValue = parseFloat(rawValue);
-                        return !isNaN(parsedValue) ? parsedValue.toFixed(2) : "-";
-                    };
-
-                    const firstMiddleValue = getFormattedValue(valuesWithTimeNoon, 1);
-                    const secondMiddleValue = getFormattedValue(valuesWithTimeNoon, 2);
-                    const thirdMiddleValue = getFormattedValue(valuesWithTimeNoon, 3);
-
-                    // console.log("Extracted noon values:", {
-                    //     nwsDay1Td: firstMiddleValue,
-                    //     nwsDay2Td: secondMiddleValue,
-                    //     nwsDay3Td: thirdMiddleValue
-                    // });
-
-                    resolve({
-                        nwsDay1Td: firstMiddleValue,
-                        nwsDay2Td: secondMiddleValue,
-                        nwsDay3Td: thirdMiddleValue
-                    });
-                })
-                .catch(error => {
-                    console.error("Error fetching or processing data:", error);
-                    reject(error);
-                });
-        } else {
-            resolve({ nwsDay1Td: "", nwsDay2Td: "", nwsDay3Td: "" });
+            return {
+                nwsDay1Td: getFormattedValue(valuesWithTimeNoon, 1),
+                nwsDay2Td: getFormattedValue(valuesWithTimeNoon, 2),
+                nwsDay3Td: getFormattedValue(valuesWithTimeNoon, 3)
+            };
+        } catch (error) {
+            console.error("Error fetching or processing NWS data:", error);
+            return { nwsDay1Td: "", nwsDay2Td: "", nwsDay3Td: "" };
         }
-    });
+    } else {
+        return { nwsDay1Td: "", nwsDay2Td: "", nwsDay3Td: "" };
+    }
 }
 
 function fetchAndUpdateCrestTd(stageTd, DeltaTd, tsidStage, flood_level, currentDateTimeMinus2Hours, currentDateTimePlus14Days, currentDateTimeMinus30Hours, setBaseUrl) {
