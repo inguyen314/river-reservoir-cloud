@@ -2323,6 +2323,86 @@
                 }
             },
             {
+                "location-id": "Grand Tower-Mississippi",
+                "office-id": "MVS",
+                "attribute": 35,
+                "metadata": {
+                    "office-id": "MVS",
+                    "name": "Grand Tower-Mississippi",
+                    "latitude": 37.658011,
+                    "longitude": -89.512443,
+                    "active": true,
+                    "public-name": "Grand Tower",
+                    "long-name": "Grand Tower-Mississippi",
+                    "description": "AT CENTRAL ILLINOIS PUBLIC SERVICE POWER PLANT, AT MILE 81.9 ABOVE THE MOUTH OF THE OHIO RIVER.",
+                    "timezone-name": "US/Central",
+                    "location-kind": "STREAM_LOCATION",
+                    "nation": "US",
+                    "state-initial": "IL",
+                    "county-name": "Jackson",
+                    "nearest-city": "Grand Tower",
+                    "horizontal-datum": "WGS84",
+                    "published-longitude": -89.512443,
+                    "published-latitude": 37.658011,
+                    "vertical-datum": "NAVD88",
+                    "elevation": 321.43,
+                    "map-label": "Grand Tower",
+                    "bounding-office-id": "MVS",
+                    "elevation-units": "ft"
+                },
+                "flood": {
+                    "office-id": "MVS",
+                    "location-level-id": "Grand Tower-Mississippi.Stage.Inst.0.Flood",
+                    "constant-value": 27.999999999999996,
+                    "level-units-id": "ft",
+                    "level-date": "2024-01-01T08:00:00Z",
+                    "attribute-units-id": "ft",
+                    "seasonal-values": []
+                },
+                "tsid-stage": {
+                    "office-id": "MVS",
+                    "id": "Stage",
+                    "time-series-category": {
+                        "office-id": "MVS",
+                        "id": "Grand Tower-Mississippi"
+                    },
+                    "assigned-time-series": [
+                        {
+                            "office-id": "MVS",
+                            "timeseries-id": "Grand Tower-Mississippi.Stage.Inst.30Minutes.0.lrgsShef-rev"
+                        }
+                    ]
+                },
+                "river-mile": [
+                    {
+                        "stream-location-node": {
+                            "id": {
+                                "office-id": "MVS",
+                                "name": "Grand Tower-Mississippi"
+                            },
+                            "stream-node": {
+                                "stream-id": {
+                                    "office-id": "MVS",
+                                    "name": "Mississippi R"
+                                },
+                                "bank": "L",
+                                "station": 81.9,
+                                "station-units": "mi"
+                            }
+                        },
+                        "published-station": 81.9,
+                        "total-drainage-area": 709200,
+                        "area-units": "mile2",
+                        "stage-units": "ft"
+                    }
+                ],
+                "record-stage": {
+                    "levels": [],
+                    "page": "MHx8bnVsbHx8MTAw",
+                    "page-size": 100
+                }
+            },
+            {
                 "location-id": "Cape Girardeau-Mississippi",
                 "office-id": "MVS",
                 "attribute": 37,
@@ -3321,6 +3401,7 @@
                                 "station-units": "mi"
                             }
                         },
+                        "published-station": 70.8,
                         "ungaged-drainage-area": 25999.999999999996,
                         "area-units": "mile2",
                         "stage-units": "ft"
@@ -4032,6 +4113,7 @@
                                 "station-units": "mi"
                             }
                         },
+                        "published-station": 67,
                         "area-units": "mile2",
                         "stage-units": "ft"
                     }
@@ -5742,6 +5824,20 @@
                     ],
                     "page": "MHx8bnVsbHx8MTAw",
                     "page-size": 100
+                },
+                "tsid-outflow-average": {
+                    "office-id": "MVS",
+                    "id": "Outflow-Average-Lake-Test",
+                    "time-series-category": {
+                        "office-id": "MVS",
+                        "id": "Lk Shelbyville-Kaskaskia"
+                    },
+                    "assigned-time-series": [
+                        {
+                            "office-id": "MVS",
+                            "timeseries-id": "Lk Shelbyville-Kaskaskia.Flow-Out.Ave.~1Day.1Day.lakerep-rev-test"
+                        }
+                    ]
                 }
             },
             {
@@ -6086,6 +6182,21 @@
                     ],
                     "page": "MHx8bnVsbHx8MTAw",
                     "page-size": 100
+                },
+                "tsid-outflow-average": {
+                    "office-id": "MVS",
+                    "id": "Outflow-Average-Lake-Test",
+                    "time-series-category": {
+                        "office-id": "MVS",
+                        "id": "Carlyle Lk-Kaskaskia"
+                    },
+                    "description": "Lake Sheet",
+                    "assigned-time-series": [
+                        {
+                            "office-id": "MVS",
+                            "timeseries-id": "Carlyle Lk-Kaskaskia.Flow-Out.Ave.~1Day.1Day.lakerep-rev-test"
+                        }
+                    ]
                 }
             },
             {
@@ -6154,6 +6265,7 @@
                                 "station-units": "mi"
                             }
                         },
+                        "published-station": 19.3,
                         "total-drainage-area": 5512.999999999999,
                         "area-units": "mile2",
                         "stage-units": "ft"
@@ -6583,6 +6695,20 @@
                     ],
                     "page": "MHx8bnVsbHx8MTAw",
                     "page-size": 100
+                },
+                "tsid-outflow-average": {
+                    "office-id": "MVS",
+                    "id": "Outflow-Average-Lake-Test",
+                    "time-series-category": {
+                        "office-id": "MVS",
+                        "id": "Rend Lk-Big Muddy"
+                    },
+                    "assigned-time-series": [
+                        {
+                            "office-id": "MVS",
+                            "timeseries-id": "Rend Lk-Big Muddy.Flow-Out.Ave.~1Day.1Day.lakerep-rev-test"
+                        }
+                    ]
                 }
             },
             {
@@ -6653,6 +6779,7 @@
                                 "station-units": "mi"
                             }
                         },
+                        "published-station": 86.60000000000001,
                         "total-drainage-area": 794,
                         "area-units": "mile2",
                         "stage-units": "ft"
@@ -7164,6 +7291,21 @@
                     ],
                     "page": "MHx8bnVsbHx8MTAw",
                     "page-size": 100
+                },
+                "tsid-outflow-average": {
+                    "office-id": "MVS",
+                    "id": "Outflow-Average-Lake-Test",
+                    "time-series-category": {
+                        "office-id": "MVS",
+                        "id": "Wappapello Lk-St Francis"
+                    },
+                    "assigned-time-series": [
+                        {
+                            "office-id": "MVS",
+                            "timeseries-id": "Wappapello Lk-St Francis.Flow-Out.Ave.~1Day.1Day.lakerep-rev-test",
+                            "attribute": 1
+                        }
+                    ]
                 }
             },
             {
@@ -7534,6 +7676,20 @@
                     ],
                     "page": "MHx8bnVsbHx8MTAw",
                     "page-size": 100
+                },
+                "tsid-outflow-average": {
+                    "office-id": "MVS",
+                    "id": "Outflow-Average-Lake-Test",
+                    "time-series-category": {
+                        "office-id": "MVS",
+                        "id": "Mark Twain Lk-Salt"
+                    },
+                    "assigned-time-series": [
+                        {
+                            "office-id": "MVS",
+                            "timeseries-id": "Mark Twain Lk-Salt.Flow-Spill.Ave.~1Day.1Day.lakerep-rev-test"
+                        }
+                    ]
                 }
             },
             {

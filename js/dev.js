@@ -83,6 +83,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const setTimeseriesGroup8 = "Outflow-Total-Lake-Test"; // Controlled Outflow
         const setTimeseriesGroup9 = "Gate-Total-Lake-Test"; // Controlled Outflow
         const setTimeseriesGroup10 = "Forecast-Lake"; // Lake Forecast
+        const setTimeseriesGroup11 = "Outflow-Average-Lake-Test"; // Lake Forecast
 
         const categoryApiUrl = `${setBaseUrl}location/group?office=${office}&group-office-id=${office}&category-office-id=${office}&category-id=${setLocationCategory}`;
 
@@ -106,6 +107,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const recordStageMap = new Map();
         const forecastNwsTsidMap = new Map();
         const crestNwsTsidMap = new Map();
+        const outflowAverageLakeMap = new Map();
 
         // Promises
         const stageTsidPromises = [];
@@ -127,6 +129,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const recordStagePromises = [];
         const forecastNwsTsidPromises = [];
         const crestNwsTsidPromises = [];
+        const outflowAverageTsidPromises = [];
 
         const apiPromises = [];
 
@@ -208,7 +211,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 ...forecastLakePromises,
                 ...recordStagePromises,
                 ...forecastNwsTsidMap,
-                ...crestNwsTsidPromises
+                ...crestNwsTsidPromises,
+                ...outflowAverageTsidPromises
             ]))
             .then(() => {
                 // Merge fetched data into locations
@@ -233,6 +237,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         loc['record-stage'] = recordStageMap.get(loc['location-id']);
                         loc['tsid-nws-forecast'] = forecastNwsTsidMap.get(loc['location-id']);
                         loc['tsid-nws-crest'] = crestNwsTsidMap.get(loc['location-id']);
+                        loc['tsid-outflow-average'] = outflowAverageLakeMap.get(loc['location-id']);
                     });
                 });
 
@@ -501,6 +506,21 @@ document.addEventListener('DOMContentLoaded', async function () {
                         if (data) {
                             // console.log(`Fetched data for ${locationId}:`, data);  // Log fetched data
                             forecastLakeMap.set(locationId, data);
+                        } else {
+                            // console.warn(`No data returned for ${locationId}`);
+                        }
+                    })
+                    .catch(err => console.error(`TSID fetch failed for ${locationId}:`, err))
+            );
+
+            const outflowAverageLakeUrl = `${setBaseUrl}timeseries/group/${setTimeseriesGroup11}?office=${office}&category-id=${loc['location-id']}`;
+            outflowAverageTsidPromises.push(
+                fetch(outflowAverageLakeUrl)
+                    .then(res => res.ok ? res.json() : null)
+                    .then(data => {
+                        if (data) {
+                            // console.log(`Fetched data for ${locationId}:`, data);  // Log fetched data
+                            outflowAverageLakeMap.set(locationId, data);
                         } else {
                             // console.warn(`No data returned for ${locationId}`);
                         }
@@ -1450,6 +1470,7 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
                 const outflowTotalLakeTsid = location?.['tsid-outflow-total-lake']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
                 const gateTotalLakeTsid = location?.['tsid-gate-total-lake']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
                 const forecastLakeTsid = location?.['tsid-forecast-lake']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
+                const outflowAverageLakeTsid = location?.['tsid-outflow-average']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
 
                 if (location['metadata'][`public-name`] === "Shelbyville Pool" || location['metadata'][`public-name`] === "Carlyle Pool") {
                     if (outflowTotalLakeTsid) {
@@ -1494,6 +1515,20 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
                     }
                 }
 
+                if (outflowAverageLakeTsid) {
+                    fetchAndUpdateOutflowAverageTd(lakeCurrent, outflowAverageLakeTsid, isoDateTodayStr, isoDatePlus1Str, isoDateTodayPlus6HoursStr, setBaseUrl, isoDateMinus1Str)
+                        .then(data => {
+                            console.log("Fetched outflowAverageLakeTsid data:", data);
+                            const value = Math.round((data?.values?.[0]?.[1] || 0) / 10) * 10;
+                            if (location['metadata'][`public-name`] === "Rend Pool") {
+                                midnightControlledOutflowTd.textContent = value !== null && value !== undefined ? value.toFixed(0) : "-M-";
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error during fetch:", error);
+                        });
+                }
+
 
                 if (forecastLakeTsid) {
                     fetchAndUpdateForecastTd(lakeCurrent, forecastLakeTsid, isoDateTodayStr, isoDatePlus1Str, isoDateTodayPlus6HoursStr, setBaseUrl, isoDateMinus1Str)
@@ -1501,10 +1536,6 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
                             // console.log("Fetched forecastLakeTsid data:", data);
                             const value = data?.values?.[0]?.[1];
                             eveningControlledOutflowTd.textContent = value !== null && value !== undefined ? value.toFixed(0) : "-M-";
-                            if (location['metadata'][`public-name`] === "Rend Pool") {
-                                // TODO: what is the midnight outflow for Rend?
-                                midnightControlledOutflowTd.textContent = "-?-";
-                            }
                         })
                         .catch(error => {
                             console.error("Error during fetch:", error);
@@ -2284,6 +2315,45 @@ function fetchAndUpdateForecastTd(lake, tsid, isoDateTodayStr, isoDatePlus1Str, 
                 urlForecast = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateTodayStr}&end=${isoDatePlus1Str}&office=${office}&version-date=${isoDateTodayPlus6HoursStr}`;
             }
             fetch(urlForecast, {
+                method: 'GET',
+                headers: {
+                    "Accept": "application/json;version=2", // Ensuring the correct version is used
+                    "cache-control": "no-cache"
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data?.values?.length) {
+                        data.values.forEach(entry => {
+                            entry[0] = formatNWSDate(entry[0]);
+                        });
+                    }
+                    resolve(data);
+                })
+                .catch(error => {
+                    console.error("Error fetching or processing data:", error);
+                    reject(error);
+                });
+        } else {
+            resolve(null);
+        }
+    });
+}
+
+function fetchAndUpdateOutflowAverageTd(lake, tsid, isoDateTodayStr, isoDatePlus1Str, isoDateTodayPlus6HoursStr, setBaseUrl, isoDateMinus1Str, midnightControlledOutflowTd) {
+    return new Promise((resolve, reject) => {
+        if (tsid !== null) {
+
+            let urlOutflowAverage = null;
+            urlOutflowAverage = `${setBaseUrl}timeseries?name=${tsid}&begin=${isoDateTodayStr}&end=${isoDateTodayStr}&office=${office}`;
+            console.log("urlOutflowAverage = ", urlOutflowAverage);
+
+            fetch(urlOutflowAverage, {
                 method: 'GET',
                 headers: {
                     "Accept": "application/json;version=2", // Ensuring the correct version is used
