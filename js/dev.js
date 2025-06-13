@@ -1078,7 +1078,7 @@ function createTableRiver(combinedDataRiver, type, nws_day1_date_title, nws_day2
                     const nwsForecastTsid = location['tsid-nws-forecast']?.['assigned-time-series']?.[0]?.['timeseries-id'] ?? null;
 
                     if (nwsForecastTsid !== null) {
-                        nwsForecastTimeTd.textContent = '--';
+                        nwsForecastTimeTd.textContent = '-TBD-';
                         nwsForecastTimeTd.style.background = 'pink';
                     } else {
                         nwsForecastTimeTd.textContent = '';
@@ -1842,8 +1842,7 @@ function fetchAndUpdateStageMidnightTd(stageTd, DeltaTd, tsidStage, flood_level,
             fetch(urlStage, {
                 method: 'GET',
                 headers: {
-                    "Accept": "application/json;version=2", // Ensuring the correct version is used
-                    "cache-control": "no-cache"
+                    'Accept': 'application/json;version=2'
                 }
             })
                 .then(response => {
@@ -1935,7 +1934,9 @@ function fetchAndUpdateNwsForecastTd(tsidStage, nwsForecastTsid, flood_level, cu
 
             fetch(urlNWS, {
                 method: 'GET',
-                headers: { 'Accept': 'application/json;version=2' }
+                headers: {
+                    'Accept': 'application/json;version=2'
+                }
             })
                 .then(response => {
                     if (!response.ok) throw new Error('Network response was not ok');
@@ -2016,17 +2017,25 @@ function fetchAndUpdateCrestTd(td1, td2, tsid, flood, begin, end, setBaseUrl) {
                         valueLast = lastNonNullValue.value;
                     }
 
-                    let innerHTMLStage;
+                    let innerHTMLCrest;
                     if (valueLast === null) {
-                        innerHTMLStage = "<span class='missing'></span>";
+                        innerHTMLCrest = "<span class='missing'>-TBD-</span>";
+                        td1.style.background = 'pink';
                     } else {
                         const floodClass = determineStageClass(valueLast, flood);
-                        innerHTMLStage = `<span class='${floodClass}'>${valueLast.toFixed(2)}</span>`;
+                        innerHTMLCrest = `<span class='${floodClass}'>${valueLast.toFixed(2)}</span>`;
                     }
 
-                    td1.innerHTML = innerHTMLStage;
-                    td2.innerHTML = timestampLast !== null ? timestampLast : '--';
-                    td2.style.background = 'pink';
+                    let innerHTMLCrestDate = null;
+                    if (timestampLast === null) {
+                        innerHTMLCrestDate = "<span class='missing'>-TBD-</span>";
+                        td2.style.background = 'pink';
+                    } else {
+                        innerHTMLCrestDate = `<span>${timestampLast}</span>`;
+                    } 
+
+                    td1.innerHTML = innerHTMLCrest;
+                    td2.innerHTML = innerHTMLCrestDate;
 
                     resolve({
                         stageTd: valueLast,
@@ -2320,8 +2329,7 @@ function fetchAndUpdateForecastTd(lake, tsid, isoDateTodayStr, isoDatePlus1Str, 
             fetch(urlForecast, {
                 method: 'GET',
                 headers: {
-                    "Accept": "application/json;version=2", // Ensuring the correct version is used
-                    "cache-control": "no-cache"
+                    'Accept': 'application/json;version=2'
                 }
             })
                 .then(response => {
@@ -2359,8 +2367,7 @@ function fetchAndUpdateOutflowAverageTd(lake, tsid, isoDateTodayStr, isoDatePlus
             fetch(urlOutflowAverage, {
                 method: 'GET',
                 headers: {
-                    "Accept": "application/json;version=2", // Ensuring the correct version is used
-                    "cache-control": "no-cache"
+                    'Accept': 'application/json;version=2'
                 }
             })
                 .then(response => {
