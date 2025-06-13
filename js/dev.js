@@ -1519,7 +1519,9 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
                     fetchAndUpdateOutflowAverageTd(lakeCurrent, outflowAverageLakeTsid, isoDateTodayStr, isoDatePlus1Str, isoDateTodayPlus6HoursStr, setBaseUrl, isoDateMinus1Str)
                         .then(data => {
                             console.log("Fetched outflowAverageLakeTsid data:", data);
-                            const value = Math.round((data?.values?.[0]?.[1] || 0) / 10) * 10;
+                            const rawValue = data?.values?.[0]?.[1];
+                            const value = typeof rawValue === 'number' ? Math.round(rawValue / 10) * 10 : null;
+                            console.log("value: ", value);
                             if (location['metadata'][`public-name`] === "Rend Pool") {
                                 midnightControlledOutflowTd.textContent = value !== null && value !== undefined ? value.toFixed(0) : "-M-";
                             }
@@ -1535,6 +1537,7 @@ function createTableReservoir(combinedDataReservoir, type, nws_day1_date_title, 
                         .then(data => {
                             // console.log("Fetched forecastLakeTsid data:", data);
                             const value = data?.values?.[0]?.[1];
+                            // console.log("value: ", value);
                             eveningControlledOutflowTd.textContent = value !== null && value !== undefined ? value.toFixed(0) : "-M-";
                         })
                         .catch(error => {
